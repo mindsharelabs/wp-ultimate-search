@@ -1,5 +1,5 @@
 <?php if ($results): ?>
-	
+
 	<?php global $post; ?>
 	
 	<?php foreach ($results as $post): ?>
@@ -9,7 +9,7 @@
 		<div class="post" id="post-<?php the_ID(); ?>">
 		<h2><a href="<?php the_permalink() ?>" rel="bookmark" title="Permanent Link to <?php the_title(); ?>">
 		<?php the_title(); ?></a></h2>
-			<small><?php the_time('F jS, Y') ?> <!-- by <?php the_author() ?> --></small>
+			<small><?php // the_time('F jS, Y') ?> <!-- by <?php the_author() ?> --></small>
 			<div class="entry">
 				<?php the_excerpt(); ?>
 			</div>
@@ -19,8 +19,10 @@
 		
 	<?php endforeach; ?>
 	
-<?php else : ?>
+	<?php if(wpus_option('clear_search')) { ?>
+		<a id="wpus-clear-search" class="<?php echo wpus_option('clear_search_class') ?>" href="#"><?php echo wpus_option('clear_search_text'); ?></a>
+	<?php } ?>
 	
-		<p><?php echo wpus_option('no_results_msg'); ?></p>
-		
+<?php else : ?>
+		<div class="wpus-no-results"><?php echo wpus_option('no_results_msg'); ?></div>
 <?php endif; ?>

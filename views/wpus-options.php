@@ -622,24 +622,91 @@ if(!class_exists('WPUltimateSearchOptions')) :
 					'section' => 'general'
 				);
 			}
+			$this->settings['box_heading'] = array(
+				'section' => 'general',
+				'title'   => '', // not used
+				'desc'    => 'Search Box',
+				'type'    => 'heading'
+			);
+			$this->settings['show_facets'] = array(
+				'title'   => __('Show facets'),
+				'desc'    => __('Show available facets when the search box is first clicked.'),
+				'std'     => 1,
+				'type'    => 'checkbox',
+				'section' => 'general'
+			);
+			$this->settings['placeholder'] = array(
+				'title'   => __('Placeholder'),
+				'desc'    => __('Text displayed in the search box before a query is entered.'),
+				'std'     => "Search",
+				'type'    => 'text',
+				'section' => 'general'
+			);
 			$this->settings['override_default'] = array(
 				'section' => 'general',
 				'title'   => __('Override default search box'),
-				'desc'    => __('Select this to replace the default WordPress search for with an instance of WP Ultimate Search.<br /> Results will be shown at the page below.'),
+				'desc'    => __('Select this to replace the default WordPress search for with an instance of WP Ultimate Search.'),
 				'type'    => 'checkbox',
 				'std'     => 0
 			);
+			$this->settings['results_heading'] = array(
+				'section' => 'general',
+				'title'   => '', // not used
+				'desc'    => 'Search Results',
+				'type'    => 'heading'
+			);
+			$this->settings['clear_search'] = array(
+				'title'   => __('"Clear search" button'),
+				'desc'    => __('Display a button after search results to clear all terms.'),
+				'std'     => 1,
+				'type'    => 'checkbox',
+				'section' => 'general'
+			);
+			$pages = get_pages();
+			$page_select = array();
+			foreach($pages as $page) {
+				$page_select[$page->ID] = $page->post_title;
+			}
 			$this->settings['results_page'] = array(
 				'title'   => __('Search Results Page'),
-				'desc'    => __('Specify the URL to the page with the ['.WPUS_PLUGIN_SLUG.'-results] shortcode (requires permalinks)'),
-				'std'     => "/search",
-				'type'    => 'text',
+				'desc'    => __('Specify the page with the ['.WPUS_PLUGIN_SLUG.'-results] shortcode.<br />Searches conducted from widget will redirect to this page.'),
+				'choices' => $page_select,
+				'std'	  => array_search('Search', $page_select), 
+				'type'    => 'select',
 				'section' => 'general'
 			);
 			$this->settings['no_results_msg'] = array(
 				'title'   => __('"No results" message'),
-				'desc'    => __('Customize the message displayed when no results are found'),
+				'desc'    => __('Customize the message displayed when no results are found.'),
 				'std'     => "Sorry, no results found.",
+				'type'    => 'text',
+				'section' => 'general'
+			);
+			$this->settings['highlight_terms'] = array(
+				'title'   => __('Highlight Terms'),
+				'desc'    => __('Highlight matching terms in search results.'),
+				'std'     => 1,
+				'type'    => 'checkbox',
+				'section' => 'general'
+			);
+			$this->settings['clear_search'] = array(
+				'title'   => __('"Clear search" button'),
+				'desc'    => __('Display a button after search results to clear all terms.'),
+				'std'     => 1,
+				'type'    => 'checkbox',
+				'section' => 'general'
+			);
+			$this->settings['clear_search_text'] = array(
+				'title'   => __('Button text'),
+				'desc'    => __(''),
+				'std'     => 'Clear Search Terms',
+				'type'    => 'text',
+				'section' => 'general'
+			);
+			$this->settings['clear_search_class'] = array(
+				'title'   => __('Button CSS class'),
+				'desc'    => __('Apply a CSS class to match your theme.'),
+				'std'     => 'btn btn-default',
 				'type'    => 'text',
 				'section' => 'general'
 			);

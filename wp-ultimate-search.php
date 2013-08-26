@@ -3,7 +3,7 @@
 Plugin Name: WP Ultimate Search
 Plugin URI: http://ultimatesearch.mindsharelabs.com
 Description: Advanced faceted AJAX search and filter utility.
-Version: 1.0.3
+Version: 1.1
 Author: Mindshare Studios
 Author URI: http://mindsharelabs.com/
 */
@@ -121,7 +121,7 @@ if(!class_exists("WPUltimateSearch")) :
 
 		function __construct() {
 
-			$this->is_active = FALSE;
+			$this->is_active = false;
 			$this->options = get_option('wpus_options');
 
 			if(is_admin()) {
@@ -147,6 +147,7 @@ if(!class_exists("WPUltimateSearch")) :
 
 			register_activation_hook(__FILE__, array($this, 'activation_hook')); // on plugin activation, create search results page
 		}
+		
 
 		/**
 		 * wpus_register_widgets
@@ -305,28 +306,26 @@ if(!class_exists("WPUltimateSearch")) :
 		 * @internal param $resultsarray
 		 */
 		protected function print_results($results, $keywords) {
-			if($results) {
-				ob_start();
+			ob_start();
 
-				if(file_exists(TEMPLATEPATH.'/wpus-results-template.php')) {
-					require(TEMPLATEPATH.'/wpus-results-template.php');
-				} else {
-					require(WPUS_DIR_PATH.'views/wpus-results-template.php');
-				}
-				// if we're tracking searches as analytics events, pass the number of search results back to main.js
-				if(wpus_option('track_events')) {
-					$this->ajax_response('numresults', count($results));
-				}
-
-				echo ob_get_clean();
-				/* @todo add an option to switch to non post_object based results output (just title and excerpt)
-
-				if($keywords) {
-				echo $this->highlightsearchterms($output, $keywords);
-				} else {
-				echo $output;
-				} */
+			if(file_exists(TEMPLATEPATH.'/wpus-results-template.php')) {
+				require(TEMPLATEPATH.'/wpus-results-template.php');
+			} else {
+				require(WPUS_DIR_PATH.'views/wpus-results-template.php');
 			}
+			// if we're tracking searches as analytics events, pass the number of search results back to main.js
+			if(wpus_option('track_events')) {
+				$this->ajax_response('numresults', count($results));
+			}
+
+			echo ob_get_clean();
+			/* @todo add an option to switch to non post_object based results output (just title and excerpt)
+
+			if($keywords) {
+			echo $this->highlightsearchterms($output, $keywords);
+			} else {
+			echo $output;
+			} */
 		}
 
 		/**
@@ -475,6 +474,11 @@ if(!class_exists("WPUltimateSearch")) :
 			wp_enqueue_script('wpus-script', WPUS_DIR_URL.'js/main.js', array('visualsearch'), '', wpus_option('scripts_in_footer'));
 
 			$options = $this->options;
+			
+			global $in_use;
+
+			($options['show_facets'] == 1 ? $showfacets = true : $showfacets = false);
+			($options['highlight_terms'] == 1 ? $highlight = true : $highlight = false);
 
 			$params = array(
 				'ajaxurl'          => admin_url('admin-ajax.php'),
@@ -482,8 +486,10 @@ if(!class_exists("WPUltimateSearch")) :
 				'trackevents'      => $options['track_events'],
 				'eventtitle'       => $options['event_category'],
 				'enabledfacets'    => json_encode($this->get_enabled_facets()),
-				'loadinganimation' => $options['loading_animation'],
-				'resultspage'      => $options['results_page']
+				'resultspage'      => get_permalink($options['results_page']),
+				'showfacets'	   => $showfacets,
+				'placeholder'	   => $options['placeholder'],
+				'highlight'		   => $highlight
 			);
 
 			wp_localize_script('wpus-script', 'wpus_script', $params);
@@ -497,24 +503,14 @@ if(!class_exists("WPUltimateSearch")) :
 		 *
 		 * @return string
 		 */
-		public function search_form() {
+		public function search_form($mode) {
+			
+			if($mode == "widget" && get_the_ID() == $this->options['results_page'])
+				return;
+			
 			$this->register_scripts();
 			// RENDER SEARCH FORM
 			return '<div id="search_box_container"><div id="search"><div class="VS-search">
-			  <div class="VS-search-box-wrapper VS-search-box">
-			    <div class="VS-icon VS-icon-search"></div>
-			    <div class="VS-icon VS-icon-cancel VS-cancel-search-box" title="clear search"></div>
-			  </div>
-			</div></div></div>';
-		}
-
-		/**
-		 * search_form_template_tag
-		 *
-		 */
-		public function search_form_template_tag() {
-			$this->register_scripts();
-			echo '<div id="search_box_container"><div id="search"><div class="VS-search">
 			  <div class="VS-search-box-wrapper VS-search-box">
 			    <div class="VS-icon VS-icon-search"></div>
 			    <div class="VS-icon VS-icon-cancel VS-cancel-search-box" title="clear search"></div>
@@ -530,14 +526,6 @@ if(!class_exists("WPUltimateSearch")) :
 		public function search_results() {
 			// RENDER SEARCH RESULTS AREA
 			return '<div id="wpus_response"></div>';
-		}
-
-		/**
-		 * search_results_template_tag
-		 *
-		 */
-		public function search_results_template_tag() {
-			echo '<div id="wpus_response"></div>';
 		}
 
 		/**
@@ -584,7 +572,7 @@ if(!class_exists("WPUltimateSearch")) :
 
 					$terms = get_terms($facet, $args);
 					foreach($terms as $term) {
-						$values[] = $term->name;
+						$values[] = html_entity_decode($term->name);
 					}
 
 					echo json_encode($values); // json encode the results array and pass it back to the UI
@@ -653,9 +641,9 @@ if(!class_exists("WPUltimateSearch")) :
 
 			foreach($searcharray as $index) { // iterate through the search query array and separate the taxonomies into their own array
 				foreach($index as $facet => $data) {
-					$facet = $wpdb->escape($facet);
+					$facet = $wpdb->prepare($facet);
 
-					//		$data = $wpdb->escape($data); //	@todo find an escape method that doesn't break strings encased in quotes. not a huge deal since we're breaking all
+					//	$data = $wpdb->prepare($data); //	@todo find an escape method that doesn't break strings encased in quotes. not a huge deal since we're breaking all
 					//	strings apart anyway (so sql injection is impossible)
 					$type = $this->determine_facet_type($facet); // determine if we're dealing with a taxonomy or a metafield
 
@@ -682,7 +670,7 @@ if(!class_exists("WPUltimateSearch")) :
 			SELECT *,
 			substring(post_content, ";
 			if(isset($keywords)) { // if there are keywords, locate them and return a 200 character excerpt beginning 80 characters before the keyword
-				$keywords = $wpdb->escape($keywords); // Sanitize the keywords parameters to prevent sql injection attacks
+				$keywords = $wpdb->prepare($keywords); // Sanitize the keywords parameters to prevent sql injection attacks
 				$querystring .= "
 					case 
 						 when locate('$keywords[0]', lower(post_content)) <= 80 then 1
@@ -759,16 +747,16 @@ if(class_exists("WPUltimateSearch")) {
 	 */
 	function wp_ultimate_search_results() {
 		global $wp_ultimate_search;
-		$wp_ultimate_search->search_results_template_tag();
+		echo $wp_ultimate_search->search_results();
 	}
 
 	/**
 	 * wp_ultimate_search_bar
 	 *
 	 */
-	function wp_ultimate_search_bar() {
+	function wp_ultimate_search_bar($mode = null) {
 		global $wp_ultimate_search;
-		$wp_ultimate_search->search_form_template_tag();
+		echo $wp_ultimate_search->search_form($mode);
 	}
 
 	/**
@@ -779,6 +767,7 @@ if(class_exists("WPUltimateSearch")) {
 	 * @return bool
 	 *
 	 * @todo move inside class. also.. is this really necessary? I can't remember the inspiration
+	 * It's used by the widget to check pull the results page template without creating a new instance of the WPUS clas
 	 */
 	function wpus_option($option) {
 		$options = get_option('wpus_options');

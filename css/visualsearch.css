@@ -110,7 +110,7 @@
 	-webkit-box-shadow: inset 0px 0px 3px #ccc;
 	-moz-box-shadow: inset 0px 0px 3px #ccc;
 	box-shadow: inset 0px 0px 3px #ccc;
-	min-height: 28px;
+	min-height: 32px;
 	height: auto;
 }
 .VS-search .VS-search-box.VS-focus {
@@ -120,16 +120,16 @@
 	box-shadow: inset 0px 0px 3px #acf;
 }
 .VS-search .VS-placeholder {
-      position: relative;
-      margin: 0 20px 0 22px;
-      color: #808080;
+	position: absolute;
+	margin: 8px 20px 0 28px;
+	color: #808080;
 }
-  .VS-search .VS-search-box.VS-focus .VS-placeholder {
+  .VS-search .VS-search-box.VS-focus .VS-placeholder, .VS-hidden {
       display: none;
 }
 .VS-search .VS-search-inner {
 	position: relative;
-	margin: 0 20px 0 22px;
+	margin: 0 20px 0 28px;
 	overflow: hidden;
 }
 .VS-search input {
@@ -170,6 +170,7 @@
 	border: 1px solid transparent;
 	height: 20px;
 	margin: 3px -3px 3px 8px;
+	overflow: visible;
 }
 .VS-search .search_facet.is_selected {
 	margin-left: 5px;
@@ -205,14 +206,11 @@
 	color: #000;
 	font-size: 13px;
 	line-height: 16px;
-	padding: 5px 0 5px 4px;
-	height: 16px;
+	height: 18px;
 	width: auto;
 	z-index: 100;
 	position: relative;
-	padding-top: 1px;
-	padding-bottom: 2px;
-	padding-right: 3px;
+	padding: 0 3px 0 2px;
 }
 .VS-search .search_facet.is_editing input,
 .VS-search .search_facet.is_selected input {
@@ -255,11 +253,9 @@
 	display: block;
 }
 .VS-search .search_input input {
-	padding: 6px 3px 6px 2px;
-	line-height: 10px;
-	height: 22px;
-	margin-top: -4px;
-	width: 10px;
+	padding: 3px 3px 6px 2px;
+	line-height: 20px;
+	height: 100%;
 	z-index: 100;
 	min-width: 20px;
 	position: relative;
@@ -268,7 +264,6 @@
 	-webkit-box-shadow: none;
 	-moz-box-shadow: none;
 	box-shadow: none;
-	}
 }
 .VS-search .search_input.is_editing input {
 	color: #202020;
@@ -319,7 +314,7 @@
 	color: #000;
 	outline: none;
 	display: block;
-	padding: 3px 4px 5px;
+	padding: 6px 6px;
 	border-radius: none;
 	line-height: 1;
 	background-color: #F8F8F8;
@@ -328,6 +323,9 @@
 	background-image: linear-gradient(top, #F8F8F8, #F3F3F3);
 	border-top: 1px solid #FAFAFA;
 	border-bottom: 1px solid #f0f0f0;
+}
+.VS-interface.ui-autocomplete .ui-menu-item a:hover {
+	text-decoration: none;
 }
 .VS-interface.ui-autocomplete .ui-menu-item a:active {
 	outline: none;
@@ -350,4 +348,10 @@
 .VS-interface.ui-autocomplete li {
 	list-style: none;
 	width: auto;
+}
+
+.wpus-no-results {
+	width: 100%;
+	text-align: center;
+	margin-top: 15px;
 }

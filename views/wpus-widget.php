@@ -25,6 +25,11 @@ if(!class_exists('WPUltimateSearchWidget')) :
 		 * @param array $instance Saved values from database.
 		 */
 		public function widget($args, $instance) {
+			
+			// Disable the widget if we're already on the search results page
+			if(get_the_ID() == wpus_option('results_page'))
+				return;
+			
 			extract($args);
 			$title = apply_filters('widget_title', $instance['title']);
 
@@ -32,7 +37,7 @@ if(!class_exists('WPUltimateSearchWidget')) :
 			if(!empty($title)) {
 				echo $before_title.$title.$after_title;
 			}
-			wp_ultimate_search_bar();
+			wp_ultimate_search_bar('widget');
 			echo $after_widget;
 		}
 

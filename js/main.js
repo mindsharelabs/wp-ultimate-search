@@ -57,6 +57,8 @@ jQuery(document).ready(function($) {
 		top:       'auto', // Top position relative to parent in px
 		left:      'auto' // Left position relative to parent in px
 	};
+	
+	
 
 	var visualSearch = VS.init({
 		container:  $("#search_box_container"),
@@ -64,14 +66,17 @@ jQuery(document).ready(function($) {
 		unquotable: [
 			"text"
 		],
-		placeholder: '',
-      	showFacets  : true,
+		placeholder : wpus_script.placeholder,
+      	showFacets  : wpus_script.showfacets,
 		callbacks:  {
 			search:       function(query, searchCollection) {
 				//		  	enable the following line for search query debugging:
 				//			console.log(["query", searchCollection.facets(), query]);
 
-				//$(".VS-cancel-search-box").addClass("hidden");
+				if(!query) {
+					return;
+				}
+
 				var target = document.getElementById('wpus_response');
 				var spinner = new Spinner(opts).spin(target);
 
@@ -83,7 +88,12 @@ jQuery(document).ready(function($) {
 				var searchdata = [];
 				var searchuri = '';
 				searchdata = searchCollection.facets();
+				
+				// Build the search URI
 				for(var i = 0; i < searchdata.length; i++) {
+					$.each(searchdata[i], function(k, v) {
+						searchdata[i][k] = searchdata[i][k].replace('&','and');
+					});
 					searchuri = searchuri + $.param(searchdata[i]);
 					if(i < (searchdata.length - 1)) {
 						searchuri = searchuri + "&";
@@ -96,17 +106,18 @@ jQuery(document).ready(function($) {
 				};
 				if($("#wpus_response").length > 0) {
 					$.get(wpus_script.ajaxurl, data, function(response_from_get_results) {
-						$('.iosnotice').remove();
 						VS.app.searcher.navigate("/" + searchuri);
-						//$(".VS-cancel-search-box").removeClass("hidden");
 						spinner.stop();
 						$("#wpus_response").html(response_from_get_results);
 						// @todo: make result highlighting less sketchy
-						for(var i = 0; i < searchdata.length; i++) {
-							if(searchdata[i]['text']) {
-								var words = searchdata[i]['text'].split(' ');
-								for (var word in words) {
-									$("#wpus_response").highlight(words[word]);
+						
+						if(wpus_script.highlight) {
+							for(var i = 0; i < searchdata.length; i++) {
+								if(searchdata[i]['text']) {
+									var words = searchdata[i]['text'].split(' ');
+									for (var word in words) {
+										$("#wpus_response").highlight(words[word]);
+									}
 								}
 							}
 						}
@@ -114,6 +125,12 @@ jQuery(document).ready(function($) {
 						$("#wpus_response").animate({
 							opacity: 1
 						}, 500, function() {
+							
+						$('#wpus-clear-search').click(function(e) {
+							e.preventDefault();
+							visualSearch.searchBox.clearSearch('type=keydown');
+							$("#wpus_response").html("");
+						});
 
 						});
 						if(wpus_script.trackevents == true) {
@@ -132,12 +149,10 @@ jQuery(document).ready(function($) {
 					action: "wpus_getvalues",
 					facet:  category
 				};
-				//$(".VS-cancel-search-box").addClass("hidden");
 				$.get(wpus_script.ajaxurl, data, function(response_from_get_values) {
 					if(response_from_get_values) {
 						callback($.parseJSON(response_from_get_values));
 					}
-					//$(".VS-cancel-search-box").removeClass("hidden");
 				});
 			},
 			facetMatches: function(callback) {
@@ -148,17 +163,19 @@ jQuery(document).ready(function($) {
 			}
 		}
 	});
-	if(/webOS|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
-		$('.VS-search').append("<div class='iosnotice'>Due to a bug in mobile Safari, the search box may not function properly. To fix this: exit Safari and double-press your 'Home' button to access the app-switcher. Press and hold the Safari icon until the red 'close' icon appears. Close Safari, and open it again. Problem should be solved :)</div>");
-	}
 
 	VS.utils.Searcher = Backbone.Router.extend({
 		routes: {
 			"*actions": "search"  // matches http://ultimatesearch.mindsharelabs.com#/query
 		},
 		search: function(query) {
+			
+			if(!query) {
+				return;
+			}
 
-			visualSearch.searchBox.value(query.replace(/=/g, ":").replace(/&/g, " ").replace(/\+/g, "_"));
+			// Update the search box with the terms of the query
+			visualSearch.searchBox.value(query.replace(/=/g, ': "').replace(/&/g, '" ').replace(/\+/g, ' ').replace('and','&') + '"');
 
 			query = query.split("&");
 			var queryarray = new Array();
@@ -166,12 +183,11 @@ jQuery(document).ready(function($) {
 			$.each(query, function(i, key) {
 				queryarray[i] = new Object();
 				var temparray = key.split("=");
-				queryarray[i][temparray[0]] = decodeURI(temparray[1]).replace(/\+/g, " ");
+				queryarray[i][temparray[0]] = decodeURI(temparray[1]).replace(/\+/g, " ").replace('and','&amp;');
 			});
 			// enable the following line for search query debugging:
 			// console.log(["query", queryarray, query]);
 
-			//$(".VS-cancel-search-box").addClass("hidden");
 			var target = document.getElementById('#wpus_response');
 			var spinner = new Spinner(opts).spin(target);
 
@@ -186,13 +202,17 @@ jQuery(document).ready(function($) {
 				searchNonce:  wpus_script.searchNonce
 			};
 			$.get(wpus_script.ajaxurl, data, function(response_from_get_results) {
-				$('.iosnotice').remove();
-				//$(".VS-cancel-search-box").removeClass("hidden");
 				spinner.stop();
 				$("#wpus_response").html(response_from_get_results);
 				$("#wpus_response").animate({
 					opacity: 1
 				}, 500, function() {
+
+				$('#wpus-clear-search').click(function(e) {
+					e.preventDefault();
+					visualSearch.searchBox.clearSearch('type=keydown');
+					$("#wpus_response").html("");
+				});
 
 				});
 				if(wpus_script.trackevents == true) {
@@ -206,4 +226,5 @@ jQuery(document).ready(function($) {
 
 	// Start Backbone history a neccesary step for bookmarkable URL's
 	Backbone.history.start();
+	
 });

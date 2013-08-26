@@ -33,6 +33,19 @@ For additional information, [visit our website](http://mindsharelabs.com/)
 
 <h4>Changelog<h4>
 
+= 1.1 =
+* Added support for special characters in facet values
+* Fixed permalinked searches rendering spaces as underscores
+* Fixed bug that would cause the "no results" message to not show
+* Removed iOS/Safari warning message. Update to Safari has fixed the bug.
+* Added Clear Search Results button option
+* Added option to disable the facet options popping up on first focus
+* Added option for placeholder text in the search bar
+* Fixed bug where search results page wouldn't load on sites without pretty permalinks
+* Added option to disable search results highlighting
+* DB queries updated to support Wordpress 3.6
+* Misc. style refinements and bugfixes
+
 = 1.0.3 =
 * Updates to premium upgrade process
 * Removed premium 'teasers' from options page to comply with repository guidelines

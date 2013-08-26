@@ -3,8 +3,8 @@ Contributors: sekatsim, mindshare
 Donate link: http://mind.sh/are/donate/
 Tags: search, ajax, metadata, autocomplete, jquery
 Requires at least: 3.4.1
-Tested up to: 3.5.1
-Stable tag: 1.0.3
+Tested up to: 3.6
+Stable tag: 1.1
  
 Advanced faceted auto completing AJAX search and filter utility.
 
@@ -38,8 +38,15 @@ For additional information, [visit our website](http://mindsharelabs.com/)
 
 == Frequently Asked Questions ==
 
-Post your questions in the [support forum](http://mindsharelabs.com/support/).
+= How do I customize the search results template? =
 
+When a search is executed, the plugin first looks in your current theme directory for the file wpus-results-template.php. If no file is found, it falls back to the default results template, located in /wp-ultimate-search/views/wpus-results-template.php.
+
+To customize the template, first copy the wpus-results-template.php file into your theme directory. The code within this file is a standard WordPress loop, which you can modify in any way you choose. To learn more about WordPress loops, see the codex.
+
+= More Info =
+
+Help documents and support forums are available at [Mindshare Labs](http://mindsharelabs.com/).
 
 == Screenshots ==
 
@@ -57,6 +64,19 @@ Post your questions in the [support forum](http://mindsharelabs.com/support/).
 
 == Changelog ==
 
+= 1.1 =
+* Added support for special characters in facet values
+* Fixed permalinked searches rendering spaces as underscores
+* Fixed bug that would cause the "no results" message to not show
+* Removed iOS/Safari warning message. Update to Safari has fixed the bug.
+* Added Clear Search Results button option
+* Added option to disable the facet options popping up on first focus
+* Added option for placeholder text in the search bar
+* Fixed bug where search results page wouldn't load on sites without pretty permalinks
+* Added option to disable search results highlighting
+* DB queries updated to support Wordpress 3.6
+* Misc. style refinements and bugfixes
+
 = 1.0.3 =
 * Updates to premium upgrade process
 * Removed premium 'teasers' from options page to comply with repository guidelines
@@ -65,7 +85,7 @@ Post your questions in the [support forum](http://mindsharelabs.com/support/).
 
 WARNING: If you encounter any problems with this update, check the "Reset options" box and hit Save Changes to restore initial settings.
 
-* Increased load times
+* Sped up load times
 * Silenced PHP notices when wp_debug was turned on
 * Fixed bug that prevented option saving with some database configurations
 
