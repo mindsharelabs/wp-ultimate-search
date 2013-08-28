@@ -4,7 +4,7 @@ Donate link: http://mind.sh/are/donate/
 Tags: search, ajax, metadata, autocomplete, jquery
 Requires at least: 3.4.1
 Tested up to: 3.6
-Stable tag: 1.1
+Stable tag: 1.1.1
  
 Advanced faceted auto completing AJAX search and filter utility.
 
@@ -63,6 +63,9 @@ Help documents and support forums are available at [Mindshare Labs](http://minds
 `/tags/1.0/screenshot-3.jpg`
 
 == Changelog ==
+
+= 1.1.1 =
+* Misc. bugfixes to 1.1
 
 = 1.1 =
 * Added support for special characters in facet values

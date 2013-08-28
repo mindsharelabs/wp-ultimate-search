@@ -90,7 +90,7 @@
 	width: 100%;
 }
 .VS-interface, .VS-search .dialog, .VS-search input {
-	font-family: "Lucida Grande", "Lucida Sans Unicode", Helvetica, Arial, sans-serif !important;
+	font-family: "Lucida Grande", "Lucida Sans Unicode", Helvetica, Arial, sans-serif;
 	line-height: 1.1em;
 }
 
