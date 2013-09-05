@@ -8,6 +8,7 @@ Version: 1.0
 */
 
 add_action('init', 'mindshare_auto_update');
+
 function mindshare_auto_update() {
 	require_once('mindshare-auto-update.php');
 	new mindshare_auto_update(plugin_basename(__FILE__), plugin_dir_path(__FILE__));
