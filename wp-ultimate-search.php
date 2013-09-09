@@ -3,7 +3,7 @@
 Plugin Name: WP Ultimate Search
 Plugin URI: http://ultimatesearch.mindsharelabs.com
 Description: Advanced faceted AJAX search and filter utility.
-Version: 1.1.1
+Version: 1.2
 Author: Mindshare Studios
 Author URI: http://mindsharelabs.com/
 */
@@ -117,12 +117,14 @@ register_deactivation_hook(__FILE__, 'deactivate_pro');
 if(!class_exists("WPUltimateSearch")) :
 	class WPUltimateSearch {
 
-		public $options, $is_active;
+		public $options, $is_active, $pro_class;
 
 		function __construct() {
 
 			$this->is_active = false;
 			$this->options = get_option('wpus_options');
+
+			$options = $this->options;
 
 			if(is_admin()) {
 				require_once(WPUS_DIR_PATH.'views/wpus-options.php'); // include options file
@@ -143,9 +145,18 @@ if(!class_exists("WPUltimateSearch")) :
 			add_shortcode(WPUS_PLUGIN_SLUG."-bar", array($this, 'search_form'));
 			add_shortcode(WPUS_PLUGIN_SLUG."-results", array($this, 'search_results'));
 
-			add_action('widgets_init', array($this, 'wpus_register_widgets')); // REGISTER WIDGET
+			// REGISTER WIDGET
+			add_action('widgets_init', array($this, 'wpus_register_widgets'));
 
-			register_activation_hook(__FILE__, array($this, 'activation_hook')); // on plugin activation, create search results page
+			// CREATE SEARCH RESULTS PAGE ON ACTIVATION
+			register_activation_hook(__FILE__, array($this, 'activation_hook'));
+
+			// REGISTER SCRIPTS IF GLOBAL SCRIPTS ARE ENABLED
+			if(isset($options['global_scripts'])) {
+				if($options['global_scripts'] == 1) {
+					add_action('wp_enqueue_scripts', array($this, 'register_scripts'));
+				}
+			}
 		}
 		
 
@@ -161,10 +172,12 @@ if(!class_exists("WPUltimateSearch")) :
 		function init() {
 			if(file_exists(WPUS_PRO_PATH.WPUS_PRO_SLUG.'.php')) {
 				require(WPUS_PRO_PATH.WPUS_PRO_SLUG.'.php');
-				new WPUltimateSearchPro();
+				$this->pro_class = new WPUltimateSearchPro();
 			}
-			if($this->options['override_default']) {
-				add_filter('get_search_form', array($this, 'search_form'));
+			if(isset($this->options['override_default'])) {
+				if($this->options['override_default']) {
+					add_filter('get_search_form', array($this, 'search_form'));
+				}
 			}
 		}
 
@@ -340,24 +353,39 @@ if(!class_exists("WPUltimateSearch")) :
 		private function get_enabled_facets() {
 			$options = $this->options;
 
-			foreach($options['taxonomies'] as $taxonomy => $key) {
-				if($key['enabled']) {
-					if($key['label']) {
-						$enabled_facets[] = $key['label'];
-					} else {
-						$enabled_facets[] = $taxonomy;
-					}
-				}
-			}
-			if(isset($options['metafields'])) {
-				foreach($options['metafields'] as $metafield => $key) {
-					if($key['enabled']) {
-						if($key['label']) {
-							$enabled_facets[] = $key['label'];
-						} else {
-							$enabled_facets[] = $metafield;
+			if(class_exists("WPUltimateSearchPro")) {
+
+				foreach($options['taxonomies'] as $taxonomy => $key) {
+					if(isset($key['enabled'])) {
+						if($key['enabled']) {
+							if($key['label']) {
+								$enabled_facets[] = $key['label'];
+							} else {
+								$enabled_facets[] = $taxonomy;
+							}
 						}
 					}
+				}
+				if(isset($options['metafields'])) {
+					foreach($options['metafields'] as $metafield => $key) {
+						if(isset($key['enabled'])) {
+							if($key['enabled']) {
+								if($key['label']) {
+									$enabled_facets[] = $key['label'];
+								} else {
+									$enabled_facets[] = $metafield;
+								}
+							}
+						}
+					}
+				}
+			} else {
+				$enabled_facets = array();
+				if($options['enable_category']) {
+					$enabled_facets[] = 'category';
+				}
+				if($options['enable_tag']) {
+					$enabled_facets[] = 'tag';
 				}
 			}
 			return $enabled_facets;
@@ -375,7 +403,9 @@ if(!class_exists("WPUltimateSearch")) :
 		 * @return int|string
 		 */
 		protected function get_taxonomy_name($label) {
-			$options = $this->options;
+			if(!$options = $this->options) {
+				$options = $this->pro_class->options;
+			}
 
 			foreach($options['taxonomies'] as $taxonomy => $value) {
 				if($value['label'] == $label) {
@@ -398,7 +428,9 @@ if(!class_exists("WPUltimateSearch")) :
 		 * @return int|string
 		 */
 		protected function get_metafield_name($label) {
-			$options = $this->options;
+			if(!$options = $this->options) {
+				$options = $this->pro_class->options;
+			}
 
 			foreach($options['metafields'] as $metafield => $value) {
 				if($value['label'] == $label) {
@@ -421,11 +453,15 @@ if(!class_exists("WPUltimateSearch")) :
 		 * @return string
 		 */
 		protected function determine_facet_type($facet) {
-			$options = $this->options;
+			if(!$options = $this->options) {
+				$options = $this->pro_class->options;
+			}
 
 			if($facet == "text") {
 				return "text";
 			}
+
+
 
 			foreach($options['taxonomies'] as $taxonomy => $value) {
 				if($value['label'] == $facet || $taxonomy == $facet) {
@@ -458,7 +494,7 @@ if(!class_exists("WPUltimateSearch")) :
 			wp_enqueue_script('backbone');
 			wp_enqueue_script(
 				'visualsearch',
-				WPUS_DIR_URL.'js/visualsearch.js',
+				WPUS_DIR_URL.'js/visualsearch.min.js',
 				array(
 					 'jquery',
 					 'jquery-ui-core',
@@ -474,8 +510,6 @@ if(!class_exists("WPUltimateSearch")) :
 			wp_enqueue_script('wpus-script', WPUS_DIR_URL.'js/main.js', array('visualsearch'), '', wpus_option('scripts_in_footer'));
 
 			$options = $this->options;
-			
-			global $in_use;
 
 			($options['show_facets'] == 1 ? $showfacets = true : $showfacets = false);
 			($options['highlight_terms'] == 1 ? $highlight = true : $highlight = false);
@@ -495,7 +529,15 @@ if(!class_exists("WPUltimateSearch")) :
 			wp_localize_script('wpus-script', 'wpus_script', $params);
 
 			// ENQUEUE STYLES
-			wp_enqueue_style('wpus-bar', WPUS_DIR_URL.'css/visualsearch.css');
+			if(isset($options['style'])) {
+				if($options['style'] == 'square') {
+					wp_enqueue_style('wpus-bar', WPUS_DIR_URL.'css/square.css');
+				} else {
+					wp_enqueue_style('wpus-bar', WPUS_DIR_URL.'css/visualsearch.css');	
+				}
+			} else {
+				wp_enqueue_style('wpus-bar', WPUS_DIR_URL.'css/visualsearch.css');
+			}
 		}
 
 		/**
@@ -508,7 +550,14 @@ if(!class_exists("WPUltimateSearch")) :
 			if($mode == "widget" && get_the_ID() == $this->options['results_page'])
 				return;
 			
-			$this->register_scripts();
+			$options = $this->options;
+
+			if(isset($options['global_scripts'])) {
+				if($options['global_scripts'] == 0) {
+					$this->register_scripts();
+				}
+			}
+
 			// RENDER SEARCH FORM
 			return '<div id="search_box_container"><div id="search"><div class="VS-search">
 			  <div class="VS-search-box-wrapper VS-search-box">
@@ -626,7 +675,7 @@ if(!class_exists("WPUltimateSearch")) :
 			}
 
 			if(class_exists("WPUltimateSearchPro")) {
-				WPUltimateSearchPro::execute_query_pro($searcharray);
+				$this->pro_class->execute_query_pro($searcharray);
 			} else {
 				$this->execute_query_basic($searcharray);
 			}
@@ -641,10 +690,8 @@ if(!class_exists("WPUltimateSearch")) :
 
 			foreach($searcharray as $index) { // iterate through the search query array and separate the taxonomies into their own array
 				foreach($index as $facet => $data) {
-					$facet = $wpdb->prepare($facet);
+					$facet = esc_sql($facet);
 
-					//	$data = $wpdb->prepare($data); //	@todo find an escape method that doesn't break strings encased in quotes. not a huge deal since we're breaking all
-					//	strings apart anyway (so sql injection is impossible)
 					$type = $this->determine_facet_type($facet); // determine if we're dealing with a taxonomy or a metafield
 
 					switch($type) {
@@ -652,6 +699,7 @@ if(!class_exists("WPUltimateSearch")) :
 							$keywords = $this->string_to_keywords($data);
 							break;
 						case "taxonomy" :
+							$facet = $this->get_taxonomy_name($facet);
 							$data = preg_replace('/_/', " ", $data); // in case there are underscores in the value (from a permalink), remove them
 							if(!isset($taxonomies[$facet])) {
 								$taxonomies[$facet] = "'".$data."'"; // if it's the first parameter, don't prefix with a comma
@@ -670,7 +718,7 @@ if(!class_exists("WPUltimateSearch")) :
 			SELECT *,
 			substring(post_content, ";
 			if(isset($keywords)) { // if there are keywords, locate them and return a 200 character excerpt beginning 80 characters before the keyword
-				$keywords = $wpdb->prepare($keywords); // Sanitize the keywords parameters to prevent sql injection attacks
+				$keywords = esc_sql($keywords); // Sanitize the keywords parameters to prevent sql injection attacks
 				$querystring .= "
 					case 
 						 when locate('$keywords[0]', lower(post_content)) <= 80 then 1

@@ -404,18 +404,15 @@ if(!class_exists('WPUltimateSearchOptions')) :
 									foreach ( $terms as $term ) {
 										$termstring .= $term->name . ', ';
 									} */
-					if($this->is_active !== $this->hash) {
-						$disabledtext = 'disabled="disabled"';
-					}
 					?>
 					<tr>
 						<th scope="row" class="tax <?php echo $altclass ?>"><span id="<?php echo $metafield.'-title' ?>" class="<?php echo $checked ?>"><?php echo $metafield ?>:<div class="VS-icon-cancel"></div></span>
 						</th>
 						<td class="<?php echo $altclass ?>">
-							<input class="checkbox" <?php echo $disabledtext ?> type="checkbox" id="<?php echo $metafield ?>" name="wpus_options[metafields][<?php echo $metafield ?>][enabled]" value="1" <?php echo checked($this->options["metafields"][$metafield]["enabled"], 1, FALSE) ?> />
+							<input class="checkbox" type="checkbox" id="<?php echo $metafield ?>" name="wpus_options[metafields][<?php echo $metafield ?>][enabled]" value="1" <?php echo checked($this->options["metafields"][$metafield]["enabled"], 1, FALSE) ?> />
 						</td>
 						<td class="<?php echo $altclass ?>">
-							<input class="" <?php echo $disabledtext ?> type="text" id="<?php echo $metafield ?>" name="wpus_options[metafields][<?php echo $metafield ?>][label]" size="20" placeholder="<?php echo $metafield ?>" value="<?php echo esc_attr($this->options["metafields"][$metafield]["label"]) ?>" />
+							<input class="" type="text" id="<?php echo $metafield ?>" name="wpus_options[metafields][<?php echo $metafield ?>][label]" size="20" placeholder="<?php echo $metafield ?>" value="<?php echo esc_attr($this->options["metafields"][$metafield]["label"]) ?>" />
 						</td>
 						<td class="<?php echo $altclass ?>"><?php echo $value["count"] ?></td>
 
@@ -427,7 +424,7 @@ if(!class_exists('WPUltimateSearchOptions')) :
 							<option value="date" <?php echo selected($this->options["'metafields'"][$metafield]["'type'"], "date", FALSE) ?> >Date</option>
 							</select></td>
 						<td class="<?php echo $altclass ?>">
-							<input class="checkbox" <?php echo $disabledtext ?> type="checkbox" name="wpus_options['metafields'][<?php echo $metafield ?>][autocomplete']" value="1" <?php echo checked($this->options["'metafields'"][$metafield]["'autocomplete'"], 1, FALSE) ?> />
+							<input class="checkbox" type="checkbox" name="wpus_options['metafields'][<?php echo $metafield ?>][autocomplete']" value="1" <?php echo checked($this->options["'metafields'"][$metafield]["'autocomplete'"], 1, FALSE) ?> />
 						</td>
 						*/ ?>
 					</tr>
@@ -493,7 +490,13 @@ if(!class_exists('WPUltimateSearchOptions')) :
 
 				case 'checkbox':
 
-					echo '<input class="checkbox'.$field_class.'" type="checkbox" id="'.$id.'" name="wpus_options['.$id.']" value="1" '.checked($this->options[$id], 1, FALSE).' /> <label for="'.$id.'">'.$desc.'</label>';
+					if($class == 'disabledpro' && $this->is_active === $this->hash) {
+						$disabled = ' disabled="true"';
+					} else {
+						$disabled = '';
+					}
+
+					echo '<input class="checkbox'.$field_class.'" type="checkbox"'.$disabled.' id="'.$id.'" name="wpus_options['.$id.']" value="1" '.checked($this->options[$id], 1, FALSE).' /> <label for="'.$id.'">'.$desc.'</label>';
 
 					break;
 
@@ -635,6 +638,30 @@ if(!class_exists('WPUltimateSearchOptions')) :
 				'type'    => 'checkbox',
 				'section' => 'general'
 			);
+			$this->settings['enable_category'] = array(
+				'title'   => __('Taxonomies'),
+				'desc'    => __('Category'),
+				'std'     => 1,
+				'type'    => 'checkbox',
+				'section' => 'general',
+				'class'	  => 'disabledpro'
+			);
+			$this->settings['enable_tag'] = array(
+				'title'   => __(''),
+				'desc'    => __('Tag'),
+				'std'     => 1,
+				'type'    => 'checkbox',
+				'section' => 'general',
+				'class'	  => 'disabledpro'
+			);
+			$this->settings['style'] = array(
+				'title'   => __('Style'),
+				'desc'    => __(''),
+				'choices' => array("visualsearch" => "Visual Search", "square" => "Square"),
+				'std'	  => 'visualsearch',
+				'type'    => 'select',
+				'section' => 'general'
+			);
 			$this->settings['placeholder'] = array(
 				'title'   => __('Placeholder'),
 				'desc'    => __('Text displayed in the search box before a query is entered.'),
@@ -732,6 +759,20 @@ if(!class_exists('WPUltimateSearchOptions')) :
 				'std'     => 'Search',
 				'type'    => 'text',
 				'section' => 'general'
+			);
+
+			$this->settings['advanced_heading'] = array(
+				'section' => 'general',
+				'title'   => '', // not used
+				'desc'    => 'Advanced',
+				'type'    => 'heading'
+			);
+			$this->settings['global_scripts'] = array(
+				'section' => 'general',
+				'title'   => __('Global Scripts'),
+				'desc'    => __('Load WPUS scripts on every page. Disabling this will speed up sites that only use the search bar in a few places.'),
+				'type'    => 'checkbox',
+				'std'     => 1 // Set to 1 to be checked by default, 0 to be unchecked by default.
 			);
 
 			$this->settings['reset_theme'] = array(

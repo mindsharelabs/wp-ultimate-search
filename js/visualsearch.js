@@ -866,7 +866,7 @@ VS.ui.SearchFacet = Backbone.View.extend({
     this.disableEdit();
     this.options.app.searchQuery.remove(this.model);
     if (committed && this.options.app.options.autosearch) {
-      this.search(e, -1);
+      this.search(e, 0);
     } else {
       this.options.app.searchBox.renderFacets();
       this.options.app.searchBox.focusNextFacet(this, -1, {viewPosition: this.options.order});

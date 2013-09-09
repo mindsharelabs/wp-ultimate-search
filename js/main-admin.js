@@ -26,7 +26,7 @@ jQuery(document).ready(function($) {
 	});
 	
 	$("#license_key").focusin(function() {
-		if(!$("#license_key").val()) {
+		if(!$("#license_key").val() || ($("#license_key").hasClass('invalid') && $("#validate").length == 0)) {
 			$("#license_key").after("<a id='validate' class='button validate'>Validate</a>");
 		}
 	});

@@ -92,7 +92,7 @@ jQuery(document).ready(function($) {
 				// Build the search URI
 				for(var i = 0; i < searchdata.length; i++) {
 					$.each(searchdata[i], function(k, v) {
-						searchdata[i][k] = searchdata[i][k].replace('&','and');
+						searchdata[i][k] = searchdata[i][k].replace('&','\%and');
 					});
 					searchuri = searchuri + $.param(searchdata[i]);
 					if(i < (searchdata.length - 1)) {
@@ -125,12 +125,18 @@ jQuery(document).ready(function($) {
 						$("#wpus_response").animate({
 							opacity: 1
 						}, 500, function() {
-							
+
+
+						// Cancel / clear buttons							
 						$('#wpus-clear-search').click(function(e) {
 							e.preventDefault();
 							visualSearch.searchBox.clearSearch('type=keydown');
 							$("#wpus_response").html("");
 						});
+						$('.VS-icon-cancel').click(function(e) {
+							$("#wpus_response").html("");
+						});
+
 
 						});
 						if(wpus_script.trackevents == true) {
@@ -138,7 +144,7 @@ jQuery(document).ready(function($) {
 						}
 					});
 				} else {
-					window.location.replace(wpus_script.resultspage + "#" + searchuri);
+					window.location.href = wpus_script.resultspage + "#" + searchuri;
 				}
 			},
 			valueMatches: function(category, searchTerm, callback) {
@@ -175,7 +181,7 @@ jQuery(document).ready(function($) {
 			}
 
 			// Update the search box with the terms of the query
-			visualSearch.searchBox.value(query.replace(/=/g, ': "').replace(/&/g, '" ').replace(/\+/g, ' ').replace('and','&') + '"');
+			visualSearch.searchBox.value(query.replace(/=/g, ': "').replace(/&/g, '" ').replace(/\+/g, ' ').replace('%and','&') + '"');
 
 			query = query.split("&");
 			var queryarray = new Array();
@@ -183,7 +189,7 @@ jQuery(document).ready(function($) {
 			$.each(query, function(i, key) {
 				queryarray[i] = new Object();
 				var temparray = key.split("=");
-				queryarray[i][temparray[0]] = decodeURI(temparray[1]).replace(/\+/g, " ").replace('and','&amp;');
+				queryarray[i][temparray[0]] = decodeURI(temparray[1]).replace(/\+/g, " ").replace('%and','&amp;');
 			});
 			// enable the following line for search query debugging:
 			// console.log(["query", queryarray, query]);
@@ -211,6 +217,9 @@ jQuery(document).ready(function($) {
 				$('#wpus-clear-search').click(function(e) {
 					e.preventDefault();
 					visualSearch.searchBox.clearSearch('type=keydown');
+					$("#wpus_response").html("");
+				});
+				$('.VS-icon-cancel').click(function(e) {
 					$("#wpus_response").html("");
 				});
 
