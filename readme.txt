@@ -1,7 +1,7 @@
 === WP Ultimate Search ===
 Contributors: sekatsim, mindshare
 Donate link: http://mind.sh/are/donate/
-Tags: search, ajax, metadata, autocomplete, jquery
+Tags: search, ajax, metadata, autocomplete, jquery, facet, faceted search, faceting, advanced custom fields, acf, taxonomy, taxonomies
 Requires at least: 3.4.1
 Tested up to: 3.6
 Stable tag: 1.2
@@ -10,7 +10,7 @@ Advanced faceted auto completing AJAX search and filter utility.
 
 == Description ==
 
-WP Ultimate Search: a highly customizable WordPress search alternative with the ability to autocomplete [faceted search queries](http://en.wikipedia.org/wiki/Faceted_search).
+A highly customizable WordPress search alternative with the ability to autocomplete [faceted search queries](http://en.wikipedia.org/wiki/Faceted_search).
 
 Try a [demo](http://ultimatesearch.mindsharelabs.com/).
 
@@ -147,7 +147,7 @@ WARNING: If you encounter any problems with this update, check the "Reset option
 = 0.2 =
 * First public release
 
-== To Do ==
+== Upgrade Notice ==
 
-* Caching of meta data
-* Sortable results
+= 1.2 =
+Notice: this upgrade adds a lot of new options to the options page. Please review them and update your settings before using the search bar.
