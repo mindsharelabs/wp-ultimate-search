@@ -3,7 +3,7 @@
 Plugin Name: WP Ultimate Search
 Plugin URI: http://ultimatesearch.mindsharelabs.com
 Description: Advanced faceted AJAX search and filter utility.
-Version: 1.2
+Version: 1.2.1
 Author: Mindshare Studios
 Author URI: http://mindsharelabs.com/
 */
@@ -462,10 +462,11 @@ if(!class_exists("WPUltimateSearch")) :
 			}
 
 
-
-			foreach($options['taxonomies'] as $taxonomy => $value) {
-				if($value['label'] == $facet || $taxonomy == $facet) {
-					return "taxonomy";
+			if(isset($options['taxonomies'])) {
+				foreach($options['taxonomies'] as $taxonomy => $value) {
+					if($value['label'] == $facet || $taxonomy == $facet) {
+						return "taxonomy";
+					}
 				}
 			}
 			if(isset($options['metafields'])) {
