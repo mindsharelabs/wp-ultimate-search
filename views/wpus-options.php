@@ -924,6 +924,10 @@ if(!class_exists('WPUltimateSearchOptions')) :
 				}
 			}
 
+			if(stristr($result, 'The plugin does not have a valid header')) {
+				$result .= ' Please validate again.';
+			}
+
 			die($result); // return either success or error message to the script
 		}
 	} // END CLASS
