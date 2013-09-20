@@ -3,7 +3,7 @@
 Plugin Name: WP Ultimate Search
 Plugin URI: http://ultimatesearch.mindsharelabs.com
 Description: Advanced faceted AJAX search and filter utility.
-Version: 1.2.1
+Version: 1.3
 Author: Mindshare Studios
 Author URI: http://mindsharelabs.com/
 */
@@ -393,6 +393,37 @@ if(!class_exists("WPUltimateSearch")) :
 
 		/**
 		 *
+		 * Format Meta By Type
+		 *
+		 *
+		 * Formats a meta fields contents for display based on the type of the data
+		 *
+		 * @param $facet
+		 * @param $data
+		 *
+		 * @return string
+		 */
+
+		private function format_meta_by_type($facet, $data) {
+
+			if(!$options = $this->options) {
+				$options = $this->pro_class->options;
+			}
+
+			foreach($options['metafields'] as $metafield => $value) {
+				if($metafield == $facet) {
+					if($value['type'] == 'checkbox') {
+						$data = unserialize($data);
+						return $data[0];
+					}
+				}
+			}
+
+			return $data;
+		}
+
+		/**
+		 *
 		 * Get Taxonomy Name
 		 *
 		 *
@@ -643,7 +674,8 @@ if(!class_exists("WPUltimateSearch")) :
 
 					foreach($results as $key) {
 						if(!empty($key->value)) { // for some reason, $results sometimes returns zero-length strings as keys, so this filters them out
-							$values[strtolower($key->value)] = $key->value;
+							$formatted_value = $this->format_meta_by_type($facet, $key->value);
+							$values[strtolower($formatted_value)] = $formatted_value;
 						}
 					}
 					echo json_encode($values);

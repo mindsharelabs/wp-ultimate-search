@@ -75,8 +75,8 @@ if(!class_exists('WPUltimateSearchOptions')) :
 					$this->options["metafields"][$key->{"meta_key"}] = array(
 						"enabled"      => 0,
 						"label"        => $key->{"meta_key"},
-						"count"        => $key->{'count'},
-						"type"         => 'string',
+						"count"        => $key->{"count"},
+						"type"         => "string",
 						"autocomplete" => 0
 					);
 				}
@@ -349,14 +349,9 @@ if(!class_exists('WPUltimateSearchOptions')) :
 					<th>Instances
 						<div class="tooltip" title="Number of times a particular meta field was found in the database."></div>
 					</th>
-					<?php /* commenting these fields out for now as they haven't been implemented yet
 					<th>Type
-						<div class="tooltip" title="Set the format of the data."></div>
+						<div class="tooltip" title="The format of the data."></div>
 					</th>
-					<th>Autocomplete
-						<div class="tooltip" title="Whether or not to autocomplete search terms in the search bar. Only select this if the meta field has a small number of possible options."></div>
-					</th>
-					*/ ?>
 				</tr>
 				</thead>
 				<tfoot>
@@ -365,8 +360,7 @@ if(!class_exists('WPUltimateSearchOptions')) :
 					<th>Enabled</th>
 					<th>Label override</th>
 					<th>Instances</th>
-					<!-- <th>Type</th>
-					<th>Autocomplete</th> -->
+					<th>Type</th>
 				</tr>
 				</tfoot>
 				<tbody>
@@ -393,6 +387,10 @@ if(!class_exists('WPUltimateSearchOptions')) :
 						$this->options["metafields"][$metafield]["enabled"] = 0;
 					}
 
+					if(empty($value["type"])) {
+						$this->options["metafields"][$metafield]["type"] = "string";
+					}
+
 					if(empty($value["autocomplete"])) {
 						$this->options["metafields"][$metafield]["autocomplete"] = 0;
 					}
@@ -415,15 +413,12 @@ if(!class_exists('WPUltimateSearchOptions')) :
 							<input class="" type="text" id="<?php echo $metafield ?>" name="wpus_options[metafields][<?php echo $metafield ?>][label]" size="20" placeholder="<?php echo $metafield ?>" value="<?php echo esc_attr($this->options["metafields"][$metafield]["label"]) ?>" />
 						</td>
 						<td class="<?php echo $altclass ?>"><?php echo $value["count"] ?></td>
-
-						<?php /* commenting these fields out for now as they haven't been implemented yet
-						
-						<td class="<?php echo $altclass ?>"><select class="" id="<?php echo $metafield ?>" name="wpus_options['metafields'][<?php echo $metafield ?>][type']" />
-							<option value="string" <?php echo selected($this->options["'metafields'"][$metafield]["'type'"], "string", FALSE) ?> >String</option>
-							<option value="number" <?php echo selected($this->options["'metafields'"][$metafield]["'type'"], "number", FALSE) ?> >Number</option>
-							<option value="date" <?php echo selected($this->options["'metafields'"][$metafield]["'type'"], "date", FALSE) ?> >Date</option>
-							</select></td>
-						<td class="<?php echo $altclass ?>">
+						<td class="<?php echo $altclass ?>"><select class="" id="<?php echo $metafield ?>" name="wpus_options[metafields][<?php echo $metafield ?>][type]" />
+							<option value="string" <?php echo selected($this->options["metafields"][$metafield]["type"], "string", FALSE) ?> >String</option>
+							<option value="checkbox" <?php echo selected($this->options["metafields"][$metafield]["type"], "checkbox", FALSE) ?> >Checkbox</option>
+							</select>
+						</td>
+						<?php /* <td class="<?php echo $altclass ?>">
 							<input class="checkbox" type="checkbox" name="wpus_options['metafields'][<?php echo $metafield ?>][autocomplete']" value="1" <?php echo checked($this->options["'metafields'"][$metafield]["'autocomplete'"], 1, FALSE) ?> />
 						</td>
 						*/ ?>
@@ -922,10 +917,6 @@ if(!class_exists('WPUltimateSearchOptions')) :
 					// if installed successfully, activate. set $result to either "true" or error message
 					$result = $updater->maybe_activate_plugin();
 				}
-			}
-
-			if(stristr($result, 'The plugin does not have a valid header')) {
-				$result .= ' Please validate again.';
 			}
 
 			die($result); // return either success or error message to the script

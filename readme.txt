@@ -1,16 +1,16 @@
 === WP Ultimate Search ===
 Contributors: sekatsim, mindshare
 Donate link: http://mind.sh/are/donate/
-Tags: search, ajax, metadata, autocomplete, jquery, facet, faceted search, faceting, advanced custom fields, acf, taxonomy, taxonomies
+Tags: search, ajax, metadata, meta, post meta, autocomplete, jquery, facet, faceted search, faceting, advanced custom fields, acf, taxonomy, taxonomies, term, terms, facets
 Requires at least: 3.4.1
 Tested up to: 3.6
-Stable tag: 1.2.1
+Stable tag: 1.3
  
 Advanced faceted auto completing AJAX search and filter utility.
 
 == Description ==
 
-A highly customizable WordPress search alternative with the ability to autocomplete [faceted search queries](http://en.wikipedia.org/wiki/Faceted_search).
+A highly customizable AJAX-based WordPress search bar alternative with the ability to autocomplete [faceted search queries](http://en.wikipedia.org/wiki/Faceted_search). Users can quickly and dynamically browse through your site's taxonomies and post metadata to find exactly what they're looking for, and results can be loaded beneath the search bar instantly.
 
 Try a [demo](http://ultimatesearch.mindsharelabs.com/).
 
@@ -50,6 +50,10 @@ If you have a mobile website and you want to disable autozooming on input fields
 
 `<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />`
 
+= I've added a post with some meta fields I'd like to make searchable, but they're not showing up under Post Meta Settings =
+
+Since Wordpress uses post meta fields to track a lot of things you probably don't care to know about, we've added a filter to WPUS to only show a meta field as an option if it occurs more than three times. If you've recently added a meta field to a post, try adding that meta field to two more posts and you should see it appear as an option under Post Meta Settings.
+
 = More Info =
 
 Help documents and support forums are available at [Mindshare Labs](http://mindsharelabs.com/).
@@ -69,6 +73,10 @@ Help documents and support forums are available at [Mindshare Labs](http://minds
 `/tags/1.0/screenshot-3.jpg`
 
 == Changelog ==
+
+= 1.3 =
+* Added the ability to search for posts based on their ACF checkboxes
+* 
 
 = 1.2.1 =
 * Misc. bugfixes to 1.2

@@ -1,10 +1,7 @@
 WP Ultimate Search
 ==================
 
-Advanced faceted auto completing AJAX search and filter tool for Wordpress.
-
-<strong>Get the latest stable version from the WordPress.org repository:</strong>
-http://wordpress.org/plugins/wp-ultimate-search/
+Advanced faceted auto completing AJAX search and filter tool for Wordpress
 
 <h4>Description</h4>
 
