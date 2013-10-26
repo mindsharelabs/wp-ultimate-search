@@ -211,6 +211,8 @@
 	z-index: 100;
 	position: relative;
 	padding: 0 3px 0 5px;
+	border: none;
+	outline: none;
 }
 .VS-search .search_facet.is_editing input,
 .VS-search .search_facet.is_selected input {

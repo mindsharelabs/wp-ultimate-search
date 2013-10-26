@@ -178,12 +178,11 @@
 
 .VS-search .search_facet {
 	float: left;
-	margin: 0;
 	padding: 0 0 0 14px;
 	position: relative;
 	border: 1px solid transparent;
 	height: 20px;
-	margin: 3px 3px 3px 8px;
+	margin: 3px;
 	overflow: visible;
 }
 .VS-search .search_facet.is_selected {
@@ -219,6 +218,8 @@
 	z-index: 100;
 	position: relative;
 	padding: 0 3px 0 5px;
+	border: none;
+	outline: none;
 }
 .VS-search .search_facet.is_editing input,
 .VS-search .search_facet.is_selected input {
