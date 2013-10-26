@@ -21,7 +21,7 @@ Try a [demo](http://ultimatesearch.mindsharelabs.com/).
 * Highlights search terms in results
 * Option to send search queries as events to your Google Analytics account
 * Facets by post category
-* Can search in multiple categories (OR search)
+* Can search in multiple categories (OR or AND search)
 * Category options are dynamically generated and autocompleted as you type
 * Attractive and lightweight interface based on jQuery, Backbone.js, and the VisualSearch.js library
 * Customizable results template using standard WordPress functions
