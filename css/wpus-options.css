@@ -156,8 +156,8 @@
 
 .settings_page_wpus-options .postbox-container {
 	position:absolute;
-	width:25%;
-	right:20px;
+	width:280px;
+	right: 80px;
 	top:180px;
 	z-index:99;
 }
@@ -165,6 +165,11 @@
 .settings_page_wpus-options .postbox-container a {
 	text-align:center;
 	display:block;
+}
+
+.settings_page_wpus-options .postbox-container ul {
+	margin-left: 20px;
+	list-style: disc;
 }
 
 /* TipTip CSS - Version 1.2 */

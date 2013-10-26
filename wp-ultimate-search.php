@@ -4,7 +4,7 @@ Plugin Name: WP Ultimate Search
 Plugin URI: http://ultimatesearch.mindsharelabs.com
 Description: Advanced faceted AJAX search and filter utility.
 Version: 1.3
-Author: Mindshare Studios
+Author: Mindshare Studios, Inc.
 Author URI: http://mindsharelabs.com/
 */
 
@@ -79,38 +79,6 @@ if(!function_exists('add_action')) {
 	exit();
 }
 
-/*
- * If WPUS Pro is available these hooks will handle activation/deactivation.
- * These fail silently if the plugin isn't installed.
- */
-if(!function_exists('activate_pro')) {
-	function activate_pro() {
-		if(is_plugin_inactive(WPUS_PRO_SLUG.'/'.WPUS_PRO_FILE)) {
-			add_action('update_option_active_plugins', 'activate_pro_callback', 1);
-		}
-	}
-}
-if(!function_exists('activate_pro_callback')) {
-	function activate_pro_callback() {
-		activate_plugin(WPUS_PRO_SLUG.'/'.WPUS_PRO_FILE);
-	}
-}
-if(!function_exists('deactivate_pro')) {
-	function deactivate_pro() {
-		if(is_plugin_active(WPUS_PRO_SLUG.'/'.WPUS_PRO_FILE)) {
-			add_action('update_option_active_plugins', 'deactivate_pro_callback', 1);
-		}
-	}
-}
-if(!function_exists('deactivate_pro_callback')) {
-	function deactivate_pro_callback() {
-		deactivate_plugins(WPUS_PRO_SLUG.'/'.WPUS_PRO_FILE);
-	}
-}
-
-register_activation_hook(__FILE__, 'activate_pro');
-register_deactivation_hook(__FILE__, 'deactivate_pro');
-
 /**
  *  WPUltimateSearch CONTAINER CLASS
  */
@@ -131,6 +99,10 @@ if(!class_exists("WPUltimateSearch")) :
 				$options_page = new WPUltimateSearchOptions();
 				add_action('admin_menu', array($options_page, 'add_pages')); // adds page to menu
 				add_action('admin_init', array($options_page, 'register_settings'));
+
+				$plugin = plugin_basename(__FILE__); 
+				add_filter("plugin_action_links_$plugin", array($this, 'wpus_settings_link') );
+
 			}
 
 			add_action('init', array($this, 'init'));
@@ -157,6 +129,13 @@ if(!class_exists("WPUltimateSearch")) :
 					add_action('wp_enqueue_scripts', array($this, 'register_scripts'));
 				}
 			}
+		}
+
+		// Add settings link on plugin page
+		public function wpus_settings_link($links) { 
+		  $settings_link = '<a href="options-general.php?page=wpus-options">Settings</a>'; 
+		  array_unshift($links, $settings_link); 
+		  return $links; 
 		}
 		
 
@@ -734,11 +713,7 @@ if(!class_exists("WPUltimateSearch")) :
 						case "taxonomy" :
 							$facet = $this->get_taxonomy_name($facet);
 							$data = preg_replace('/_/', " ", $data); // in case there are underscores in the value (from a permalink), remove them
-							if(!isset($taxonomies[$facet])) {
-								$taxonomies[$facet] = "'".$data."'"; // if it's the first parameter, don't prefix with a comma
-							} else {
-								$taxonomies[$facet] .= ", '".$data."'"; // prefix subsequent parameters with ", "
-							}
+							$taxonomies[$facet][] = $data;
 							break;
 						case "metafield" :
 							echo "I'm sorry but WP Ultimate Search Pro is currently not installed, configured incorrectly, or the plugin is disabled.";
@@ -764,11 +739,16 @@ if(!class_exists("WPUltimateSearch")) :
 			AS excerpt
 			FROM $wpdb->posts ";
 			if(isset($taxonomies)) {
-				for($i = 0; $i < count($taxonomies); $i++) { // for each taxonomy (categories, tags, etc.) do some joins so we can check each post against taxonomy[i] and term[i]
-					$querystring .= "
-					LEFT JOIN $wpdb->term_relationships AS rel".$i." ON($wpdb->posts.ID = rel".$i.".object_id)
-					LEFT JOIN $wpdb->term_taxonomy AS tax".$i." ON(rel".$i.".term_taxonomy_id = tax".$i.".term_taxonomy_id)
-					LEFT JOIN $wpdb->terms AS term".$i." ON(tax".$i.".term_id = term".$i.".term_id) ";
+				$i = 0;
+				foreach($taxonomies as $taxonomy) {
+					foreach($taxonomy as $taxonomy => $term) {
+						// For each term, set up a join between the terms and taxonomies table, so that we can later use WHERE term0 = x AND tax0 = y
+						$querystring .= "
+						LEFT JOIN $wpdb->term_relationships AS rel".$i." ON($wpdb->posts.ID = rel".$i.".object_id)
+						LEFT JOIN $wpdb->term_taxonomy AS tax".$i." ON(rel".$i.".term_taxonomy_id = tax".$i.".term_taxonomy_id)
+						LEFT JOIN $wpdb->terms AS term".$i." ON(tax".$i.".term_id = term".$i.".term_id) ";
+						$i++;
+					}
 				}
 			}
 			$querystring .= "WHERE "; // the SELECT part of the query told us *what* to grab, the WHERE part tells us which posts to grab it from
@@ -786,13 +766,32 @@ if(!class_exists("WPUltimateSearch")) :
 				$querystring .= "AND ";
 			} // if there were keywords, and there are taxonomies, insert an AND between the two sections
 			$i = 0;
+			$t = 0;
 			if(isset($taxonomies)) {
-				foreach($taxonomies as $taxonomy => $taxstring) { // for each taxonomy, check to see if there are any matches from within the comma-separated list of terms
+				foreach($taxonomies as $taxname => $tax) { // for each taxonomy, check to see if there are any matches from within the comma-separated list of terms
 					if($i > 0) {
 						$querystring .= "AND ";
 					}
-					$querystring .= "(term".$i.".name IN (".$taxstring.") ";
-					$querystring .= "AND tax".$i.".taxonomy = '".$taxonomy."') ";
+					$n = 0;
+					foreach($tax as $taxonomy => $term) {
+						$taxstring = key($taxonomies);
+						if($n > 0) {
+							// For each iteration of the taxonomy query, check whether a user has specified AND or OR logic in the preferences
+							if(isset($this->options['and_or'])) {
+								if($this->options['and_or'] == "and") {
+									$querystring .= "AND ";		
+								} else {
+									$querystring .= "OR ";
+								}
+							} else {
+								$querystring .= "OR ";
+							}
+						}
+						$querystring .= "(term".$t.".name = '".$term."' ";
+						$querystring .= "AND tax".$t.".taxonomy = '".$taxname."') ";
+						$n++;
+						$t++;
+					}
 					$i++;
 				}
 			}

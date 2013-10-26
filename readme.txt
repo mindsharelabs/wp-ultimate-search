@@ -3,10 +3,10 @@ Contributors: sekatsim, mindshare
 Donate link: http://mind.sh/are/donate/
 Tags: search, ajax, metadata, meta, post meta, autocomplete, jquery, facet, faceted search, faceting, advanced custom fields, acf, taxonomy, taxonomies, term, terms, facets
 Requires at least: 3.4.1
-Tested up to: 3.6
+Tested up to: 3.7
 Stable tag: 1.3
  
-Advanced faceted auto completing AJAX search and filter utility.
+Powerful AJAX-based search alternative which supports faceting queries by taxonomies, terms, and post meta data.
 
 == Description ==
 
@@ -33,6 +33,12 @@ Premium version now supports the ability to search through an unlimited number o
 1. Upload the `wp-ultimate-search` folder to the `/wp-content/plugins/` directory
 2. Activate the plugin through the 'Plugins' menu in WordPress
 3. Add a shortcode to a post, use the template tag in your theme, or use the sidebar widget.
+
+To use the shortcode:
+Place `[wp-ultimate-search-bar]` where you'd like the search bar, and `[wpus-search-results]` where you'd like the results.
+
+To use the template tag:
+Put `wp_ultimate_search_bar()` where you'd like the search bar, and `wpus_search_results()` where you'd like the results.
 
 For additional information, [visit our website](http://mindsharelabs.com/)
 
@@ -75,8 +81,12 @@ Help documents and support forums are available at [Mindshare Labs](http://minds
 == Changelog ==
 
 = 1.3 =
+* Added ability to choose either AND or OR logic for query components within the same taxonomy
 * Added the ability to search for posts based on their ACF checkboxes
-* 
+* Added support for ACF comboxboxes
+* Upgraded to EDD for licensing and upgrade
+* Added settings to plugin action links
+* Fixed bug where taxonomies created by plugins like Taxonomy Manager would generate notices
 
 = 1.2.1 =
 * Misc. bugfixes to 1.2

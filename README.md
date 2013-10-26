@@ -1,7 +1,7 @@
 WP Ultimate Search
 ==================
 
-Advanced faceted auto completing AJAX search and filter tool for Wordpress
+Powerful AJAX-based search alternative which supports faceting queries by taxonomies, terms, and post meta data.
 
 <h4>Description</h4>
 
@@ -32,6 +32,27 @@ Premium version now supports the ability to search through an unlimited number o
 For additional information, [visit our website](http://mindsharelabs.com/)
 
 <h4>Changelog<h4>
+
+= 1.3 =
+* Added the ability to search for posts based on their ACF checkboxes
+* Added support for ACF comboxboxes
+* Upgraded to EDD for licensing and upgrade
+* Added settings to plugin action links
+
+= 1.2.1 =
+* Misc. bugfixes to 1.2
+
+= 1.2 =
+* Added an alternative square search bar style
+* Added option to disable built-in taxonomies and revert to a plain text search
+* Added option to restrict script loading to only pages with search bar
+* Improved iOS support
+* Fixed bug where tag search wouldn't work for some users
+* Fixed "clear search" icon not clearing results
+* Fixed wpdb->prepare() notice appearing in WP 3.6
+* Fixed dropdown items appearing outside of search bar when a term was deleted
+* Added browser navigation history when moving from widget to results page
+* Minified visualsearch.js script
 
 = 1.1 =
 * Added support for special characters in facet values

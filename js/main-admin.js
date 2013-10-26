@@ -24,39 +24,6 @@ jQuery(document).ready(function($) {
 	$.each( sec, function(key, value) {
 		sections[value] = key;
 	});
-	
-	$("#license_key").focusin(function() {
-		if(!$("#license_key").val() || ($("#license_key").hasClass('invalid') && $("#validate").length == 0)) {
-			$("#license_key").after("<a id='validate' class='button validate'>Validate</a>");
-		}
-	});
-	$("#license_key").focusout(function() {
-		if(!$("#license_key").val()) {
-			$("#license_key").next("#validate").remove();
-		}
-	});
-	
-	
-		$('body').on('click', '#validate', function() {
-			$("<span class='loading'></span>").replaceAll("#validate");
-			
-			var key = $("#license_key").val();
-			var email = $("#email_address").val();
-			var data = {
-					action: 'wpus_validate',
-					key: key,
-					email: email
-				};
-			$.post(ajaxurl, data, function(response) {
-				$(".loading").remove();
-				if(response == true) {
-					$("form#wpus-options").submit();
-				} else {
-					$("#license_key").addClass('invalid');
-					$("#license_key").nextAll(".description").html(response);
-				}
-			});	
-	});
 
 	
 	// foreach($this->sections as $section_slug => $section) {

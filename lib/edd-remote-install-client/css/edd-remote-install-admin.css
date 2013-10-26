@@ -1,0 +1,113 @@
+.edd-remote-install{
+    margin-top: 10px;
+    display: inline-block;
+    font-size:14px;
+    color:#fff !important;
+    text-decoration: none !important;
+    padding:14px 60px;
+    line-height:1;
+    overflow: hidden;
+    position:relative;
+
+    box-shadow:0 1px 1px #ccc;
+    border-radius:2px;
+
+    background-color: #21759b;
+    background-image: -webkit-gradient(linear,left top,left bottom,from(#2a95c5),to(#21759b));
+    background-image: -webkit-linear-gradient(top,#2a95c5,#21759b);
+    background-image: -moz-linear-gradient(top,#2a95c5,#21759b);
+    background-image: -ms-linear-gradient(top,#2a95c5,#21759b);
+    background-image: -o-linear-gradient(top,#2a95c5,#21759b);
+    background-image: linear-gradient(to bottom,#2a95c5,#21759b);
+    border: 1px solid #21759b;
+    border-bottom-color: #1e6a8d;
+    border-radius: 3px;
+    -webkit-box-shadow: inset 0 1px 0 rgba(120,200,230,0.5);
+    box-shadow: inset 0 1px 0 rgba(120,200,230,0.5);
+    text-decoration: none;
+    text-shadow: 0 1px 0 rgba(0,0,0,0.1);
+
+    cursor: pointer;
+}
+
+.edd-remote-install.in-progress {
+    cursor: progress;
+}
+
+.edd-remote-install.stopped {
+    cursor: pointer;
+}
+
+.edd-remote-install.success {
+
+}
+
+.edd-remote-install.failure {
+
+}
+/* Hide the original text of the button. Then the loading or finished
+   text will be shown in the :after element above it. */
+
+.edd-remote-install.in-progress,
+.edd-remote-install.finished{
+    color:transparent !important;
+    text-shadow: none;
+}
+
+.edd-remote-install.in-progress:after,
+.edd-remote-install.finished:after{
+    position: absolute;
+    z-index: 2;
+    width: 100%;
+    height: 100%;
+    text-align: center;
+    top: 0;
+    padding-top: inherit;
+    color: #fff !important;
+    left: 0;
+}
+
+/* If the .in-progress class is set on the button, show the
+   contents of the data-loading attribute on the butotn */
+
+.edd-remote-install.in-progress:after{
+    content:attr(data-loading);
+}
+
+/* The same goes for the .finished class */
+
+.edd-remote-install.finished:after{
+    content:attr(data-finished);
+}
+
+/* The colorful bar that grows depending on the progress */
+
+.edd-remote-install .tz-bar{
+    background-color: #21759b;
+    height:3px;
+    bottom:0;
+    left:0;
+    width:0;
+    position:absolute;
+    z-index:1;
+
+    border-radius:0 0 2px 2px;
+
+    -webkit-transition: width 0.5s, height 0.5s;
+    -moz-transition: width 0.5s, height 0.5s;
+    transition: width 0.5s, height 0.5s;
+}
+
+/* The bar can be either horizontal, or vertical */
+
+.edd-remote-install .tz-bar.background-horizontal{
+    height:100%;
+    border-radius:2px;
+}
+
+#license-input {
+    display: block;
+    position: relative;
+    margin-top: 4px;
+    outline: none;
+}
