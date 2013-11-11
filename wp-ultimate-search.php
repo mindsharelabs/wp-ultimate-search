@@ -3,7 +3,7 @@
 Plugin Name: WP Ultimate Search
 Plugin URI: http://ultimatesearch.mindsharelabs.com
 Description: Advanced faceted AJAX search and filter utility.
-Version: 1.3
+Version: 1.4
 Author: Mindshare Studios, Inc.
 Author URI: http://mindsharelabs.com/
 */
@@ -64,6 +64,10 @@ if(!defined('WPUS_PRO_PATH')) {
 
 if(!defined('WPUS_PRO_FILE')) {
 	define('WPUS_PRO_FILE', WPUS_PRO_SLUG.'.php');
+}
+
+if(!defined('WPUS_PRO_URL')) {
+	define('WPUS_PRO_URL', plugin_dir_url(WPUS_PRO_PATH . WPUS_PRO_FILE));
 }
 
 // check WordPress version
@@ -394,6 +398,9 @@ if(!class_exists("WPUltimateSearch")) :
 					if($value['type'] == 'checkbox') {
 						$data = unserialize($data);
 						return $data[0];
+					} elseif($value['type'] == 'geo') {
+						$data = unserialize($data);
+						return $data['address'];
 					}
 				}
 			}
@@ -517,10 +524,24 @@ if(!class_exists("WPUltimateSearch")) :
 				)
 			);
 
-			// ENQUEUE AND LOCALIZE MAIN JS FILE
-			wp_enqueue_script('wpus-script', WPUS_DIR_URL.'js/main.js', array('visualsearch'), '', wpus_option('scripts_in_footer'));
-
 			$options = $this->options;
+
+			if(isset($options['radius']) && $options['radius'] != false) {
+				$radius = $options['radius'];
+			} else {
+				$radius = false;
+			}
+
+			// ENQUEUE AND LOCALIZE MAIN JS FILE
+			if(class_exists('WPUltimateSearchPro')) {
+				wp_enqueue_script('wpus-script', WPUS_PRO_URL.'js/main-pro.js', array('visualsearch'), '', wpus_option('scripts_in_footer'));
+				if($radius) {
+					wp_enqueue_script('google-maps', 'http://maps.googleapis.com/maps/api/js?sensor=false&amp;libraries=places');
+					wp_enqueue_script('geocomplete', WPUS_PRO_URL.'js/jquery.geocomplete.js', array('jquery', 'google-maps'), '', wpus_option('scripts_in_footer'));
+				}
+			} else {
+				wp_enqueue_script('wpus-script', WPUS_DIR_URL.'js/main.js', array('visualsearch'), '', wpus_option('scripts_in_footer'));
+			}
 
 			($options['show_facets'] == 1 ? $showfacets = true : $showfacets = false);
 			($options['highlight_terms'] == 1 ? $highlight = true : $highlight = false);
@@ -534,7 +555,8 @@ if(!class_exists("WPUltimateSearch")) :
 				'resultspage'      => get_permalink($options['results_page']),
 				'showfacets'	   => $showfacets,
 				'placeholder'	   => $options['placeholder'],
-				'highlight'		   => $highlight
+				'highlight'		   => $highlight,
+				'radius'		   => $radius
 			);
 
 			wp_localize_script('wpus-script', 'wpus_script', $params);
@@ -623,11 +645,20 @@ if(!class_exists("WPUltimateSearch")) :
 							$excludetermids[] = $term->term_id;
 						}
 					}
+					$includetermids = array();
+					if(!empty($options['taxonomies'][$facet]['include'])) {
+						$includeterms = $this->string_to_keywords($options['taxonomies'][$facet]['include']);
+						foreach($includeterms as $term) {
+							$term = get_term_by('name', $term, $facet);
+							$includetermids[] = $term->term_id;
+						}
+					}
 					$args = array( // parameters for the term query
 						'orderby' => 'name',
 						'order'   => 'ASC',
 						'number'  => $number,
-						'exclude' => $excludetermids
+						'exclude' => $excludetermids,
+						'include' => $includetermids
 					);
 
 					$terms = get_terms($facet, $args);
@@ -795,11 +826,8 @@ if(!class_exists("WPUltimateSearch")) :
 					$i++;
 				}
 			}
-			if((isset($keywords) || isset($taxonomies)) && isset($metafields)) {
-				$querystring .= "AND ";
-			}
 			$querystring .= "
-			AND $wpdb->posts.post_status = 'publish'"; // exclude drafts, scheduled posts, etc
+			AND $wpdb->posts.post_status = 'publish' GROUP BY $wpdb->posts.ID"; // exclude drafts, scheduled posts, etc
 
 			//echo $querystring; $wpdb->show_errors(); 		// for debugging, you can echo the completed query string and enable error reporting before it's executed
 

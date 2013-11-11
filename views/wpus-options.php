@@ -29,6 +29,7 @@ if(!class_exists('WPUltimateSearchOptions')) :
 				// Check if there are any new meta / taxonomy fields. Set them up w/ default values if necessary
 				add_action('admin_init', array($this, 'update_meta_fields'));
 				add_action('admin_init', array($this, 'update_taxonomies'));
+				add_action('admin_init', array($this, 'update_post_types'));
 			}
 
 			if(isset($this->options['license_status']) && $this->options["license_key"] != "")
@@ -39,6 +40,7 @@ if(!class_exists('WPUltimateSearchOptions')) :
 			if($this->is_active === "active") {
 				$this->sections['taxopts'] = __('Taxonomy Settings');
 				$this->sections['metaopts'] = __('Post Meta Settings');
+				$this->sections['typeopts'] = __('Post Type Settings');
 			}
 			$this->sections['reset'] = __('Reset to Defaults');
 			$this->sections['about'] = __('About');
@@ -117,6 +119,22 @@ if(!class_exists('WPUltimateSearchOptions')) :
 					}
 				}
 			}
+		}
+
+		public function update_post_types() {
+
+			$posttypes = get_post_types(array('public' => TRUE));
+
+			foreach($posttypes as $type) {
+				if(!isset($this->options['posttypes'][$type])) {
+					$this->options['posttypes'][$type] = array(
+						"label"		=> $type,
+						"enabled"	=> 1
+					);
+				}
+
+			}
+
 		}
 
 		/**
@@ -265,6 +283,9 @@ if(!class_exists('WPUltimateSearchOptions')) :
 					<th>Exclude
 						<div class="tooltip" title="Comma-separated list of term names to exclude from autocomplete. If the term contains spaces, wrap it in quotation marks."></div>
 					</th>
+					<th>Include
+						<div class="tooltip" title="Comma-separated list of term names to include in autocomplete, all other terms will be excluded. If the term contains spaces, wrap it in quotation marks."></div>
+					</th>
 				</tr>
 				</thead>
 				<tfoot>
@@ -275,6 +296,7 @@ if(!class_exists('WPUltimateSearchOptions')) :
 					<th>Terms found</th>
 					<th>Max terms</th>
 					<th>Exclude</th>
+					<th>Include</th>
 				</tr>
 				</tfoot>
 				<tbody>
@@ -322,6 +344,9 @@ if(!class_exists('WPUltimateSearchOptions')) :
 						</td>
 						<td class="<?php echo $altclass ?>">
 							<input class="" <?php echo $disabledtext ?> type="text" id="<?php echo $tax ?>" name="wpus_options[taxonomies][<?php echo $tax ?>][exclude]" size="30" placeholder="" value="<?php echo esc_attr($this->options['taxonomies'][$tax]['exclude']) ?>" />
+						</td>
+						<td class="<?php echo $altclass ?>">
+							<input class="" <?php echo $disabledtext ?> type="text" id="<?php echo $tax ?>" name="wpus_options[taxonomies][<?php echo $tax ?>][include]" size="30" placeholder="" value="<?php echo (isset($this->options['taxonomies'][$tax]['include']) ? esc_attr($this->options['taxonomies'][$tax]['include']) : '') ?>" />
 						</td>
 					</tr>
 					<?php
@@ -429,13 +454,76 @@ if(!class_exists('WPUltimateSearchOptions')) :
 						<td class="<?php echo $altclass ?>"><select class="" id="<?php echo $metafield ?>" name="wpus_options[metafields][<?php echo $metafield ?>][type]" />
 							<option value="string" <?php echo selected($this->options["metafields"][$metafield]["type"], "string", FALSE) ?> >String</option>
 							<option value="checkbox" <?php echo selected($this->options["metafields"][$metafield]["type"], "checkbox", FALSE) ?> >Checkbox</option>
-							<option value="checkbox" <?php echo selected($this->options["metafields"][$metafield]["type"], "combobox", FALSE) ?> >Combobox</option>
+							<option value="combobox" <?php echo selected($this->options["metafields"][$metafield]["type"], "combobox", FALSE) ?> >Combobox</option>
+							<option value="geo" <?php echo selected($this->options["metafields"][$metafield]["type"], "geo", FALSE) ?> >ACF Map</option>
+							<option value="radius" <?php echo selected($this->options["metafields"][$metafield]["type"], "radius", FALSE) ?> >Radius</option>
 							</select>
 						</td>
 						<?php /* <td class="<?php echo $altclass ?>">
 							<input class="checkbox" type="checkbox" name="wpus_options['metafields'][<?php echo $metafield ?>][autocomplete']" value="1" <?php echo checked($this->options["'metafields'"][$metafield]["'autocomplete'"], 1, FALSE) ?> />
 						</td>
 						*/ ?>
+					</tr>
+					<?php
+					// Set alternating classes on the table rows
+					if($altclass == 'alt') {
+						$altclass = '';
+					} else {
+						$altclass = 'alt';
+					}?>
+				<?php } ?>
+				</tbody>
+			</table>
+		<?php
+		}
+
+		/**
+		 *
+		 * Post type options
+		 *
+		 *
+		 */
+		public function display_typeopts_section() { ?>
+
+			<?php if($this->is_active !== "active") : return; endif; ?>
+
+			<table class="widefat <?php if($this->is_active !== "active") : echo 'disabled'; endif; ?>">
+				<thead>
+				<tr>
+					<th class="nobg">Post Type
+						<div class="tooltip" title="Post type, as it's registered with Wordpress."></div>
+					</th>
+					<th>Allow in results
+						<div class="tooltip" title="Whether or not to include posts of this type in search results."></div>
+					</th>
+				</tr>
+				</thead>
+				<tfoot>
+				<tr>
+					<th class="nobg">Post Type</th>
+					<th>Enabled</th>
+				</tr>
+				</tfoot>
+				<tbody>
+				<?php
+				$altclass = '';
+
+				foreach($this->options["posttypes"] as $posttype => $value) {
+
+					// If the taxonomy is active, set the 'checked' class
+					if(!empty($value["enabled"])) {
+						$checked = 'checked';
+					} else {
+						$checked = '';
+						$this->options["posttypes"][$posttype]["enabled"] = 0;
+					}
+					?>
+					<tr>
+						<th scope="row" class="tax <?php echo $altclass ?>"><span id="<?php echo $posttype.'-title' ?>" class="<?php echo $checked ?>"><?php echo $posttype ?><div class="VS-icon-cancel"></div></span>
+						<input class="" type="hidden" id="<?php echo $posttype ?>" name="wpus_options[posttypes][<?php echo $posttype ?>][label]" value="<?php echo esc_attr($this->options["posttypes"][$posttype]["label"]) ?>" /></th>
+						<td class="<?php echo $altclass ?>">
+							<input class="checkbox" type="checkbox" id="<?php echo $posttype ?>" name="wpus_options[posttypes][<?php echo $posttype ?>][enabled]" value="1" <?php echo checked($this->options["posttypes"][$posttype]["enabled"], 1, FALSE) ?> />
+						</td>
 					</tr>
 					<?php
 					// Set alternating classes on the table rows
@@ -845,6 +933,9 @@ if(!class_exists('WPUltimateSearchOptions')) :
 			// Set default taxonomy parameters
 			$this->update_taxonomies();
 
+			// Set default post type parametrs
+			$this->update_post_types();
+
 			update_option('wpus_options', $this->options);
 		}
 
@@ -871,7 +962,11 @@ if(!class_exists('WPUltimateSearchOptions')) :
 						if($slug == 'metaopts') {
 							add_settings_section($slug, $title, array(&$this, 'display_metaopts_section'), 'wpus-options');
 						} else {
-							add_settings_section($slug, $title, array(&$this, 'display_section'), 'wpus-options');
+							if($slug == 'typeopts') {
+								add_settings_section($slug, $title, array(&$this, 'display_typeopts_section'), 'wpus-options');
+							} else {
+								add_settings_section($slug, $title, array(&$this, 'display_section'), 'wpus-options');
+							}
 						}
 					}
 				}
@@ -908,6 +1003,13 @@ if(!class_exists('WPUltimateSearchOptions')) :
 						$input[$id] = 0;
 					} else {
 						$input[$id] = 1;
+					}
+				}
+
+				$input['radius'] = false;
+				foreach($input['metafields'] as $field => $data) {
+					if(isset($data['enabled']) && $data['enabled'] == '1' && $data['type'] == 'radius') {
+						$input['radius'] = $field;
 					}
 				}
 				

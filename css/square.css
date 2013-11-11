@@ -225,6 +225,11 @@
 .VS-search .search_facet.is_selected input {
 	color: #666;
 }
+
+.VS-search .search_facet.is_editing input.geocomplete {
+	min-width: 140px;
+}
+
 .VS-search .search_facet .search_facet_remove {
 	position: absolute;
 	left: 2px;
@@ -349,4 +354,7 @@
 	width: 100%;
 	text-align: center;
 	margin-top: 15px;
+}
+.pac-container {
+	margin-top: 7px;
 }

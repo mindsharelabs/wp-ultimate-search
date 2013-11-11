@@ -156,6 +156,7 @@ jQuery(document).ready(function($) {
 					facet:  category
 				};
 				$.get(wpus_script.ajaxurl, data, function(response_from_get_values) {
+					//console.log(response_from_get_values);
 					if(response_from_get_values) {
 						callback($.parseJSON(response_from_get_values));
 					}

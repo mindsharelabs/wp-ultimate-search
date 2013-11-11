@@ -3,8 +3,8 @@ Contributors: sekatsim, mindshare
 Donate link: http://mind.sh/are/donate/
 Tags: search, ajax, metadata, meta, post meta, autocomplete, jquery, facet, faceted search, faceting, advanced custom fields, acf, taxonomy, taxonomies, term, terms, facets
 Requires at least: 3.4.1
-Tested up to: 3.7
-Stable tag: 1.3
+Tested up to: 3.7.1
+Stable tag: 1.4
  
 Powerful AJAX-based search alternative which supports faceting queries by taxonomies, terms, and post meta data.
 
@@ -79,6 +79,12 @@ Help documents and support forums are available at [Mindshare Labs](http://minds
 `/tags/1.0/screenshot-3.jpg`
 
 == Changelog ==
+
+= 1.4 =
+* Added radius search capability based on ACF Map field
+* Added ability to confine taxonomy searches to given terms
+* Added ability to exclude specific post types from results
+* Added ability to search for addresses stored with an ACF Map field
 
 = 1.3 =
 * Added ability to choose either AND or OR logic for query components within the same taxonomy
