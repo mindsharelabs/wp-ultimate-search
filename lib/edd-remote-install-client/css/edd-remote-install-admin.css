@@ -1,5 +1,4 @@
 .edd-remote-install{
-    margin-top: 10px;
     display: inline-block;
     font-size:14px;
     color:#fff !important;
@@ -28,6 +27,22 @@
     text-shadow: 0 1px 0 rgba(0,0,0,0.1);
 
     cursor: pointer;
+
+}
+
+.edd-remote-install.disabled {
+    pointer-events: none;
+    cursor: default;
+    background-color: #9c9c9c;
+    background-image: -webkit-gradient(linear,left top,left bottom,from(#c4c4c4),to(#9c9c9c));
+    background-image: -webkit-linear-gradient(top,#c4c4c4,#9c9c9c);
+    background-image: -moz-linear-gradient(top,#c4c4c4,#9c9c9c);
+    background-image: -ms-linear-gradient(top,#c4c4c4,#9c9c9c);
+    background-image: -o-linear-gradient(top,#c4c4c4,#9c9c9c);
+    background-image: linear-gradient(to bottom,#c4c4c4,#9c9c9c);
+    border: 1px solid #9c9c9c;
+    border-bottom-color: #8c8c8c;
+    box-shadow: inset 0 1px 0 rgba(0,0,0,0.2);
 }
 
 .edd-remote-install.in-progress {
@@ -107,7 +122,7 @@
 
 #license-input {
     display: block;
-    position: relative;
-    margin-top: 4px;
+    position: absolute;
+    margin: 0;
     outline: none;
 }

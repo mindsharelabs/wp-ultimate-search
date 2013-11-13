@@ -3,11 +3,14 @@
 /**
  * Allows plugins to install new plugins or upgrades
  *
- * @author Mindshare Studios
- * @version 1.1
+ * @author Mindshare Studios, Inc.
+ * @version 1.3
  */
 class WPUS_EDD_Remote_Install_Client {
 	private $api_url  = '';
+	private $options = array(
+			'skipplugincheck'	=> false
+		);
 
 	/**
 	 * Class constructor.
@@ -18,11 +21,16 @@ class WPUS_EDD_Remote_Install_Client {
 	 * @param array $_api_data Optional data to send with API calls.
 	 * @return void
 	 */
-	function __construct( $_api_url, $_plugin_file ) {
+	function __construct( $_api_url, $_plugin_file, $options = array() ) {
 		$this->api_url  = trailingslashit( $_api_url );
+
+		if(isset($options['skipplugincheck']) && $options['skipplugincheck'] == true) {
+			$this->options['skipplugincheck'] = true;
+		}
 
 		add_action( 'admin_enqueue_scripts', array($this, 'register_scripts' ));
 
+		add_action('wp_ajax_edd-check-plugin-status', array($this, 'check_plugin_status'));
 		add_action('wp_ajax_edd-check-remote-install', array($this, 'check_remote_install'));
 		add_action('wp_ajax_edd-do-remote-install', array($this, 'do_remote_install'));
 	}
@@ -36,22 +44,28 @@ class WPUS_EDD_Remote_Install_Client {
 	public function register_scripts() {
 		wp_enqueue_script('edd-remote-install-script', plugin_dir_url( __FILE__ ) . '/js/edd-remote-install-admin.js', array('jquery'));
 		wp_enqueue_style('edd-remote-install-style', plugin_dir_url( __FILE__ ) . '/css/edd-remote-install-admin.css');
+
+		wp_localize_script( 'edd-remote-install-script', 'edd_ri_options', $this->options );
 	}
 
 	/**
-	 * Slug
+	 * Check plugin status
 	 *
-	 * Converts a plugin name to a slug
+	 * Checks to see if a plugin is currently installed and disables the install button if so
 	 *
-	 * @param string $str String to convert
-	 * @return string $str Converted string
+	 * @param string $_POST['download'] Download requested
+	 * @return string $response
 	 */
 
-	private function slug($str) {
-		$str = strtolower(trim($str));
-		$str = preg_replace('/[^a-z0-9-]/', '-', $str);
-		$str = preg_replace('/-+/', "-", $str);
-		return $str;
+	public function check_plugin_status() {
+		$plugin = strtolower( $_POST['download'] );
+		$plugin = preg_replace("/[\s_]/", "-", $plugin);
+
+		if (is_plugin_active($plugin . '/' . $plugin . '.php')) {
+			die(true);
+		} else {
+			die(false);
+		}
 	}
 
 	/**
@@ -139,12 +153,6 @@ class WPUS_EDD_Remote_Install_Client {
 			if($license_data->license != "valid") 
 				die("invalid");
 
-			$options = get_option('wpus_options');
-			$options['license_key'] = $license;
-			$options['license_status'] = 'active';
-
-			update_option('wpus_options', $options);
-
 		} else {
 
 			// If its a free download, don't send a license
@@ -175,6 +183,3 @@ class WPUS_EDD_Remote_Install_Client {
 		die();
 	}
 }
-
-// set up the remote installer
-$edd_remote_install = new WPUS_EDD_Remote_Install_Client( WPUS_STORE_URL, __FILE__ );

@@ -18,6 +18,12 @@ if(!class_exists('WPUltimateSearchOptions')) :
 				include( WPUS_DIR_PATH . '/lib/edd-remote-install-client/EDD_Remote_Install_Client.php' );
 			}
 
+			$options = array(
+				'skipplugincheck'	=> true
+					);
+
+			$edd_remote_install = new WPUS_EDD_Remote_Install_Client( EDD_STORE_URL, __FILE__, $options );
+
 			// This will keep track of the checkbox options for the validate_settings function.
 			$this->checkboxes = array();
 			$this->setting = array();
@@ -787,6 +793,36 @@ if(!class_exists('WPUltimateSearchOptions')) :
 				'type'    => 'checkbox',
 				'std'     => 0
 			);
+			if($this->is_active === "active" && file_exists(WPUS_PRO_PATH.WPUS_PRO_FILE)) {
+				$this->settings['radius_heading'] = array(
+					'section' => 'general',
+					'title'   => '', // not used
+					'desc'    => 'Radius Searches',
+					'type'    => 'heading'
+				);
+				$this->settings['radius_dist'] = array(
+					'title'   => __('Radius'),
+					'desc'    => __('Set the default distance for radius searches'),
+					'std'	  => '60',
+					'type'    => 'text',
+					'section' => 'general'
+				);
+				$this->settings['radius_format'] = array(
+					'title'   => __('Format'),
+					'desc'    => __(''),
+					'choices' => array("km" => "Kilometers", "mi" => "Miles", "m" => "Meters"),
+					'std'	  => 'km',
+					'type'    => 'select',
+					'section' => 'general'
+				);
+				$this->settings['radius_label'] = array(
+					'title'   => __('Radius Label'),
+					'desc'    => __('Set the text that should be displayed as the label for the radius facet'),
+					'std'	  => 'distance (km)',
+					'type'    => 'text',
+					'section' => 'general'
+				);
+			}
 			$this->settings['results_heading'] = array(
 				'section' => 'general',
 				'title'   => '', // not used

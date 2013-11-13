@@ -371,6 +371,11 @@ if(!class_exists("WPUltimateSearch")) :
 					$enabled_facets[] = 'tag';
 				}
 			}
+
+			if(isset($options['radius'])) {
+				$enabled_facets[] = $options['radius_label'];
+			}
+
 			return $enabled_facets;
 		}
 
@@ -474,9 +479,11 @@ if(!class_exists("WPUltimateSearch")) :
 				$options = $this->pro_class->options;
 			}
 
-			if($facet == "text") {
+			if($facet == "text")
 				return "text";
-			}
+
+			if(isset($options['radius_label']) && $facet == $options['radius_label'])
+				return "radius";
 
 
 			if(isset($options['taxonomies'])) {

@@ -85,6 +85,10 @@ Help documents and support forums are available at [Mindshare Labs](http://minds
 * Added ability to confine taxonomy searches to given terms
 * Added ability to exclude specific post types from results
 * Added ability to search for addresses stored with an ACF Map field
+* Fixed bug where spaces in facet names would break permalinks
+* Fixed bug where permalinks weren't updated when last facet was removed
+* Fixed bug where lowercase terms would appear after capitalized ones
+* Fixed bug where pressing backspace would sometimes cause the browser to navigate back
 
 = 1.3 =
 * Added ability to choose either AND or OR logic for query components within the same taxonomy
