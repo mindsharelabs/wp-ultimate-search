@@ -372,7 +372,7 @@ if(!class_exists("WPUltimateSearch")) :
 				}
 			}
 
-			if(isset($options['radius'])) {
+			if(isset($options['radius']) && $options['radius'] != false) {
 				$enabled_facets[] = $options['radius_label'];
 			}
 

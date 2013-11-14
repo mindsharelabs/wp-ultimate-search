@@ -22,7 +22,7 @@ if(!class_exists('WPUltimateSearchOptions')) :
 				'skipplugincheck'	=> true
 					);
 
-			$edd_remote_install = new WPUS_EDD_Remote_Install_Client( EDD_STORE_URL, __FILE__, $options );
+			$edd_remote_install = new WPUS_EDD_Remote_Install_Client( WPUS_STORE_URL, __FILE__, $options );
 
 			// This will keep track of the checkbox options for the validate_settings function.
 			$this->checkboxes = array();
@@ -82,7 +82,7 @@ if(!class_exists('WPUltimateSearchOptions')) :
 						"label"        => $key->{"meta_key"},
 						"count"        => $key->{"count"},
 						"type"         => "string",
-						"autocomplete" => 0
+						"autocomplete" => 1
 					);
 				}
 				// count the instances of each key, overwrite whatever it was before
@@ -106,21 +106,24 @@ if(!class_exists('WPUltimateSearchOptions')) :
 							"enabled" => 1,
 							"label"   => 'tag',
 							"max"     => 0,
-							"exclude" => ''
+							"exclude" => '',
+							"autocomplete" => 1
 						);
 					} elseif($taxonomy == 'category') {
 						$this->options['taxonomies'][$taxonomy] = array(
 							"enabled" => 1,
 							"label"   => $taxonomy,
 							"max"     => 0,
-							"exclude" => ''
+							"exclude" => '',
+							"autocomplete" => 1
 						);
 					} else {
 						$this->options['taxonomies'][$taxonomy] = array(
 							"enabled" => 0,
 							"label"   => $taxonomy,
 							"max"     => 0,
-							"exclude" => ''
+							"exclude" => '',
+							"autocomplete" => 1
 						);
 					}
 				}
@@ -292,6 +295,9 @@ if(!class_exists('WPUltimateSearchOptions')) :
 					<th>Include
 						<div class="tooltip" title="Comma-separated list of term names to include in autocomplete, all other terms will be excluded. If the term contains spaces, wrap it in quotation marks."></div>
 					</th>
+					<th>Autocomplete
+						<div class="tooltip" title="Whether or not to autocomplete values typed into this field."></div>
+					</th>
 				</tr>
 				</thead>
 				<tfoot>
@@ -303,6 +309,7 @@ if(!class_exists('WPUltimateSearchOptions')) :
 					<th>Max terms</th>
 					<th>Exclude</th>
 					<th>Include</th>
+					<th>Autocomplete</th>
 				</tr>
 				</tfoot>
 				<tbody>
@@ -319,6 +326,10 @@ if(!class_exists('WPUltimateSearchOptions')) :
 					} else {
 						$checked = '';
 						$this->options['taxonomies'][$tax]['enabled'] = 0;
+					}
+
+					if(empty($this->options["taxonomies"][$tax]["autocomplete"])) {
+						$this->options["taxonomies"][$tax]["autocomplete"] = 0;
 					}
 
 					// Generate the list of terms for the "Count" tooltip
@@ -353,6 +364,9 @@ if(!class_exists('WPUltimateSearchOptions')) :
 						</td>
 						<td class="<?php echo $altclass ?>">
 							<input class="" <?php echo $disabledtext ?> type="text" id="<?php echo $tax ?>" name="wpus_options[taxonomies][<?php echo $tax ?>][include]" size="30" placeholder="" value="<?php echo (isset($this->options['taxonomies'][$tax]['include']) ? esc_attr($this->options['taxonomies'][$tax]['include']) : '') ?>" />
+						</td>
+						<td class="<?php echo $altclass ?>">
+							<input class="checkbox" type="checkbox" name="wpus_options[taxonomies][<?php echo $tax ?>][autocomplete]" value="1" <?php echo checked($this->options["taxonomies"][$tax]["autocomplete"], 1, FALSE) ?> />
 						</td>
 					</tr>
 					<?php
@@ -396,6 +410,9 @@ if(!class_exists('WPUltimateSearchOptions')) :
 					<th>Type
 						<div class="tooltip" title="The format of the data."></div>
 					</th>
+					<th>Autocomplete
+						<div class="tooltip" title="Whether or not to autocomplete values typed into this field."></div>
+					</th>
 				</tr>
 				</thead>
 				<tfoot>
@@ -405,6 +422,7 @@ if(!class_exists('WPUltimateSearchOptions')) :
 					<th>Label override</th>
 					<th>Instances</th>
 					<th>Type</th>
+					<th>Autocomplete</th>
 				</tr>
 				</tfoot>
 				<tbody>
@@ -465,10 +483,9 @@ if(!class_exists('WPUltimateSearchOptions')) :
 							<option value="radius" <?php echo selected($this->options["metafields"][$metafield]["type"], "radius", FALSE) ?> >Radius</option>
 							</select>
 						</td>
-						<?php /* <td class="<?php echo $altclass ?>">
-							<input class="checkbox" type="checkbox" name="wpus_options['metafields'][<?php echo $metafield ?>][autocomplete']" value="1" <?php echo checked($this->options["'metafields'"][$metafield]["'autocomplete'"], 1, FALSE) ?> />
+						<td class="<?php echo $altclass ?>">
+							<input class="checkbox" type="checkbox" name="wpus_options[metafields][<?php echo $metafield ?>][autocomplete]" value="1" <?php echo checked($this->options["metafields"][$metafield]["autocomplete"], 1, FALSE) ?> />
 						</td>
-						*/ ?>
 					</tr>
 					<?php
 					// Set alternating classes on the table rows
@@ -1043,9 +1060,11 @@ if(!class_exists('WPUltimateSearchOptions')) :
 				}
 
 				$input['radius'] = false;
-				foreach($input['metafields'] as $field => $data) {
-					if(isset($data['enabled']) && $data['enabled'] == '1' && $data['type'] == 'radius') {
-						$input['radius'] = $field;
+				if(isset($input['metafield'])) {
+					foreach($input['metafields'] as $field => $data) {
+						if(isset($data['enabled']) && $data['enabled'] == '1' && $data['type'] == 'radius') {
+							$input['radius'] = $field;
+						}
 					}
 				}
 				

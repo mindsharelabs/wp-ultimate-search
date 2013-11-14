@@ -152,6 +152,12 @@ class WPUS_EDD_Remote_Install_Client {
 
 			if($license_data->license != "valid") 
 				die("invalid");
+			
+			$options = get_option('wpus_options');
+			$options['license_key'] = $license;
+			$options['license_status'] = 'active';
+
+			update_option('wpus_options', $options);
 
 		} else {
 

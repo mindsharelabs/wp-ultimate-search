@@ -73,18 +73,7 @@ jQuery(document).ready(function($) {
 				//		  	enable the following line for search query debugging:
 				//			console.log(["query", searchCollection.facets(), query]);
 
-				if(!query) {
-					return;
-				}
-
-				var target = document.getElementById('wpus_response');
-				var spinner = new Spinner(opts).spin(target);
-
-				$("#wpus_response").animate({
-					opacity: 0.5
-				}, 500, function() {
-
-				});
+				// Update routers
 				var searchdata = [];
 				var searchuri = '';
 				searchdata = searchCollection.facets();
@@ -99,14 +88,29 @@ jQuery(document).ready(function($) {
 						searchuri = searchuri + "&";
 					}
 				}
+
+				VS.app.searcher.navigate("/" + searchuri);
+
+				if(!query) {
+					return;
+				}
+
+				// Set spinner target
+				var spinner = new Spinner(opts).spin(document.getElementById('wpus_response'));
+
+				// Dim results area while query is being conducted
+				$("#wpus_response").animate({
+					opacity: 0.5
+				}, 500, function() {});
+
 				var data = {
 					action:       "wpus_search",
 					wpusquery: searchCollection.facets(),
 					searchNonce:  wpus_script.searchNonce
 				};
+
 				if($("#wpus_response").length > 0) {
 					$.get(wpus_script.ajaxurl, data, function(response_from_get_results) {
-						VS.app.searcher.navigate("/" + searchuri);
 						spinner.stop();
 						$("#wpus_response").html(response_from_get_results);
 						// @todo: make result highlighting less sketchy
@@ -156,9 +160,10 @@ jQuery(document).ready(function($) {
 					facet:  category
 				};
 				$.get(wpus_script.ajaxurl, data, function(response_from_get_values) {
-					//console.log(response_from_get_values);
 					if(response_from_get_values) {
-						callback($.parseJSON(response_from_get_values));
+						callback($.parseJSON(response_from_get_values), {
+							preserveOrder: true
+						});
 					}
 				});
 			},
@@ -173,62 +178,31 @@ jQuery(document).ready(function($) {
 
 	VS.utils.Searcher = Backbone.Router.extend({
 		routes: {
-			"*actions": "search"  // matches http://ultimatesearch.mindsharelabs.com#/query
+			"*actions": "search"  // matches http://ultimatesearch.mindsharelabs.com/#query
 		},
 		search: function(query) {
 			
 			if(!query) {
 				return;
 			}
+			var result = {};
 
-			// Update the search box with the terms of the query
-			visualSearch.searchBox.value(query.replace(/=/g, ': "').replace(/&/g, '" ').replace(/\+/g, ' ').replace('%and','&') + '"');
+			query = query.replace(/\+/g, ' ').replace('%and','&');
 
-			query = query.split("&");
-			var queryarray = new Array();
+			$.each(query.split('&'), function(index, value){
+		        if(value){
+		            var param = value.split('=');
+		            result[param[0]] = param[1];
+		        }
+		    });
 
-			$.each(query, function(i, key) {
-				queryarray[i] = new Object();
-				var temparray = key.split("=");
-				queryarray[i][temparray[0]] = decodeURI(temparray[1]).replace(/\+/g, " ").replace('%and','&amp;');
+			visualSearch.searchBox.value('');
+
+			$.each(result, function(index, value) {
+				visualSearch.searchBox.addFacet(index, value, 0);
 			});
-			// enable the following line for search query debugging:
-			// console.log(["query", queryarray, query]);
 
-			var target = document.getElementById('#wpus_response');
-			var spinner = new Spinner(opts).spin(target);
-
-			$("#wpus_response").animate({
-				opacity: 0.5
-			}, 500, function() {
-
-			});
-			var data = {
-				action:       "wpus_search",
-				wpusquery: queryarray,
-				searchNonce:  wpus_script.searchNonce
-			};
-			$.get(wpus_script.ajaxurl, data, function(response_from_get_results) {
-				spinner.stop();
-				$("#wpus_response").html(response_from_get_results);
-				$("#wpus_response").animate({
-					opacity: 1
-				}, 500, function() {
-
-				$('#wpus-clear-search').click(function(e) {
-					e.preventDefault();
-					visualSearch.searchBox.clearSearch('type=keydown');
-					$("#wpus_response").html("");
-				});
-				$('.VS-icon-cancel').click(function(e) {
-					$("#wpus_response").html("");
-				});
-
-				});
-				if(wpus_script.trackevents == true) {
-					_gaq.push(['_trackEvent', wpus_script.eventtitle, 'Submit', searchCollection.serialize(), parseInt(wpus_response.numresults)]);
-				}
-			});
+			visualSearch.searchBox.searchEvent({});
 		}
 	});
 	// Initiate the router
