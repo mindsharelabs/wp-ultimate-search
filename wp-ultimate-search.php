@@ -102,7 +102,6 @@ if(!class_exists("WPUltimateSearch")) :
 				require_once(WPUS_DIR_PATH.'views/wpus-options.php'); // include options file
 				$options_page = new WPUltimateSearchOptions();
 				add_action('admin_menu', array($options_page, 'add_pages')); // adds page to menu
-				add_action('admin_init', array($options_page, 'register_settings'));
 
 				$plugin = plugin_basename(__FILE__); 
 				add_filter("plugin_action_links_$plugin", array($this, 'wpus_settings_link') );
@@ -301,7 +300,8 @@ if(!class_exists("WPUltimateSearch")) :
 		 *
 		 * @internal param $resultsarray
 		 */
-		protected function print_results($results, $keywords) {
+		protected function print_results($results, $keywords, $location) {
+			
 			ob_start();
 
 			if(file_exists(TEMPLATEPATH.'/wpus-results-template.php')) {

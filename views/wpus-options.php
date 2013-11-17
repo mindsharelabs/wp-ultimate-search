@@ -18,6 +18,8 @@ if(!class_exists('WPUltimateSearchOptions')) :
 				include( WPUS_DIR_PATH . '/lib/edd-remote-install-client/EDD_Remote_Install_Client.php' );
 			}
 
+			add_action('admin_init', array($this, 'register_settings'));
+
 			$options = array(
 				'skipplugincheck'	=> true
 					);
@@ -29,14 +31,17 @@ if(!class_exists('WPUltimateSearchOptions')) :
 			$this->setting = array();
 			$this->get_settings();
 
-			if(!$this->options = get_option('wpus_options')) {
-				$this->initialize_settings();
-			} else {
-				// Check if there are any new meta / taxonomy fields. Set them up w/ default values if necessary
-				add_action('admin_init', array($this, 'update_meta_fields'));
-				add_action('admin_init', array($this, 'update_taxonomies'));
-				add_action('admin_init', array($this, 'update_post_types'));
-			}
+				if(!$this->options = get_option('wpus_options')) {
+					$this->initialize_settings();
+				} else {
+					// Only necessary to run these operations when the actual WPUS options page is loaded
+					if(isset($_GET['page']) && $_GET['page'] == 'wpus-options') {
+						// Check if there are any new meta / taxonomy fields. Set them up w/ default values if necessary
+						add_action('admin_init', array($this, 'update_meta_fields'));
+						add_action('admin_init', array($this, 'update_taxonomies'));
+						add_action('admin_init', array($this, 'update_post_types'));
+					}
+				}
 
 			if(isset($this->options['license_status']) && $this->options["license_key"] != "")
 				$this->is_active = $this->options['license_status'];
@@ -209,6 +214,7 @@ if(!class_exists('WPUltimateSearchOptions')) :
 			<div class="wrap">
 			<div class="icon32" id="icon-options-general"></div>
 			<h2><?php echo __('WP Ultimate Search Options') ?> </h2>
+
 			<?php if($this->is_active !== "active" || $this->is_active === "active" && !file_exists(WPUS_PRO_PATH.WPUS_PRO_FILE) ) { ?>
 				<div class="postbox-container">
 					<div id="submitdiv" class="postbox">
@@ -1060,10 +1066,10 @@ if(!class_exists('WPUltimateSearchOptions')) :
 				}
 
 				$input['radius'] = false;
-				if(isset($input['metafield'])) {
+				if(isset($input['metafields'])) {
 					foreach($input['metafields'] as $field => $data) {
 						if(isset($data['enabled']) && $data['enabled'] == '1' && $data['type'] == 'radius') {
-							$input['radius'] = $field;
+							$input['radius'] = $data['label'];
 						}
 					}
 				}
