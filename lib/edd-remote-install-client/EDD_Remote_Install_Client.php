@@ -74,7 +74,7 @@ class WPUS_Remote_Install_Client {
 	 * @return void
 	 */
 
-	public function install_complete($slug) {
+	public function install_complete($args) {
 
 
 	}
@@ -212,7 +212,9 @@ class WPUS_Remote_Install_Client {
 			$path = WP_PLUGIN_DIR . "/" . $slug . "/" . $slug . ".php";
 			$result = activate_plugin( $path );
 
-			do_action('eddri-install-complete-' . $this->options['page'], $slug);
+			$args['slug'] = $slug;
+			$args['license'] = $license;
+			do_action('eddri-install-complete-' . $this->options['page'], $args);
 		}
 
 		die();

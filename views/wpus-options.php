@@ -9,7 +9,7 @@ define( 'WPUS_STORE_URL', 'http://mindsharelabs.com' );
 if(!class_exists('WPUltimateSearchOptions')) :
 	class WPUltimateSearchOptions extends WPUltimateSearch {
 
-		private $sections, $checkboxes, $settings, $admin_page;
+		private $sections, $checkboxes, $settings;
 		public $options, $is_active, $updater;
 
 		function __construct() {
@@ -18,11 +18,14 @@ if(!class_exists('WPUltimateSearchOptions')) :
 			add_action('admin_init', array($this, 'register_settings'));
 
 			// Create EDDRI instance
-			if( !class_exists( 'WPUS_EDD_Remote_Install_Client' ) ) {
+			if( !class_exists( 'WPUS_Remote_Install_Client' ) ) {
 				include( WPUS_DIR_PATH . '/lib/edd-remote-install-client/EDD_Remote_Install_Client.php' );
 			}
+
 			$options = array( 'skipplugincheck'	=> true );
-			$edd_remote_install = new WPUS_Remote_Install_Client( WPUS_STORE_URL, $this->admin_page, $options );
+			$edd_remote_install = new WPUS_Remote_Install_Client( WPUS_STORE_URL, 'settings_page_wpus-options', $options );
+
+			add_action( 'eddri-install-complete-settings_page_wpus-options', array($this, 'activate_upgrade') );
 
 			// This will keep track of the checkbox options for the validate_settings function.
 			$this->checkboxes = array();
@@ -53,6 +56,20 @@ if(!class_exists('WPUltimateSearchOptions')) :
 			}
 			$this->sections['reset'] = __('Reset to Defaults');
 			$this->sections['about'] = __('About');
+		}
+
+		public function activate_upgrade($args) {
+
+			if($args['slug'] == "wp-ultimate-search-pro") {
+
+				$options = get_option('wpus_options');
+				$options['license_key'] = $args['license'];
+				$options['license_status'] = 'active';
+
+				update_option('wpus_options', $options);
+
+			}
+
 		}
 
 		/**
@@ -154,8 +171,8 @@ if(!class_exists('WPUltimateSearchOptions')) :
 		 *
 		 */
 		public function register_menus() {
-			$this->admin_page = add_options_page('Ultimate Search', 'Ultimate Search', 'manage_options', 'wpus-options', array($this, 'display_page'));
-			add_action('admin_print_scripts-'.$this->admin_page, array($this, 'scripts'));
+			$admin_page = add_options_page('Ultimate Search', 'Ultimate Search', 'manage_options', 'wpus-options', array($this, 'display_page'));
+			add_action('admin_print_scripts-'.$admin_page, array($this, 'scripts'));
 		}
 
 		/**
