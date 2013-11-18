@@ -4,9 +4,9 @@
  * Allows plugins to install new plugins or upgrades
  *
  * @author Mindshare Studios, Inc.
- * @version 1.3
+ * @version 1.4
  */
-class WPUS_EDD_Remote_Install_Client {
+class WPUS_Remote_Install_Client {
 	private $api_url  = '';
 	private $options = array(
 			'skipplugincheck'	=> false
@@ -21,18 +21,37 @@ class WPUS_EDD_Remote_Install_Client {
 	 * @param array $_api_data Optional data to send with API calls.
 	 * @return void
 	 */
-	function __construct( $_api_url, $_plugin_file, $options = array() ) {
+	function __construct( $_api_url, $page, $options = array() ) {
 		$this->api_url  = trailingslashit( $_api_url );
 
 		if(isset($options['skipplugincheck']) && $options['skipplugincheck'] == true) {
 			$this->options['skipplugincheck'] = true;
 		}
 
-		add_action( 'admin_enqueue_scripts', array($this, 'register_scripts' ));
+		$options['page'] = $page;
+		$this->options = $options;
 
-		add_action('wp_ajax_edd-check-plugin-status', array($this, 'check_plugin_status'));
-		add_action('wp_ajax_edd-check-remote-install', array($this, 'check_remote_install'));
-		add_action('wp_ajax_edd-do-remote-install', array($this, 'do_remote_install'));
+		add_action( 'load-' . $page, array($this, 'register_scripts' ));
+
+		add_action('wp_ajax_edd-check-plugin-status-' . $page, array($this, 'check_plugin_status'));
+		add_action('wp_ajax_edd-check-remote-install-' . $page, array($this, 'check_remote_install'));
+		add_action('wp_ajax_edd-do-remote-install-' . $page, array($this, 'do_remote_install'));
+
+		add_action('eddri-install-complete-' . $page, array($this, 'install_complete'), 0, 1);
+	}
+
+	/**
+	 * Try to convert plugin name to slug
+	 *
+	 * @param $str Download name
+	 * @return $str Slug
+	 */
+
+	private function slug($str) {
+		$str = strtolower( $str );
+		$str = preg_replace("/[\s_]/", "-", $str);
+
+		return $str;
 	}
 
 	/**
@@ -49,6 +68,18 @@ class WPUS_EDD_Remote_Install_Client {
 	}
 
 	/**
+	 * Callback action that's fired when an install is completed successfully
+	 *
+	 * @param string $slug Slug of plugin successfully installed
+	 * @return void
+	 */
+
+	public function install_complete($slug) {
+
+
+	}
+
+	/**
 	 * Check plugin status
 	 *
 	 * Checks to see if a plugin is currently installed and disables the install button if so
@@ -58,8 +89,8 @@ class WPUS_EDD_Remote_Install_Client {
 	 */
 
 	public function check_plugin_status() {
-		$plugin = strtolower( $_POST['download'] );
-		$plugin = preg_replace("/[\s_]/", "-", $plugin);
+		
+		$plugin = $this->slug($_POST['download']);
 
 		if (is_plugin_active($plugin . '/' . $plugin . '.php')) {
 			die(true);
@@ -80,7 +111,7 @@ class WPUS_EDD_Remote_Install_Client {
 	public function check_remote_install() {
 
 		if ( ! current_user_can('install_plugins') )
-			wp_die( 'You do not have sufficient permissions to install plugins on this site.' );
+			die( 'You do not have sufficient permissions to install plugins on this site.' );
 
 		$api_params = array(
 			'edd_action' => 'check_download',
@@ -107,13 +138,13 @@ class WPUS_EDD_Remote_Install_Client {
 
 			}
 
-			die($response);
-
 		else:
 
-			die("Error occurred while trying to reach remote server. Please try again or contact support.");
+			$response = "Error occurred while trying to reach remote server. Please try again or contact support.";
 
 		endif;
+
+		die(json_encode($response));
 	}
 
 	/**
@@ -131,13 +162,15 @@ class WPUS_EDD_Remote_Install_Client {
 		if ( ! current_user_can('install_plugins') )
 			wp_die( 'You do not have sufficient permissions to install plugins on this site.' );
 
+		$download = $_POST['download'];
+
 		if(isset($_POST['license'])) {
 			$license = $_POST['license'];
 
 			$api_params = array( 
 				'edd_action'=> 'activate_license', 
 				'license' 	=> $license, 
-				'item_name' => urlencode( $_POST['download'] ) // the name of our product in EDD
+				'item_name' => urlencode( $download ) // the name of our product in EDD
 			);
 			
 			// Call the custom API.
@@ -152,12 +185,6 @@ class WPUS_EDD_Remote_Install_Client {
 
 			if($license_data->license != "valid") 
 				die("invalid");
-			
-			$options = get_option('wpus_options');
-			$options['license_key'] = $license;
-			$options['license_status'] = 'active';
-
-			update_option('wpus_options', $options);
 
 		} else {
 
@@ -168,7 +195,7 @@ class WPUS_EDD_Remote_Install_Client {
 
 		$api_params = array(
 			'edd_action' => 'get_download',
-			'item_name'  => urlencode( $_POST['download'] ),
+			'item_name'  => urlencode( $download ),
 			'license'	 => urlencode( $license )
 		);
 
@@ -181,9 +208,11 @@ class WPUS_EDD_Remote_Install_Client {
 		$result = $upgrader->install($download_link);
 
 		if($result == 1) {
-			$slug = $this->slug($_POST['download']);
+			$slug = $this->slug($download);
 			$path = WP_PLUGIN_DIR . "/" . $slug . "/" . $slug . ".php";
 			$result = activate_plugin( $path );
+
+			do_action('eddri-install-complete-' . $this->options['page'], $slug);
 		}
 
 		die();

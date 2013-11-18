@@ -9,22 +9,20 @@ define( 'WPUS_STORE_URL', 'http://mindsharelabs.com' );
 if(!class_exists('WPUltimateSearchOptions')) :
 	class WPUltimateSearchOptions extends WPUltimateSearch {
 
-		private $sections, $checkboxes, $settings;
+		private $sections, $checkboxes, $settings, $admin_page;
 		public $options, $is_active, $updater;
 
 		function __construct() {
 
+			add_action('admin_menu', array($this, 'register_menus'));
+			add_action('admin_init', array($this, 'register_settings'));
+
+			// Create EDDRI instance
 			if( !class_exists( 'WPUS_EDD_Remote_Install_Client' ) ) {
 				include( WPUS_DIR_PATH . '/lib/edd-remote-install-client/EDD_Remote_Install_Client.php' );
 			}
-
-			add_action('admin_init', array($this, 'register_settings'));
-
-			$options = array(
-				'skipplugincheck'	=> true
-					);
-
-			$edd_remote_install = new WPUS_EDD_Remote_Install_Client( WPUS_STORE_URL, __FILE__, $options );
+			$options = array( 'skipplugincheck'	=> true );
+			$edd_remote_install = new WPUS_Remote_Install_Client( WPUS_STORE_URL, $this->admin_page, $options );
 
 			// This will keep track of the checkbox options for the validate_settings function.
 			$this->checkboxes = array();
@@ -155,9 +153,9 @@ if(!class_exists('WPUltimateSearchOptions')) :
 		 * Add menu pages
 		 *
 		 */
-		public function add_pages() {
-			$admin_page = add_options_page('Ultimate Search', 'Ultimate Search', 'manage_options', 'wpus-options', array($this, 'display_page'));
-			add_action('admin_print_scripts-'.$admin_page, array($this, 'scripts'));
+		public function register_menus() {
+			$this->admin_page = add_options_page('Ultimate Search', 'Ultimate Search', 'manage_options', 'wpus-options', array($this, 'display_page'));
+			add_action('admin_print_scripts-'.$this->admin_page, array($this, 'scripts'));
 		}
 
 		/**
