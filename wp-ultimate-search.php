@@ -638,6 +638,9 @@ if(!class_exists("WPUltimateSearch")) :
 				case "taxonomy" :
 					$facet = $this->get_taxonomy_name($facet); // get the database taxonomy name from the current facet
 
+					if(!isset($options['taxonomies'][$facet]['autocomplete']))
+						die();
+
 					if(isset($options['taxonomies'][$facet]['max'])) {
 						$number = $options['taxonomies'][$facet]['max'];
 					} else {
@@ -678,6 +681,9 @@ if(!class_exists("WPUltimateSearch")) :
 				case "metafield" :
 
 					$facet = $this->get_metafield_name($facet);
+
+					if(!isset($options['metafields'][$facet]['autocomplete']))
+						die();
 
 					global $wpdb;
 
