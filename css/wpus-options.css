@@ -3,90 +3,10 @@
 	border:1px solid #E6DB55;
 	padding:10px 20px 20px 20px;
 }
-.settings_page_wpus-options .wpus-options.ui-tabs-nav {
-	border-bottom:1px solid #ccc;
-	height:27px;
-	margin:20px 0;
-	padding:0;
-}
-
-.settings_page_wpus-options .button.validate {
-	margin-left: 6px;
-}
-.settings_page_wpus-options .loading {
-	background: url('../img/loader-small.gif') no-repeat 0 5px;
-	margin-left: 10px;
-	display: inline-block;
-	width: 16px;
-	height: 22px;
-	opacity: 0.7;
-	position: absolute;
-}
 
 .settings_page_wpus-options .description {
 	width: 600px;
 	display: block;
-}
-
-
-.settings_page_wpus-options .ui-tabs-nav li {
-	display:block;
-	float:left;
-	margin:0;
-}
-
-.settings_page_wpus-options .ui-tabs-nav li a:focus, .settings_page_wpus-options .ui-tabs-nav li a:active {
-	outline: none;
-}
-
-.settings_page_wpus-options .ui-tabs-nav li a {
-	font-weight:bold;
-	border-style:solid;
-	border-color:#CCC #CCC #F9F9F9;
-	border-width:1px 1px 0;
-	color:#C1C1C1;
-	text-shadow:rgba(255, 255, 255, 1) 0 1px 0;
-	display:inline-block;
-	padding:4px 14px 6px;
-	text-decoration:none;
-	margin:0 6px -1px 0;
-	-moz-border-radius:5px 5px 0 0;
-	-webkit-border-top-left-radius:5px;
-	-webkit-border-top-right-radius:5px;
-	-khtml-border-top-left-radius:5px;
-	-khtml-border-top-right-radius:5px;
-	border-top-left-radius:5px;
-	border-top-right-radius:5px;
-}
-
-.settings_page_wpus-options .ui-tabs-nav li.ui-tabs-selected a,
-.settings_page_wpus-options .ui-tabs-nav li.ui-state-active a {
-	border-width:1px;
-	color:#464646;
-	padding-bottom:7px;
-	background:white;
-}
-
-.settings_page_wpus-options .ui-tabs-panel {
-	clear:both;
-}
-
-.settings_page_wpus-options .ui-tabs-panel h3 {
-	font:italic normal normal 24px/29px Georgia, "Times New Roman", "Bitstream Charter", Times, serif;
-	margin:0;
-	padding:0 0 5px;
-	line-height:35px;
-	text-shadow:0 1px 0 #fff;
-}
-
-.settings_page_wpus-options .ui-tabs-panel h4 {
-	font-size:15px;
-	font-weight:bold;
-	margin:1em 0;
-}
-
-.settings_page_wpus-options .wrap h3, .wrap table {
-	display:none;
 }
 
 .settings_page_wpus-options .widefat th.tax .checked {
@@ -98,8 +18,8 @@
 	background-image:linear-gradient(top, #D2E6FD, #B0D1F9);
 	border:1px solid #6EADF5;
 	border-radius:16px;
-	height:20px;
-	padding:0 8px 0 18px;
+	height:26px;
+	padding:3px 8px 0 18px;
 	display:inline-block;
 	line-height:20px;
 	position:relative;
@@ -115,7 +35,7 @@
 	height:11px;
 	position:absolute;
 	left:4px;
-	top:4px;
+	top:6px;
 	width:11px;
 	opacity:0.4;
 	cursor:pointer;
@@ -135,6 +55,17 @@
 	opacity:0.4;
 }
 
+.settings_page_wpus-options .alert {
+	max-width: 900px;
+	background-color: #F2DEDE;
+	border-color: #EBCCD1;
+	color: #B94A35;
+}
+
+.settings_page_wpus-options .alert strong {
+
+}
+
 .settings_page_wpus-options h4.notice {
 	position:absolute;
 	left:30%;
@@ -146,30 +77,29 @@
 	z-index:99;
 }
 
-.settings_page_wpus-options .postbox-container h3 {
-	font-size: 15px;
+.settings_page_wpus-options .eddri-addon {
+	position: absolute;
+	top:160px;
+	right: 20px;
+	z-index: 99;
+}
+
+.settings_page_wpus-options .eddri-addon .button {
+	margin-right: 5px;
+}
+
+.settings_page_wpus-options label {
 	font-weight: normal;
-	padding: 7px 10px;
-	margin: 0;
-	line-height: 1;
+	font-size: 13px;
 }
 
-.settings_page_wpus-options .postbox-container {
-	position:absolute;
-	width:280px;
-	right: 80px;
-	top:180px;
-	z-index:99;
+.settings_page_wpus-options td label {
+	font-size: 12px;
 }
 
-.settings_page_wpus-options .postbox-container a {
-	text-align:center;
-	display:block;
-}
-
-.settings_page_wpus-options .postbox-container ul {
-	margin-left: 20px;
-	list-style: disc;
+.table>thead>tr>th, .table>tbody>tr>th, .table>tfoot>tr>th, .table>thead>tr>td, .table>tbody>tr>td, .table>tfoot>tr>td {
+	vertical-align: middle !important;
+	overflow: visible;
 }
 
 /* TipTip CSS - Version 1.2 */

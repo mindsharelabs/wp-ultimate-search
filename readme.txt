@@ -1,12 +1,12 @@
 === WP Ultimate Search ===
 Contributors: sekatsim, mindshare
 Donate link: http://mind.sh/are/donate/
-Tags: search, ajax, metadata, meta, post meta, autocomplete, jquery, facet, faceted search, faceting, advanced custom fields, acf, taxonomy, taxonomies, term, terms, facets
+Tags: search, ajax, metadata, meta, post meta, autocomplete, jquery, facet, faceted search, faceting, advanced custom fields, acf, taxonomy, taxonomies, term, terms, facets, geo, wp-geo, radius, latitude, longitude, location
 Requires at least: 3.4.1
 Tested up to: 3.7.1
-Stable tag: 1.4
+Stable tag: 1.4.2
  
-Powerful AJAX-based search alternative which supports faceting queries by taxonomies, terms, and post meta data.
+Powerful AJAX-based search alternative which supports faceting queries by taxonomies, terms, location, and post metadata.
 
 == Description ==
 
@@ -26,7 +26,7 @@ Try a [demo](http://ultimatesearch.mindsharelabs.com/).
 * Attractive and lightweight interface based on jQuery, Backbone.js, and the VisualSearch.js library
 * Customizable results template using standard WordPress functions
 
-Premium version now supports the ability to search through an unlimited number of user-specified taxonomies and meta fields (including data contained in Advanced Custom Fields)
+Premium version supports the ability to search through an unlimited number of user-specified taxonomies and meta fields (including data contained in Advanced Custom Fields). Can also conduct radius searches against data stored in the ACF Map field (i.e. search for posts within x km of a user-specified location).
 
 == Installation ==
 
@@ -35,10 +35,10 @@ Premium version now supports the ability to search through an unlimited number o
 3. Add a shortcode to a post, use the template tag in your theme, or use the sidebar widget.
 
 To use the shortcode:
-Place `[wp-ultimate-search-bar]` where you'd like the search bar, and `[wpus-search-results]` where you'd like the results.
+Place `[wp-ultimate-search-bar]` where you'd like the search bar, and `[wp-ultimate-search-results]` where you'd like the results.
 
 To use the template tag:
-Put `wp_ultimate_search_bar()` where you'd like the search bar, and `wpus_search_results()` where you'd like the results.
+Put `wp_ultimate_search_bar()` where you'd like the search bar, and `wp_ultimate_search_results()` where you'd like the results.
 
 For additional information, [visit our website](http://mindsharelabs.com/)
 
@@ -78,18 +78,37 @@ Help documents and support forums are available at [Mindshare Labs](http://minds
 
 `/tags/1.0/screenshot-3.jpg`
 
+4. WP Ultimate Search being used on a music archive
+
+`/trunk/screenshot-4.jpg`
+
+5. WP Ultimate Search being used on [Foodtrade.com](http://fresh.foodtrade.com/find/)
+
+`/trunk/screenshot-5.jpg`
+
+
 == Changelog ==
+
+= 1.4.2 =
+* Updated options framework to work with new admin styles
+* Fixed typo in installation instructions
+* Fixed bug caused by ampersands in permalinks
+* Fixed PHP notices on multisite installations
+
+= 1.4.1 =
+* Fixed PHP warnings
 
 = 1.4 =
 * Added radius search capability based on ACF Map field
 * Added ability to confine taxonomy searches to given terms
 * Added ability to exclude specific post types from results
 * Added ability to search for addresses stored with an ACF Map field
-* Added ability to disable autocomplete per term
+* Added ability to disable autocomplete per facet
 * Fixed bug where spaces in facet names would break permalinks
 * Fixed bug where permalinks weren't updated when last facet was removed
 * Fixed bug where lowercase terms would appear after capitalized ones
 * Fixed bug where pressing backspace would sometimes cause the browser to navigate back
+* Fixed bugs that sometimes prevented premium upgrade
 
 = 1.3 =
 * Added ability to choose either AND or OR logic for query components within the same taxonomy

@@ -42,7 +42,7 @@
 }
 
 .VS-search .VS-icon-cancel:before {
-  content: "\f022";
+  content: "\f00d";
 }
 .VS-search .VS-icon-cancel:hover {
 	background-position: center -11px;
@@ -55,7 +55,7 @@
 
 .VS-search .VS-icon-search:before {
 	
-	content: "\f021";
+	content: "\f002";
 }
 
 /*------------------------------ RESET + DEFAULT STYLES ---------------------------------*/

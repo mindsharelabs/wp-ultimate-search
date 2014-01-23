@@ -187,10 +187,11 @@ jQuery(document).ready(function($) {
 			}
 			var result = {};
 
-			query = query.replace(/\+/g, ' ').replace('%and','&');
+			query = query.replace(/\+/g, ' ');
 
 			$.each(query.split('&'), function(index, value){
 		        if(value){
+		        	value = value.replace('%and','&');
 		            var param = value.split('=');
 		            result[param[0]] = param[1];
 		        }

@@ -4,7 +4,7 @@
  * Allows plugins to install new plugins or upgrades
  *
  * @author Mindshare Studios, Inc.
- * @version 1.4
+ * @version 1.5
  */
 class WPUS_Remote_Install_Client {
 	private $api_url  = '';
@@ -33,9 +33,14 @@ class WPUS_Remote_Install_Client {
 
 		add_action( 'load-' . $page, array($this, 'register_scripts' ));
 
+		add_action('wp_ajax_edd-activate-plugin-' . $page, array($this, 'activate_plugin'));
+		add_action('wp_ajax_edd-deactivate-plugin-' . $page, array($this, 'deactivate_plugin'));
 		add_action('wp_ajax_edd-check-plugin-status-' . $page, array($this, 'check_plugin_status'));
 		add_action('wp_ajax_edd-check-remote-install-' . $page, array($this, 'check_remote_install'));
 		add_action('wp_ajax_edd-do-remote-install-' . $page, array($this, 'do_remote_install'));
+
+		add_action('wp_ajax_edd-do-manual-install-' . $page, array($this, 'do_manual_install'));
+		add_action( 'plugins_api', array($this, 'plugins_api'), 100, 3 );
 
 		add_action('eddri-install-complete-' . $page, array($this, 'install_complete'), 0, 1);
 	}
@@ -68,9 +73,74 @@ class WPUS_Remote_Install_Client {
 	}
 
 	/**
+	 * Do manual install
+	 *
+	 * If a plugin was unable to be installed automatically, generate an install URL and redirect to the plugins API
+	 *
+	 * @param string $_POST['download'] Download requested
+	 * @param string $_POST['license'] License key
+	 * @return string $url
+	 */
+
+	public function do_manual_install() {
+
+		$download_name = urlencode($_POST['download']);
+		$download_slug = $this->slug($_POST['download']);
+
+		$license = '';
+		if(isset($_POST['license']))
+			$license = $_POST['license'];
+
+		$nonce = wp_create_nonce('install-plugin_' . $download_slug);
+
+		$url = admin_url('update.php?action=install-plugin&plugin=' . $download_slug . '&name=' . $download_name . '&license=' . $license . '&_wpnonce=' . $nonce . '&eddri=' . $this->options['page']);
+
+		die($url);
+
+	}
+
+	/**
+	 * Plugins API
+	 *
+	 * Overrides the plugins API parameters for download URLs originated by EDDRI
+	 *
+	 * @param string $_GET['eddri'] EDDRI page that originated the request
+	 * @param string $_GET['license'] License key
+	 * @param string $_GET['name'] Name of the plugin requested
+	 * @return obj $api
+	 */
+
+	public function plugins_api($api, $action, $args) {
+
+		if($action = 'plugin_information') {
+
+			if(isset($_GET['eddri']) && $_GET['eddri'] == $this->options['page']) {
+
+				$api_params = array(
+					'edd_action' => 'get_download',
+					'item_name'  => urlencode( $_GET['name'] ),
+					'license'	 => urlencode( $_GET['license'] )
+				);
+
+				$download_link = add_query_arg($api_params, $this->api_url);
+
+			    $api = new stdClass();
+		        $api->name = $args->slug;
+		        $api->version = "";
+		        $api->download_link = $download_link;
+
+			}
+
+	    }
+
+	    return $api;
+
+	}
+
+	/**
 	 * Callback action that's fired when an install is completed successfully
 	 *
-	 * @param string $slug Slug of plugin successfully installed
+	 * @param array $args Install complete arguments
 	 * @return void
 	 */
 
@@ -93,8 +163,10 @@ class WPUS_Remote_Install_Client {
 		$plugin = $this->slug($_POST['download']);
 
 		if (is_plugin_active($plugin . '/' . $plugin . '.php')) {
-			die(true);
-		} else {
+			die("active");
+		} elseif (file_exists(WP_PLUGIN_DIR . '/' . $plugin . '/' . $plugin . '.php')) {
+			die("installed");
+		} {
 			die(false);
 		}
 	}
@@ -145,6 +217,67 @@ class WPUS_Remote_Install_Client {
 		endif;
 
 		die(json_encode($response));
+	}
+
+	/**
+	 * Activate plugin
+	 *
+	 * Attemps to activate a plugin which is installed and inactive. Triggered by user clicking "Activate".
+	 *
+	 * @param string $_POST['download'] Download requested
+	 * @return response
+	 */
+
+	public function activate_plugin() {
+
+		$slug = $this->slug($_POST['download']);
+		$path = WP_PLUGIN_DIR . "/" . $slug . "/" . $slug . ".php";
+		activate_plugin( $path );
+
+		if(is_plugin_active( $slug . '/' . $slug . '.php' )) {
+			die('activated');
+		} else {
+			die('error');
+		}
+
+	}
+
+	/**
+	 * Deactivate plugin
+	 *
+	 * Attemps to deactivate a plugin. Triggered by user clicking "Deactivate".
+	 *
+	 * @param string $_POST['download'] Download requested
+	 * @return response
+	 */
+
+	public function deactivate_plugin() {
+
+		$slug = $this->slug($_POST['download']);
+		$path = WP_PLUGIN_DIR . "/" . $slug . "/" . $slug . ".php";
+		deactivate_plugins( $path );
+
+		if(!is_plugin_active( $slug . '/' . $slug . '.php' )) {
+			die('deactivated');
+		} else {
+			die('error');
+		}
+
+	}
+
+	/**
+	 * Manual install
+	 *
+	 * Outputs full install log in cases where auto-install failed
+	 *
+	 * @param string $_POST['download'] Download requested
+	 * @return response
+	 */
+
+	public function manual_install() {
+
+		echo "Hi";
+
 	}
 
 	/**

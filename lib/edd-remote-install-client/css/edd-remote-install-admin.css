@@ -45,60 +45,111 @@
     box-shadow: inset 0 1px 0 rgba(0,0,0,0.2);
 }
 
-.edd-remote-install.in-progress {
+.eddri-addon {
+    vertical-align: top;
+    border: 1px solid #CCC;
+    -moz-box-shadow: 0 0 5px rgba(0,0,0,0.25);
+    -webkit-box-shadow: 0 0 5px rgba(0, 0, 0, 0.25);
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.25);
+    width: 300px;
+}
+
+.eddri-addon .eddri-addon-container {
+    margin: 20px;
+}
+
+.eddri-addon a.button {
+    margin-top: 12px;
+}
+
+.eddri-addon span.eddri-status {
+    background-color: #EEE;
+    border: 1px solid #DADADA;
+    padding: 6px;
+    display: block;
+    position: relative;
+    font-weight: bold;
+    color: #424242;
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    border-radius: 3px;
+}
+
+.eddri-addon span.eddri-status.eddri-inactive {
+    background-color: #FFFBCC;
+    border: 1px solid #E6DB55;
+}
+
+.eddri-addon span.eddri-status.eddri-active {
+    background-color: #CBECA0;
+    border: 1px solid #97B48A;
+    color: #2D5312;
+}
+
+.eddri-addon span.eddri-status.eddri-error {
+    color: #A94442;
+    background-color: #F2DEDE;
+    border: 1px solid #EBCCD1;
+}
+
+.eddri-status.in-progress {
     cursor: progress;
+    background-color: #D9EDF7 !important;
 }
 
-.edd-remote-install.stopped {
+.eddri-status.stopped {
     cursor: pointer;
+    background-color: #D9EDF7 !important;
 }
 
-.edd-remote-install.success {
-
+.eddri-status.success {
+    background-color: #D9EDF7 !important;
 }
 
-.edd-remote-install.failure {
+.eddri-status.failure {
 
 }
 /* Hide the original text of the button. Then the loading or finished
    text will be shown in the :after element above it. */
 
-.edd-remote-install.in-progress,
-.edd-remote-install.finished{
+.eddri-status.in-progress,
+.eddri-status.finished{
     color:transparent !important;
     text-shadow: none;
 }
 
-.edd-remote-install.in-progress:after,
-.edd-remote-install.finished:after{
+.eddri-status.in-progress:after,
+.eddri-status.finished:after{
     position: absolute;
     z-index: 2;
     width: 100%;
     height: 100%;
-    text-align: center;
-    top: 0;
-    padding-top: inherit;
-    color: #fff !important;
-    left: 0;
+    top: 6px;
+    left: 6px;
+    color: #424242;
 }
 
 /* If the .in-progress class is set on the button, show the
    contents of the data-loading attribute on the butotn */
 
-.edd-remote-install.in-progress:after{
+.eddri-status.in-progress:after{
     content:attr(data-loading);
 }
 
 /* The same goes for the .finished class */
 
-.edd-remote-install.finished:after{
+.eddri-status.finished:after{
     content:attr(data-finished);
+}
+
+.eddri-status.eddri-error:after{
+    color: #A94442;
 }
 
 /* The colorful bar that grows depending on the progress */
 
-.edd-remote-install .tz-bar{
-    background-color: #21759b;
+.eddri-status .tz-bar{
+    background-color: #428BCA;
     height:3px;
     bottom:0;
     left:0;
@@ -115,7 +166,7 @@
 
 /* The bar can be either horizontal, or vertical */
 
-.edd-remote-install .tz-bar.background-horizontal{
+.eddri-status .tz-bar.background-horizontal{
     height:100%;
     border-radius:2px;
 }
@@ -123,6 +174,8 @@
 #license-input {
     display: block;
     position: relative;
-    margin: 4px 0;
+    margin-top: 4px;
     outline: none;
+    width: 100%;
+    line-height: 18px;
 }

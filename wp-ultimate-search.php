@@ -3,7 +3,7 @@
 Plugin Name: WP Ultimate Search
 Plugin URI: http://ultimatesearch.mindsharelabs.com
 Description: Advanced faceted AJAX search and filter utility.
-Version: 1.4
+Version: 1.5
 Author: Mindshare Studios, Inc.
 Author URI: http://mindsharelabs.com/
 */
@@ -99,8 +99,8 @@ if(!class_exists("WPUltimateSearch")) :
 			$options = $this->options;
 
 			if(is_admin()) {
+				require_once(WPUS_DIR_PATH.'lib/options/options.php'); // include Options framework
 				require_once(WPUS_DIR_PATH.'views/wpus-options.php'); // include options file
-				$options_page = new WPUltimateSearchOptions();
 
 				$plugin = plugin_basename(__FILE__); 
 				add_filter("plugin_action_links_$plugin", array($this, 'wpus_settings_link') );
@@ -126,11 +126,7 @@ if(!class_exists("WPUltimateSearch")) :
 			register_activation_hook(__FILE__, array($this, 'activation_hook'));
 
 			// REGISTER SCRIPTS IF GLOBAL SCRIPTS ARE ENABLED
-			if(isset($options['global_scripts'])) {
-				if($options['global_scripts'] == 1) {
-					add_action('wp_enqueue_scripts', array($this, 'register_scripts'));
-				}
-			}
+			add_action('wp_enqueue_scripts', array($this, 'register_scripts'));
 		}
 
 		// Add settings link on plugin page
@@ -546,7 +542,7 @@ if(!class_exists("WPUltimateSearch")) :
 					wp_enqueue_script('geocomplete', WPUS_PRO_URL.'js/jquery.geocomplete.js', array('jquery', 'google-maps'), '', wpus_option('scripts_in_footer'));
 				}
 			} else {
-				wp_enqueue_script('wpus-script', WPUS_DIR_URL.'js/main.js', array('visualsearch'), '', wpus_option('scripts_in_footer'));
+				wp_enqueue_script('wpus-script', WPUS_DIR_URL.'js/wpus-main.js', array('visualsearch'), '', wpus_option('scripts_in_footer'));
 			}
 
 			($options['show_facets'] == 1 ? $showfacets = true : $showfacets = false);
@@ -590,12 +586,6 @@ if(!class_exists("WPUltimateSearch")) :
 				return;
 			
 			$options = $this->options;
-
-			if(isset($options['global_scripts'])) {
-				if($options['global_scripts'] == 0) {
-					$this->register_scripts();
-				}
-			}
 
 			// RENDER SEARCH FORM
 			return '<div id="search_box_container"><div id="search"><div class="VS-search">
@@ -847,7 +837,7 @@ if(!class_exists("WPUltimateSearch")) :
 				$keywords = NULL;
 			}
 
-			$this->print_results($wpdb->get_results($querystring, OBJECT), $keywords); // format and output the search results
+			$this->print_results($wpdb->get_results($querystring, OBJECT), $keywords, $location = null); // format and output the search results
 
 			die(); // wordpress may print out a spurious zero without this - can be particularly bad if using json
 		}
