@@ -91,6 +91,7 @@ Help documents and support forums are available at [Mindshare Labs](http://minds
 
 = 1.4.2 =
 * Updated options framework to work with new admin styles
+* Simplified pro upgrade process
 * Fixed typo in installation instructions
 * Fixed bug caused by ampersands in permalinks
 * Fixed PHP notices on multisite installations

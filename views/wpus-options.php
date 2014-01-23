@@ -396,7 +396,7 @@ if(!class_exists('WPUltimateSearchOptions')) {
 				'section' => 'general'
 			);
 
-			$pages = get_posts(array('post_type' => 'page'));
+			$pages = get_posts(array('post_type' => 'page', 'posts_per_page'   => -1));
 
 			$page_select = array();
 
