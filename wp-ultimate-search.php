@@ -3,7 +3,7 @@
 Plugin Name: WP Ultimate Search
 Plugin URI: http://ultimatesearch.mindsharelabs.com
 Description: Advanced faceted AJAX search and filter utility.
-Version: 1.4.2
+Version: 1.4.5
 Author: Mindshare Studios, Inc.
 Author URI: http://mindsharelabs.com/
 */
@@ -474,7 +474,7 @@ if(!class_exists("WPUltimateSearch")) :
 				$options = $this->pro_class->options;
 			}
 
-			if($facet == "text")
+			if($facet == $options['remainder'])
 				return "text";
 
 			if(isset($options['radius_label']) && $facet == $options['radius_label'])
@@ -508,8 +508,6 @@ if(!class_exists("WPUltimateSearch")) :
 		public function register_scripts() {
 
 			// ENQUEUE VISUALSEARCH SCRIPTS
-			//			wp_enqueue_script('underscore', WPUS_DIR_URL.'js/underscore-min.js');
-			//			wp_enqueue_script('backbone', WPUS_DIR_URL.'js/backbone-min.js', array('underscore'));
 			wp_enqueue_script('underscore');
 			wp_enqueue_script('backbone');
 			wp_enqueue_script(
@@ -549,16 +547,17 @@ if(!class_exists("WPUltimateSearch")) :
 			($options['highlight_terms'] == 1 ? $highlight = true : $highlight = false);
 
 			$params = array(
-				'ajaxurl'          => admin_url('admin-ajax.php'),
-				'searchNonce'      => wp_create_nonce('search-nonce'),
-				'trackevents'      => $options['track_events'],
-				'eventtitle'       => $options['event_category'],
-				'enabledfacets'    => json_encode($this->get_enabled_facets()),
-				'resultspage'      => get_permalink($options['results_page']),
-				'showfacets'	   => $showfacets,
-				'placeholder'	   => $options['placeholder'],
-				'highlight'		   => $highlight,
-				'radius'		   => $radius
+				'ajaxurl'		=> admin_url('admin-ajax.php'),
+				'searchNonce'   => wp_create_nonce('search-nonce'),
+				'trackevents'   => $options['track_events'],
+				'eventtitle'    => $options['event_category'],
+				'enabledfacets' => json_encode($this->get_enabled_facets()),
+				'resultspage'   => get_permalink($options['results_page']),
+				'showfacets'	=> $showfacets,
+				'placeholder'	=> $options['placeholder'],
+				'highlight'		=> $highlight,
+				'radius'		=> $radius,
+				'remainder'		=> $options['remainder']
 			);
 
 			wp_localize_script('wpus-script', 'wpus_script', $params);
@@ -584,8 +583,6 @@ if(!class_exists("WPUltimateSearch")) :
 			
 			if($mode == "widget" && get_the_ID() == $this->options['results_page'])
 				return;
-			
-			$options = $this->options;
 
 			// RENDER SEARCH FORM
 			return '<div id="search_box_container"><div id="search"><div class="VS-search">

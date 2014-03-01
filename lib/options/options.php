@@ -2,7 +2,7 @@
 /**
  * The Mindshare Options Framework is a flexible, lightweight framework for creating WordPress theme and plugin options screens.
  *
- * @version        2.1
+ * @version        2.1.3
  * @author         Mindshare Studios, Inc.
  * @copyright      Copyright (c) 2013
  * @link           http://www.mindsharelabs.com/documentation/
@@ -323,6 +323,7 @@ if(!class_exists('WPUS_options')) :
 		private function initialize_settings($settings) {
 
 			$options = get_option($this->option_group);
+			$needs_update = false;
 
 			foreach($settings as $id => $setting) {
 
@@ -343,7 +344,8 @@ if(!class_exists('WPUS_options')) :
 					$this->fields[$setting['type']] = true;
 
 				// Set the default value if no option exists
-				if(!isset($options[$id])) {
+				if(!isset($options[$id]) && isset($settings[$id]['std'])) {
+					$needs_update = true;
 					$options[$id] = $settings[$id]['std'];
 				}
 
@@ -368,6 +370,11 @@ if(!class_exists('WPUS_options')) :
 			}
 
 			$this->options = $options;
+
+			// If new options have been added, set their default values
+			if($needs_update) {
+				update_option($this->option_group, $options);
+			}
 
 			return($settings);
 
@@ -749,7 +756,11 @@ if(!class_exists('WPUS_options')) :
 						* "show_field" override
 						*/
 
-						if( has_action('show_field_' . $setting['type'] ) ) {
+						if( has_action('show_field_' . $id ) ) {
+
+							do_action('show_field_' . $id, $id, $setting);
+
+						} elseif( has_action('show_field_' . $setting['type'] ) ) {
 
 							do_action('show_field_' . $setting['type'], $id, $setting);
 

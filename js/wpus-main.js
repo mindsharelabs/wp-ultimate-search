@@ -63,9 +63,7 @@ jQuery(document).ready(function($) {
 	var visualSearch = VS.init({
 		container:  $("#search_box_container"),
 		query:      '',
-		unquotable: [
-			"text"
-		],
+		remainder   : wpus_script.remainder,
 		placeholder : wpus_script.placeholder,
       	showFacets  : wpus_script.showfacets,
 		callbacks:  {
@@ -75,7 +73,7 @@ jQuery(document).ready(function($) {
 
 				// Update routers
 				var searchdata = [];
-				var searchuri = '';
+				var searchuri = 'search/';
 				searchdata = searchCollection.facets();
 				
 				// Build the search URI
@@ -88,8 +86,6 @@ jQuery(document).ready(function($) {
 						searchuri = searchuri + "&";
 					}
 				}
-
-				VS.app.searcher.navigate("/" + searchuri);
 
 				if(!query) {
 					return;
@@ -110,6 +106,9 @@ jQuery(document).ready(function($) {
 				};
 
 				if($("#wpus_response").length > 0) {
+
+					VS.app.searcher.navigate("/" + searchuri);
+
 					$.get(wpus_script.ajaxurl, data, function(response_from_get_results) {
 						spinner.stop();
 						$("#wpus_response").html(response_from_get_results);
@@ -117,8 +116,8 @@ jQuery(document).ready(function($) {
 						
 						if(wpus_script.highlight) {
 							for(var i = 0; i < searchdata.length; i++) {
-								if(searchdata[i]['text']) {
-									var words = searchdata[i]['text'].split(' ');
+								if(searchdata[i][wpus_script.remainder]) {
+									var words = searchdata[i][wpus_script.remainder].split(' ');
 									for (var word in words) {
 										$("#wpus_response").highlight(words[word]);
 									}
@@ -152,9 +151,6 @@ jQuery(document).ready(function($) {
 				}
 			},
 			valueMatches: function(category, searchTerm, callback) {
-				if(category == "text") {
-					return;
-				}
 				var data = {
 					action: "wpus_getvalues",
 					facet:  category
@@ -178,7 +174,7 @@ jQuery(document).ready(function($) {
 
 	VS.utils.Searcher = Backbone.Router.extend({
 		routes: {
-			"*actions": "search"  // matches http://ultimatesearch.mindsharelabs.com/#query
+			"search/:query": "search"  // matches http://ultimatesearch.mindsharelabs.com/#search/query
 		},
 		search: function(query) {
 			
