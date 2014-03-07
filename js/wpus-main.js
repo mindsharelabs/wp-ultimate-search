@@ -112,7 +112,6 @@ jQuery(document).ready(function($) {
 					$.get(wpus_script.ajaxurl, data, function(response_from_get_results) {
 						spinner.stop();
 						$("#wpus_response").html(response_from_get_results);
-						// @todo: make result highlighting less sketchy
 						
 						if(wpus_script.highlight) {
 							for(var i = 0; i < searchdata.length; i++) {
@@ -142,7 +141,6 @@ jQuery(document).ready(function($) {
 							VS.app.searcher.navigate("/" );
 						});
 
-
 						});
 						if(wpus_script.trackevents == true) {
 							_gaq.push(['_trackEvent', wpus_script.eventtitle, 'Submit', searchCollection.serialize(), parseInt(wpus_response.numresults)]);
@@ -167,13 +165,31 @@ jQuery(document).ready(function($) {
 			},
 			facetMatches: function(callback) {
 				var facets = $.parseJSON(wpus_script.enabledfacets.replace(/&quot;/g, '"'));
+				var currentfacets = visualSearch.searchQuery.facets();
 
-				if(facets.length == 1 && wpus_script.single_facet == true) {
+				// If only one facet has been enabled, and "single facet" mode is turned on
+				if(facets.length == 1 && wpus_script.single_facet == true && currentfacets.length > 0) {
 
+                    if(currentfacets[currentfacets.length-1]['category'].length > 0) {
+
+                    	// Add a regular facet to the box
+						visualSearch.searchBox.addFacet(facets[0], '', 99);
+
+					} else {
+
+						// If the last facet in the box is empty, move the cursor to the previous one and open the autocomplete dropdown.
+						visualSearch.searchBox.facetViews[currentfacets.length-1].setCursorAtEnd(-1);
+						visualSearch.searchBox.facetViews[currentfacets.length-1].searchAutocomplete(-1);
+					}
+
+
+				} else if (facets.length == 1 && wpus_script.single_facet == true && currentfacets.length == 0) {
+
+					// First facet being added to the box
 					visualSearch.searchBox.addFacet(facets[0], '', 99);
 
 				} else {
-
+					// If we're only allowing each facet to be used once.
 					if(wpus_script.single_use == 1) {
 						var currentFacets = visualSearch.searchQuery.pluck("category");
 
@@ -185,7 +201,6 @@ jQuery(document).ready(function($) {
 					callback(facets, {
 						preserveOrder: true
 					});
-
 				}
 			}
 		}
@@ -211,14 +226,31 @@ jQuery(document).ready(function($) {
 		        }
 		    });
 
+			// Clear the search box
 			visualSearch.searchBox.value('');
 
+			// For each query parameter, break it into a key/value pair and create a facet
 			$.each(result, function(index, value) {
 				var param = value.split('=');
 				visualSearch.searchBox.addFacet(param[0], param[1], 99);
 			});
 
+			// Execute the search
 			visualSearch.searchBox.searchEvent({});
+
+			// If we're in single facet mode, create a new facet and open the dropdown
+			if(wpus_script.single_facet == true) {
+
+				var facets = $.parseJSON(wpus_script.enabledfacets.replace(/&quot;/g, '"'));
+
+				if(facets.length == 1) {
+					visualSearch.searchBox.addFacet(facets[0], '', 99);
+				}
+			}
+
+			// Move the cursor to the last facet and open the autocomplete dropdown
+			visualSearch.searchBox.facetViews[0].setCursorAtEnd(-1);
+			visualSearch.searchBox.facetViews[0].searchAutocomplete(-1);
 		}
 	});
 	// Initiate the router

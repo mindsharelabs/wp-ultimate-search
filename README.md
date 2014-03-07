@@ -33,6 +33,18 @@ For additional information, [visit our website](http://mindsharelabs.com/)
 
 <h4>Changelog<h4>
 
+v1.5
+------------------------
+* Added ability to search for posts by user
+* Added ability to confine all searches to a single facet
+* Added ability to only allow facets to be used once
+* Added option to disable permalink generation
+* Refactored database query for faster response times
+* Fixed bug where multiple parameters wouldn't be received from permalinks
+* Fixed bug where URL wouldn't reset when 'clear search' was clicked
+* Fixed broken "results page" dropdown
+* Misc. style fixes and normalizing
+
 v1.4.5
 ------------------------
 * Fixed bug with text searches
