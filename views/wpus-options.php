@@ -62,6 +62,7 @@ if(!class_exists('WPUltimateSearchOptions')) {
 			add_action('show_section_metaopts', array($this, 'display_meta_section'), 10, 2);
 			add_action('show_section_typeopts', array($this, 'display_type_section'), 10, 2);
 			add_action('show_field_results_page', array($this, 'show_search_select'), 10, 2);
+			add_action('show_field_user_roles', array($this, 'user_roles'), 10, 2);
 
 			// Field filters
 			add_filter('validate_field_license_key', array($this, 'activate_license'), 20, 2);
@@ -292,6 +293,10 @@ if(!class_exists('WPUltimateSearchOptions')) {
 					'section' => 'general'
 				);
 			}
+
+			/*
+			/ SEARCH BOX
+			*/
 			
 			$this->settings['box_heading'] = array(
 				'section' => 'general',
@@ -302,6 +307,20 @@ if(!class_exists('WPUltimateSearchOptions')) {
 				'title'   => __('Show facets'),
 				'desc'    => __('Show available facets when the search box is first clicked.'),
 				'std'     => 1,
+				'type'    => 'checkbox',
+				'section' => 'general'
+			);
+			$this->settings['single_facet_mode'] = array(
+				'title'   => __('Single Facet Mode'),
+				'desc'    => __('When single facet mode is enabled, the facet selection dialog will be hidden, and the user will get a dropdown of available values on their first click.'),
+				'std'     => 0,
+				'type'    => 'checkbox',
+				'section' => 'general'
+			);
+			$this->settings['single_use'] = array(
+				'title'   => __('Single Use Facets'),
+				'desc'    => __('When this box is checked, a given facet can only be used one time in a search query. After this, the facet will no longer appear as an option.'),
+				'std'     => 0,
 				'type'    => 'checkbox',
 				'section' => 'general'
 			);
@@ -339,7 +358,7 @@ if(!class_exists('WPUltimateSearchOptions')) {
 			$this->settings['remainder'] = array(
 				'title'   => __('Remainder'),
 				'desc'    => __('Text displayed to preface queries which don\'t use a facet.'),
-				'std'     => "Text",
+				'std'     => "text",
 				'type'    => 'text',
 				'section' => 'general'
 			);
@@ -350,6 +369,11 @@ if(!class_exists('WPUltimateSearchOptions')) {
 				'type'    => 'checkbox',
 				'std'     => 0
 			);
+
+			/*
+			/ RADIUS SEARCH
+			*/
+
 			if($this->is_active) {
 				$this->settings['radius_heading'] = array(
 					'section' => 'general',
@@ -379,6 +403,11 @@ if(!class_exists('WPUltimateSearchOptions')) {
 					'section' => 'general'
 				);
 			}
+
+			/*
+			/ SEARCH RESULTS
+			*/
+
 			$this->settings['results_heading'] = array(
 				'section' => 'general',
 				'title'    => 'Search Results',
@@ -455,6 +484,57 @@ if(!class_exists('WPUltimateSearchOptions')) {
 				'type'    => 'text',
 				'section' => 'general'
 			);
+			$this->settings['disable_permalinks'] = array(
+				'title'   => __('Disable Permalinks'),
+				'desc'    => __('By default, Ultimate Search will update the URL in a user\'s browser as they modify their search query. Check this box to disable that functionality.'),
+				'std'     => 0,
+				'type'    => 'checkbox',
+				'section' => 'general'
+			);
+
+			/*
+			/ USER SEARCH
+			*/
+			if($this->is_active) {
+				$this->settings['user_search'] = array(
+					'section' => 'general',
+					'title'    => 'User Search',
+					'type'    => 'heading'
+				);
+
+				$this->settings['enable_user_search'] = array(
+					'section' => 'general',
+					'title'   => __('Enable'),
+					'desc'    => __('Check this box to enable searching by user.'),
+					'type'    => 'checkbox',
+					'std'     => 0
+				);
+				$this->settings['user_label'] = array(
+					'title'   => __('Label'),
+					'desc'    => __('Label to show in the dropdown of available facets.'),
+					'std'     => "user",
+					'type'    => 'text',
+					'section' => 'general'
+				);
+				$this->settings['user_autocomplete'] = array(
+					'section' => 'general',
+					'title'   => __('Autocomplete'),
+					'desc'    => __('Check this box to enable autocomplete for user searches.'),
+					'type'    => 'checkbox',
+					'std'     => 0
+				);
+				$this->settings['enabled_roles'] = array(
+					'section' => 'general',
+					'title'   => __('User Roles'),
+					'desc'    => __('Select the user roles to return in results.'),
+					'type'    => 'user_roles',
+					'std'     => 0
+				);
+			}
+
+			/*
+			/ ANALYTICS SETTINGS
+			*/
 
 			$this->settings['analytics_heading'] = array(
 				'section' => 'general',
@@ -486,13 +566,31 @@ if(!class_exists('WPUltimateSearchOptions')) {
 			);
 		}
 
-		function show_search_select($id, $field) {
+		public function user_roles($id, $field) {
 
-			echo '<div id="' . ($subfield_id ? $subfield_id : $id) . '" class="bfh-selectbox ' . $field['class'] . '" data-name="' . $this->option_group . '[' . $id . ']' . ($subfield_id ? '[' . $subfield_id . ']' : '') . '" data-value="' . ($subfield_id ? $this->options[$id][$subfield_id] : $this->options[$id]) . '" ' . ($field['disabled'] ? 'disabled="true"' : '') . ' data-filter="true" >';
+			global $wp_roles;
+
+			if ( ! isset( $wp_roles ) )
+				$wp_roles = new WP_Roles();
+
+			$roles = $wp_roles->get_names();
+			$options = get_option('wpus_options');
+
+			foreach ($roles as $role_value => $role_name) {
+				echo '<input class="checkbox" id="' . $role_value . '" type="checkbox" name="wpus_options[' . $id . '][' . $role_value . ']" value="1" ' . checked($options[$id][$role_value], 1, FALSE) . ' />';
+				echo '<label for="' . $role_value . '">' . $role_name . '</label><br />';
+			}
+		}
+
+		public function show_search_select($id, $field) {
+
+			$options = get_option('wpus_options');
+
+			echo '<div id="' . $id . '" class="bfh-selectbox ' . $field['class'] . '" data-name="wpus_options[' . $id . ']' . '" data-value="' . $this->options[$id] . '" ' . ($field['disabled'] ? 'disabled="true"' : '') . ' data-filter="true" >';
 
 			foreach($field['choices'] as $value => $label) {
 
-				echo '<div data-value="' . esc_attr($value) . '"' . selected($this->options[$id], $value, FALSE) . '>' . $label . '</div>';
+				echo '<div data-value="' . esc_attr($value) . '"' . selected($options[$id], $value, FALSE) . '>' . $label . '</div>';
 
 			}
 

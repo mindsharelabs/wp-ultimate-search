@@ -97,6 +97,10 @@
 	font-size: 12px;
 }
 
+.settings_page_wpus-options input[type=checkbox]:focus {
+	outline: none;
+}
+
 .table>thead>tr>th, .table>tbody>tr>th, .table>tfoot>tr>th, .table>thead>tr>td, .table>tbody>tr>td, .table>tfoot>tr>td {
 	vertical-align: middle !important;
 	overflow: visible;

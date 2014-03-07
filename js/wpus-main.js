@@ -57,8 +57,6 @@ jQuery(document).ready(function($) {
 		top:       'auto', // Top position relative to parent in px
 		left:      'auto' // Left position relative to parent in px
 	};
-	
-	
 
 	var visualSearch = VS.init({
 		container:  $("#search_box_container"),
@@ -107,7 +105,9 @@ jQuery(document).ready(function($) {
 
 				if($("#wpus_response").length > 0) {
 
-					VS.app.searcher.navigate("/" + searchuri);
+					if(wpus_script.disable_permalinks != 1) {
+						VS.app.searcher.navigate("/" + searchuri);
+					}
 
 					$.get(wpus_script.ajaxurl, data, function(response_from_get_results) {
 						spinner.stop();
@@ -135,9 +135,11 @@ jQuery(document).ready(function($) {
 							e.preventDefault();
 							visualSearch.searchBox.clearSearch('type=keydown');
 							$("#wpus_response").html("");
+							VS.app.searcher.navigate("/" );
 						});
 						$('.VS-icon-cancel').click(function(e) {
 							$("#wpus_response").html("");
+							VS.app.searcher.navigate("/" );
 						});
 
 
@@ -164,10 +166,27 @@ jQuery(document).ready(function($) {
 				});
 			},
 			facetMatches: function(callback) {
-				var json_str = wpus_script.enabledfacets.replace(/&quot;/g, '"');
-				callback($.parseJSON(json_str), {
-					preserveOrder: true
-				});
+				var facets = $.parseJSON(wpus_script.enabledfacets.replace(/&quot;/g, '"'));
+
+				if(facets.length == 1 && wpus_script.single_facet == true) {
+
+					visualSearch.searchBox.addFacet(facets[0], '', 99);
+
+				} else {
+
+					if(wpus_script.single_use == 1) {
+						var currentFacets = visualSearch.searchQuery.pluck("category");
+
+						facets = facets.filter( function( el ) {
+							return currentFacets.indexOf( el ) < 0;
+						});
+					}
+
+					callback(facets, {
+						preserveOrder: true
+					});
+
+				}
 			}
 		}
 	});
@@ -181,22 +200,22 @@ jQuery(document).ready(function($) {
 			if(!query) {
 				return;
 			}
-			var result = {};
+			var result = new Array();
 
 			query = query.replace(/\+/g, ' ');
 
 			$.each(query.split('&'), function(index, value){
 		        if(value){
 		        	value = value.replace('%and','&');
-		            var param = value.split('=');
-		            result[param[0]] = param[1];
+		            result.push(value);
 		        }
 		    });
 
 			visualSearch.searchBox.value('');
 
 			$.each(result, function(index, value) {
-				visualSearch.searchBox.addFacet(index, value, 0);
+				var param = value.split('=');
+				visualSearch.searchBox.addFacet(param[0], param[1], 99);
 			});
 
 			visualSearch.searchBox.searchEvent({});

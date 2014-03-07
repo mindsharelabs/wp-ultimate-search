@@ -153,7 +153,7 @@
 .VS-search .VS-icon-cancel {
 	position: absolute;
 	right: 9px;
-	top: 8px;
+	top: 9px;
 }
 .VS-cancel-search-box.hidden {
 	display: none;
@@ -213,7 +213,18 @@
 	padding: 0 3px 0 5px;
 	border: none;
 	outline: none;
+	-webkit-box-shadow: none;
+	box-shadow: none;
+	-moz-box-shadow: none;
 }
+.VS-search .search_facet input:focus {
+	border: none;
+	outline: none;
+	-webkit-box-shadow: none;
+	box-shadow: none;
+	-moz-box-shadow: none;
+}
+
 .VS-search .search_facet.is_editing input,
 .VS-search .search_facet.is_selected input {
 	color: #000;
@@ -224,7 +235,7 @@
 .VS-search .search_facet .search_facet_remove {
 	position: absolute;
 	left: 0;
-	top: 4px;
+	top: 5px;
 }
 .VS-search .search_facet.is_selected .search_facet_remove {
 	opacity: 0.4;
@@ -267,8 +278,15 @@
 	border: none;
 	outline: 0;
 	-webkit-box-shadow: none;
-	-moz-box-shadow: none;
 	box-shadow: none;
+	-moz-box-shadow: none;
+}
+.VS-search .search_input input:focus {
+	border: none;
+	outline: none;
+	-webkit-box-shadow: none;
+	box-shadow: none;
+	-moz-box-shadow: none;
 }
 .VS-search .search_input.is_editing input {
 	color: #202020;
@@ -353,6 +371,14 @@
 .VS-interface.ui-autocomplete li {
 	list-style: none;
 	width: auto;
+}
+
+.single-facet .VS-search .VS-search-inner .search_facet .category, .single-facet .VS-search .VS-search-inner .search_facet .VS-icon-cancel {
+	display: none;
+}
+
+.single-facet .VS-search .VS-search-inner .search_facet {
+	padding-left: 0px;
 }
 
 .wpus-no-results {

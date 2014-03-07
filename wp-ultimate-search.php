@@ -3,7 +3,7 @@
 Plugin Name: WP Ultimate Search
 Plugin URI: http://ultimatesearch.mindsharelabs.com
 Description: Advanced faceted AJAX search and filter utility.
-Version: 1.4.5
+Version: 1.5
 Author: Mindshare Studios, Inc.
 Author URI: http://mindsharelabs.com/
 */
@@ -295,7 +295,7 @@ if(!class_exists("WPUltimateSearch")) :
 		 *
 		 * @internal param $resultsarray
 		 */
-		protected function print_results($results, $keywords, $location) {
+		protected function print_results($wpus_results, $keywords, $location) {
 			
 			ob_start();
 
@@ -306,7 +306,7 @@ if(!class_exists("WPUltimateSearch")) :
 			}
 			// if we're tracking searches as analytics events, pass the number of search results back to main.js
 			if(wpus_option('track_events')) {
-				$this->ajax_response('numresults', count($results));
+			//	$this->ajax_response('numresults', count($results));
 			}
 
 			echo ob_get_clean();
@@ -369,6 +369,10 @@ if(!class_exists("WPUltimateSearch")) :
 
 			if(isset($options['radius']) && $options['radius'] != false) {
 				$enabled_facets[] = $options['radius_label'];
+			}
+
+			if(isset($options['enable_user_search']) && $options['enable_user_search'] != false) {
+				$enabled_facets[] = $options['user_label'];
 			}
 
 			return $enabled_facets;
@@ -480,6 +484,8 @@ if(!class_exists("WPUltimateSearch")) :
 			if(isset($options['radius_label']) && $facet == $options['radius_label'])
 				return "radius";
 
+			if(isset($options['user_label']) && $facet == $options['user_label'])
+				return "user";
 
 			if(isset($options['taxonomies'])) {
 				foreach($options['taxonomies'] as $taxonomy => $value) {
@@ -557,7 +563,10 @@ if(!class_exists("WPUltimateSearch")) :
 				'placeholder'	=> $options['placeholder'],
 				'highlight'		=> $highlight,
 				'radius'		=> $radius,
-				'remainder'		=> $options['remainder']
+				'remainder'		=> $options['remainder'],
+				'single_facet'	=> $options['single_facet_mode'],
+				'disable_permalinks'	=> $options['disable_permalinks'],
+				'single_use'	=> $options['single_use']
 			);
 
 			wp_localize_script('wpus-script', 'wpus_script', $params);
@@ -584,13 +593,20 @@ if(!class_exists("WPUltimateSearch")) :
 			if($mode == "widget" && get_the_ID() == $this->options['results_page'])
 				return;
 
+			$class = '';
+
+			if($this->options['single_facet_mode'] == true)
+				$class = "single-facet";
+
 			// RENDER SEARCH FORM
-			return '<div id="search_box_container"><div id="search"><div class="VS-search">
+			echo '<div id="search_box_container" class="' . $class . '"><div id="search"><div class="VS-search">
 			  <div class="VS-search-box-wrapper VS-search-box">
 			    <div class="VS-icon VS-icon-search"></div>
 			    <div class="VS-icon VS-icon-cancel VS-cancel-search-box" title="clear search"></div>
 			  </div>
 			</div></div></div>';
+
+			return;
 		}
 
 		/**
@@ -689,6 +705,27 @@ if(!class_exists("WPUltimateSearch")) :
 					}
 					echo json_encode($values);
 					die();
+
+				case "user" :
+
+					if(isset($options['user_autocomplete']) && $options['user_autocomplete'] != false) {
+
+						$roles = $options['enabled_roles'];
+
+						foreach($roles as $role => $enabled) {
+
+							$users = get_users('role='.$role);
+
+							foreach($users as $user) {
+								$values[] = html_entity_decode($user->display_name);
+							}
+						}
+
+						echo json_encode($values);
+
+					}
+
+					die();
 			}
 		}
 
@@ -728,113 +765,95 @@ if(!class_exists("WPUltimateSearch")) :
 		 */
 		public function execute_query_basic($searcharray) {
 
-			global $wpdb; // load the database wrapper
+			$radius = null;
 
 			foreach($searcharray as $index) { // iterate through the search query array and separate the taxonomies into their own array
 				foreach($index as $facet => $data) {
 					$facet = esc_sql($facet);
+					if($facet == "tag") {
+						$facet = "post_tag";
+					}
 
 					$type = $this->determine_facet_type($facet); // determine if we're dealing with a taxonomy or a metafield
 
 					switch($type) {
 						case "text" :
-							$keywords = $this->string_to_keywords($data);
+							$keywords = $data;
 							break;
 						case "taxonomy" :
 							$facet = $this->get_taxonomy_name($facet);
 							$data = preg_replace('/_/', " ", $data); // in case there are underscores in the value (from a permalink), remove them
-							$taxonomies[$facet][] = $data;
+							$term = get_term_by('name', $data, $facet);
+							if($term != false) {
+								$taxonomies[$facet][] = $term->term_id;
+							}
 							break;
 						case "metafield" :
-							echo "I'm sorry but WP Ultimate Search Pro is currently not installed, configured incorrectly, or the plugin is disabled.";
+							echo "I'm sorry, but WP Ultimate Search Pro is either not installed or inactive. Please activate the plugin and try again.";
+							die();
+							break;
+						case "radius" :
+							echo "I'm sorry, but WP Ultimate Search Pro is either not installed or inactive. Please activate the plugin and try again.";
+							die();
+						case "user" :
+							echo "I'm sorry, but WP Ultimate Search Pro is either not installed or inactive. Please activate the plugin and try again.";
 							die();
 					}
 				}
 			}
-			// @todo would be nice if we could somehow iterate through to find the first matching keyword instead of just checking $keywords[0]
-			$querystring = "
-			SELECT *,
-			substring(post_content, ";
-			if(isset($keywords)) { // if there are keywords, locate them and return a 200 character excerpt beginning 80 characters before the keyword
-				$keywords = esc_sql($keywords); // Sanitize the keywords parameters to prevent sql injection attacks
-				$querystring .= "
-					case 
-						 when locate('$keywords[0]', lower(post_content)) <= 80 then 1
-			             else locate('$keywords[0]', lower(post_content)) - 80
-			        end,";
-			} else { // if there aren't any keywords, just return the first 200 characters of the post
-				$querystring .= "1,";
-			}
-			$querystring .= "200)
-			AS excerpt
-			FROM $wpdb->posts ";
-			if(isset($taxonomies)) {
-				$i = 0;
-				foreach($taxonomies as $taxonomy) {
-					foreach($taxonomy as $taxonomy => $term) {
-						// For each term, set up a join between the terms and taxonomies table, so that we can later use WHERE term0 = x AND tax0 = y
-						$querystring .= "
-						LEFT JOIN $wpdb->term_relationships AS rel".$i." ON($wpdb->posts.ID = rel".$i.".object_id)
-						LEFT JOIN $wpdb->term_taxonomy AS tax".$i." ON(rel".$i.".term_taxonomy_id = tax".$i.".term_taxonomy_id)
-						LEFT JOIN $wpdb->terms AS term".$i." ON(tax".$i.".term_id = term".$i.".term_id) ";
-						$i++;
-					}
-				}
-			}
-			$querystring .= "WHERE "; // the SELECT part of the query told us *what* to grab, the WHERE part tells us which posts to grab it from
-			// if there are keywords, select posts where any of the keywords appear in either the title or post body
-			if(isset($keywords)) {
-				for($i = 0; $i < count($keywords); $i++) {
-					$querystring .= "(lower(post_content) LIKE '%{$keywords[$i]}%' ";
-					$querystring .= "OR lower(post_title) LIKE '%{$keywords[$i]}%') ";
-					if($i < count($keywords) - 1) {
-						$querystring .= "AND ";
-					}
-				}
-			}
-			if(isset($keywords) && isset($taxonomies)) {
-				$querystring .= "AND ";
-			} // if there were keywords, and there are taxonomies, insert an AND between the two sections
-			$i = 0;
-			$t = 0;
-			if(isset($taxonomies)) {
-				foreach($taxonomies as $taxname => $tax) { // for each taxonomy, check to see if there are any matches from within the comma-separated list of terms
-					if($i > 0) {
-						$querystring .= "AND ";
-					}
-					$n = 0;
-					foreach($tax as $taxonomy => $term) {
-						$taxstring = key($taxonomies);
-						if($n > 0) {
-							// For each iteration of the taxonomy query, check whether a user has specified AND or OR logic in the preferences
-							if(isset($this->options['and_or'])) {
-								if($this->options['and_or'] == "and") {
-									$querystring .= "AND ";		
-								} else {
-									$querystring .= "OR ";
-								}
-							} else {
-								$querystring .= "OR ";
-							}
-						}
-						$querystring .= "(term".$t.".name = '".$term."' ";
-						$querystring .= "AND tax".$t.".taxonomy = '".$taxname."') ";
-						$n++;
-						$t++;
-					}
-					$i++;
-				}
-			}
-			$querystring .= "
-			AND $wpdb->posts.post_status = 'publish' GROUP BY $wpdb->posts.ID"; // exclude drafts, scheduled posts, etc
 
-			//echo $querystring; $wpdb->show_errors(); 		// for debugging, you can echo the completed query string and enable error reporting before it's executed
+			$query = array(
+				'posts_per_page'	=> -1,
+				'post_status'		=> 'publish',
+				'post_type'			=> array('post', 'page')
+			);
+
+			// Text search
+			if(isset($keywords)) {
+
+				$query['s'] = $keywords;
+
+			}
+
+			// Taxonomy search
+			if(isset($taxonomies)) {
+
+				$query['tax_query'] = array();
+
+				if($this->options['and_or'] == "and" && count($taxonomies) > 1) {
+					$query['tax_query']['relation'] = "AND";
+				} elseif ($this->options['and_or'] == "or" && count($taxonomies) > 1) {
+					$query['tax_query']['relation'] = "OR";
+				}
+
+
+				foreach($taxonomies as $taxonomy => $terms) {
+
+					$query['tax_query'][] = array(
+						'taxonomy'	=> $taxonomy,
+						'terms'		=> $terms
+					);
+
+				}
+			}
+
+			$wpus_results = new WP_Query( $query );
 
 			if(!isset($keywords)) {
 				$keywords = NULL;
 			}
 
-			$this->print_results($wpdb->get_results($querystring, OBJECT), $keywords, $location = null); // format and output the search results
+			$location_arr = array();
+
+			if(isset($this->options['radius']) && $this->options['radius'] != false && isset($location)) {
+				$results = $this->filter_radius($results, $location, $radius);
+				$location_arr['address'] = $location[0];
+				$location_arr['lat'] = $location[1];
+				$location_arr['lng'] = $location[2];
+				$location_arr['radius'] = $radius;
+			}
+
+			$this->print_results($wpus_results, $keywords, $location_arr); // format and output the search results
 
 			die(); // wordpress may print out a spurious zero without this - can be particularly bad if using json
 		}

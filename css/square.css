@@ -146,6 +146,7 @@
 	position: relative;
 	margin: 0 20px 0 28px;
 	overflow: hidden;
+	min-height: 28px;
 }
 .VS-search input {
 	width: 100px;
@@ -182,7 +183,7 @@
 	position: relative;
 	border: 1px solid transparent;
 	height: 20px;
-	margin: 3px;
+	margin: 2px;
 	overflow: visible;
 }
 .VS-search .search_facet.is_selected {
@@ -199,7 +200,7 @@
 	padding: 8px 0 5px;
 	line-height: 13px;
 	cursor: pointer;
-	padding: 4px 0 0;
+	padding: 5px 0 0;
 }
 .VS-search .search_facet.is_selected .category {
 	margin-left: 3px;
@@ -209,18 +210,29 @@
 }
 .VS-search .search_facet input {
 	margin: 0;
-	padding: 0;
 	color: #000;
 	font-size: 13px;
-	line-height: 21px;
-	height: 18px;
+	line-height: 22px;
+	height: 24px;
 	width: auto;
 	z-index: 100;
 	position: relative;
 	padding: 0 3px 0 5px;
 	border: none;
 	outline: none;
+	-webkit-box-shadow: none;
+	box-shadow: none;
+	-moz-box-shadow: none;
 }
+
+.VS-search .search_facet input:focus {
+	border: none;
+	outline: none;
+	-webkit-box-shadow: none;
+	box-shadow: none;
+	-moz-box-shadow: none;
+}
+
 .VS-search .search_facet.is_editing input,
 .VS-search .search_facet.is_selected input {
 	color: #666;
@@ -233,7 +245,7 @@
 .VS-search .search_facet .search_facet_remove {
 	position: absolute;
 	left: 2px;
-	top: 0px;
+	top: 1px;
 }
 .VS-search .search_facet.is_selected .search_facet_remove {
 	opacity: 0.4;
@@ -258,26 +270,39 @@
 /* ================ */
 
 .VS-search .search_input {
-	height: 28px;
+	height: 20px;
 	float: left;
-	margin-left: -1px;
+	margin: 2px;
 	display: none;
+	border: 1px solid rgba(0, 0, 0, 0);
 }
 .VS-search .search_input:last-child {
 	display: block;
 }
 .VS-search .search_input input {
-	padding: 4px 3px 6px 2px;
-	line-height: 20px;
+	margin: 0;
+	color: rgb(0, 0, 0);
+	font-size: 13px;
+	line-height: 22px;
+	height: 24px;
+	width: auto;
 	z-index: 100;
-	min-width: 20px;
 	position: relative;
+	padding: 0 3px 0 5px;
 	border: none;
-	outline: 0;
+	outline: none;
 	-webkit-box-shadow: none;
-	-moz-box-shadow: none;
 	box-shadow: none;
+	-moz-box-shadow: none;
 }
+.VS-search .search_input input:focus {
+	border: none;
+	outline: none;
+	-webkit-box-shadow: none;
+	box-shadow: none;
+	-moz-box-shadow: none;
+}
+
 .VS-search .search_input.is_editing input {
 	color: #202020;
 }
@@ -350,6 +375,14 @@
 	width: auto;
 }
 
+.single-facet .VS-search .VS-search-inner .search_facet .category, .single-facet .VS-search .VS-search-inner .search_facet .VS-icon-cancel {
+	display: none;
+}
+
+.single-facet .VS-search .VS-search-inner .search_facet {
+	padding-left: 0px;
+}
+
 .wpus-no-results {
 	width: 100%;
 	text-align: center;
@@ -358,3 +391,4 @@
 .pac-container {
 	margin-top: 7px;
 }
+

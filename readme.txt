@@ -4,7 +4,7 @@ Donate link: http://mind.sh/are/donate/
 Tags: search, ajax, metadata, meta, post meta, autocomplete, jquery, facet, faceted search, faceting, advanced custom fields, acf, taxonomy, taxonomies, term, terms, facets, geo, wp-geo, radius, latitude, longitude, location
 Requires at least: 3.4.1
 Tested up to: 3.8.1
-Stable tag: 1.4.5
+Stable tag: 1.5
  
 Powerful AJAX-based search alternative which supports faceting queries by taxonomies, terms, location, and post metadata.
 
@@ -92,6 +92,17 @@ Help documents and support forums are available at [Mindshare Labs](http://minds
 
 
 == Changelog ==
+
+= 1.5 =
+* Added ability to search for posts by user
+* Added ability to confine all searches to a single facet
+* Added ability to only allow facets to be used once
+* Added option to disable permalink generation
+* Refactored database query for faster response times
+* Fixed bug where multiple parameters wouldn't be received from permalinks
+* Fixed bug where URL wouldn't reset when 'clear search' was clicked
+* Fixed broken "results page" dropdown
+* Misc. style fixes and normalizing
 
 = 1.4.5 =
 * Fixed bug with text searches
