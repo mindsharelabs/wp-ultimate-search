@@ -33,6 +33,12 @@ For additional information, [visit our website](http://mindsharelabs.com/)
 
 <h4>Changelog<h4>
 
+v1.5.1
+------------------------
+* Values will no longer appear in dropdown if they're already in use in the search bar
+* Fixed shortcode outputting contents at top of page
+* Value dropdown will no longer appear when navigating to results page via permalink
+
 v1.5
 ------------------------
 * Added ability to search for posts by user

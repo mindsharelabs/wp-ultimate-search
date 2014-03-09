@@ -157,7 +157,22 @@ jQuery(document).ready(function($) {
 				};
 				$.get(wpus_script.ajaxurl, data, function(response_from_get_values) {
 					if(response_from_get_values) {
-						callback($.parseJSON(response_from_get_values), {
+						response_from_get_values = $.parseJSON(response_from_get_values);
+
+						// Don't display a value if it's already in use in the search collection
+						$.each( visualSearch.searchQuery.facets(), function( key, value ) {
+							$.each( value, function( key, value ) {
+
+								if(key == category) {
+									response_from_get_values = $.grep(response_from_get_values, function(val) {
+										return val != value;
+									});
+								}
+
+							});
+						});
+
+						callback(response_from_get_values, {
 							preserveOrder: true
 						});
 					}
@@ -250,7 +265,6 @@ jQuery(document).ready(function($) {
 
 			// Move the cursor to the last facet and open the autocomplete dropdown
 			visualSearch.searchBox.facetViews[0].setCursorAtEnd(-1);
-			visualSearch.searchBox.facetViews[0].searchAutocomplete(-1);
 		}
 	});
 	// Initiate the router
