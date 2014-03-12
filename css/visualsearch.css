@@ -123,6 +123,7 @@
 	position: absolute;
 	margin: 8px 20px 0 28px;
 	color: #808080;
+	z-index: 1;
 }
   .VS-search .VS-search-box.VS-focus .VS-placeholder, .VS-hidden {
       display: none;
