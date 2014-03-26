@@ -33,6 +33,14 @@ For additional information, [visit our website](http://mindsharelabs.com/)
 
 <h4>Changelog<h4>
 
+v1.5.2
+------------------------
+* Added cancel button next to facets in single facet mode
+* Dropdown menu no longer appears in wrong location when facets are deleted
+* "AND" logic now works correctly again
+* Fixed bug where meta field options wouldn't display properly
+* Fixed bug caused by using Single Facet Mode with a metadata facet
+
 v1.5.1
 ------------------------
 * Values will no longer appear in dropdown if they're already in use in the search bar

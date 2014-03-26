@@ -3,7 +3,7 @@
 Plugin Name: WP Ultimate Search
 Plugin URI: http://ultimatesearch.mindsharelabs.com
 Description: Advanced faceted AJAX search and filter utility.
-Version: 1.5.1
+Version: 1.5.2
 Author: Mindshare Studios, Inc.
 Author URI: http://mindsharelabs.com/
 */
@@ -30,7 +30,6 @@ Author URI: http://mindsharelabs.com/
  * @todo      use WPUS_PLUGIN_SLUG
  * @todo      replace all class_exists('WPUltimateSearchPro') with better mechanism for testing pro
  * @todo      move all pro functions out of options page php file into this one
- * @todo      setup auto remote install + acivation
  */
 
 /* CONSTANTS */
@@ -688,17 +687,19 @@ if(!class_exists("WPUltimateSearch")) :
 
 					global $wpdb;
 
+					// get the values from post_meta where the meta key matches the search facet...
 					$querystring = "
 						SELECT pm.meta_value as value FROM {$wpdb->postmeta} pm
 						WHERE pm.meta_key LIKE '{$facet}'
-						ORDER BY value DESC"; // get the values from post_meta where the meta key matches the search facet...
+						GROUP BY value
+						ORDER BY value DESC";
 					// this will be cached, eventually
 					$results = $wpdb->get_results($querystring);
 
 					foreach($results as $key) {
 						if(!empty($key->value)) { // for some reason, $results sometimes returns zero-length strings as keys, so this filters them out
 							$formatted_value = $this->format_meta_by_type($facet, $key->value);
-							$values[strtolower($formatted_value)] = $formatted_value;
+							$values[] = $formatted_value;
 						}
 					}
 					echo json_encode($values);
@@ -818,18 +819,28 @@ if(!class_exists("WPUltimateSearch")) :
 
 				$query['tax_query'] = array();
 
-				if($this->options['and_or'] == "and" && count($taxonomies) > 1) {
+				// Create an AND relation between different taxonomies
+				if(count($taxonomies) > 1)
 					$query['tax_query']['relation'] = "AND";
-				} elseif ($this->options['and_or'] == "or" && count($taxonomies) > 1) {
-					$query['tax_query']['relation'] = "OR";
-				}
-
 
 				foreach($taxonomies as $taxonomy => $terms) {
 
+					// By default, use an OR operation on terms w/in the same taxonomy
+					$operator = "IN";
+					$include_children = true;
+
+					if(count($terms) > 1) {
+						if ( $this->options['and_or'] == "and" ) {
+							$operator = "AND";
+							$include_children = false;
+						}
+					}
+
 					$query['tax_query'][] = array(
-						'taxonomy'	=> $taxonomy,
-						'terms'		=> $terms
+						'taxonomy'	        => $taxonomy,
+						'terms'		        => $terms,
+						'operator'          => $operator,
+						'include_children'  => $include_children
 					);
 
 				}

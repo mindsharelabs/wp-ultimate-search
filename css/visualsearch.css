@@ -123,7 +123,7 @@
 	position: absolute;
 	margin: 8px 20px 0 28px;
 	color: #808080;
-	z-index: 1;
+	z-index: 2;
 }
   .VS-search .VS-search-box.VS-focus .VS-placeholder, .VS-hidden {
       display: none;
@@ -170,7 +170,7 @@
 	position: relative;
 	border: 1px solid transparent;
 	height: 22px;
-	margin: 3px -3px 1px 8px;
+	margin: 3px -3px 1px 0px;
 	overflow: visible;
 }
 .VS-search .search_facet.is_selected {
@@ -263,18 +263,17 @@
 .VS-search .search_input {
 	height: 22px;
 	float: left;
-	margin-left: -1px;
-	display: none;
-	margin: 3px -3px 3px 8px;
+	margin: 3px 0px;
 }
 .VS-search .search_input:last-child {
 	display: block;
 }
 .VS-search .search_input input {
-	padding: 2px 3px 2px 2px;
+	padding: 2px 0;
 	line-height: 20px;
 	z-index: 100;
-	min-width: 20px;
+	width: 8px;
+	min-width: 4px;
 	position: relative;
 	border: none;
 	outline: 0;
@@ -374,11 +373,19 @@
 	width: auto;
 }
 
-.single-facet .VS-search .VS-search-inner .search_facet .category, .single-facet .VS-search .VS-search-inner .search_facet .VS-icon-cancel {
+.single-facet .VS-search .VS-search-inner .search_facet .category {
+	display: none;
+}
+
+.single-facet .VS-search .VS-search-inner .search_facet:nth-last-child(2) .VS-icon-cancel {
 	display: none;
 }
 
 .single-facet .VS-search .VS-search-inner .search_facet {
+	padding-left: 10px;
+}
+
+.single-facet .VS-search .VS-search-inner .search_facet:nth-last-child(2) {
 	padding-left: 0px;
 }
 

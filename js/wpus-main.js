@@ -185,7 +185,9 @@ jQuery(document).ready(function($) {
 				// If only one facet has been enabled, and "single facet" mode is turned on
 				if(facets.length == 1 && wpus_script.single_facet == true && currentfacets.length > 0) {
 
-                    if(currentfacets[currentfacets.length-1]['category'].length > 0) {
+					var lastfacet = currentfacets[currentfacets.length-1];
+
+					if(lastfacet[Object.keys(lastfacet)[0]].length > 0) {
 
                     	// Add a regular facet to the box
 						visualSearch.searchBox.addFacet(facets[0], '', 99);
@@ -262,9 +264,6 @@ jQuery(document).ready(function($) {
 					visualSearch.searchBox.addFacet(facets[0], '', 99);
 				}
 			}
-
-			// Move the cursor to the last facet and open the autocomplete dropdown
-			visualSearch.searchBox.facetViews[0].setCursorAtEnd(-1);
 		}
 	});
 	// Initiate the router

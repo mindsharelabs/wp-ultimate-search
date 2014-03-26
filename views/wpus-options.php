@@ -170,6 +170,11 @@ if(!class_exists('WPUltimateSearchOptions')) {
 
 			$this->is_active = true;
 
+			foreach($input['metafields'] as $metafield) {
+				if($metafield['type'] == "radius")
+					$input['radius'] = $metafield['label'];
+			}
+
 			return $input;
 
 		}
