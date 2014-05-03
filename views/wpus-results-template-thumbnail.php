@@ -3,7 +3,8 @@
 	
 	<?php while ( $wpus_results->have_posts() ) : $wpus_results->the_post(); ?>
 
-		<div class="post" id="post-<?php the_ID(); ?>">
+		<div class="post" id="post-<?php the_ID('clearfix'); ?>">
+			<?php the_post_thumbnail('thumbnail', array('class' => 'alignleft')) ?>
 			<h2><a href="<?php the_permalink() ?>" rel="bookmark" title="Permanent Link to <?php the_title(); ?>"><?php the_title(); ?></a></h2>
 			<div class="entry">
 				<?php the_excerpt(); ?>
@@ -13,6 +14,8 @@
 				<?php comments_popup_link('No Comments »', '1 Comment »', '% Comments »'); ?>
 			</p>
 		</div>
+
+		<div style="clear:both;"></div>
 		
 	<?php endwhile; ?>
 	

@@ -217,3 +217,5 @@ pip-log.txt
 #mindshare added
 *.svn
 *.idea
+*.sublime-project
+*.sublime-workspace

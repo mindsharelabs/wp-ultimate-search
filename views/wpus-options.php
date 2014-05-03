@@ -454,6 +454,21 @@ if(!class_exists('WPUltimateSearchOptions')) {
 				'section' => 'general'
 			);
 
+
+			$this->settings['results_template'] = array(
+				'title'   => __('Search results template'),
+				'desc'    => __('Select a template for search results. <a href="http://mindsharelabs.com/kb/how-do-i-customize-the-search-results-template/" target="_BLANK">Custom templates</a> will override this section.'),
+				'choices' => array(
+							'default'	=> 'Default results template',
+							'thumbnail'	=> 'Results with featured image thumbnails',
+							'titles'	=> 'Post titles only',
+							'images'	=> 'Featured images only'
+				),
+				'std'	  => 'default', 
+				'type'    => 'select',
+				'section' => 'general'
+			);
+
 			$this->settings['no_results_msg'] = array(
 				'title'   => __('"No results" message'),
 				'desc'    => __('Customize the message displayed when no results are found.'),
@@ -485,7 +500,7 @@ if(!class_exists('WPUltimateSearchOptions')) {
 			$this->settings['clear_search_class'] = array(
 				'title'   => __('Button CSS class'),
 				'desc'    => __('Apply a CSS class to match your theme.'),
-				'std'     => 'btn btn-default',
+				'std'     => 'btn btn-default btn-sm',
 				'type'    => 'text',
 				'section' => 'general'
 			);
@@ -654,10 +669,10 @@ if(!class_exists('WPUltimateSearchOptions')) {
 						<div class="tooltip" title="Set a maximum number of terms to load in the autocomplete dropdown. Use '0' for unlimited."></div>
 					</th>
 					<th>Exclude
-						<div class="tooltip" title="Comma-separated list of term names to exclude from autocomplete. If the term contains spaces, wrap it in quotation marks."></div>
+						<div class="tooltip" title="Comma-separated list of term IDs to exclude from autocomplete. Child terms will be excluded as well."></div>
 					</th>
 					<th>Include
-						<div class="tooltip" title="Comma-separated list of term names to include in autocomplete, all other terms will be excluded. If the term contains spaces, wrap it in quotation marks."></div>
+						<div class="tooltip" title="Comma-separated list of term IDs to include in autocomplete, all other terms will be excluded. Child terms will be included as well."></div>
 					</th>
 					<th>Autocomplete
 						<div class="tooltip" title="Whether or not to autocomplete values typed into this field."></div>
@@ -815,6 +830,8 @@ if(!class_exists('WPUltimateSearchOptions')) {
 								<div data-value="string" <?php echo selected($options["metafields"][$metafield]["type"], "string", FALSE) ?> >String</div>
 								<div data-value="checkbox" <?php echo selected($options["metafields"][$metafield]["type"], "checkbox", FALSE) ?> >Checkbox</div>
 								<div data-value="combobox" <?php echo selected($options["metafields"][$metafield]["type"], "combobox", FALSE) ?> >Combobox</div>
+								<div data-value="true-false" <?php echo selected($options["metafields"][$metafield]["type"], "true-false", FALSE) ?> >True/False</div>
+								<div data-value="date" <?php echo selected($options["metafields"][$metafield]["date"], "date", FALSE) ?> >Date</div>
 								<div data-value="geo" <?php echo selected($options["metafields"][$metafield]["type"], "geo", FALSE) ?> >ACF Map</div>
 								<div data-value="radius" <?php echo selected($options["metafields"][$metafield]["type"], "radius", FALSE) ?> >Radius</div>
 							</div>

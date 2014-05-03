@@ -33,6 +33,18 @@ For additional information, [visit our website](http://mindsharelabs.com/)
 
 <h4>Changelog<h4>
 
+v1.6
+------------------------
+* Added built in custom results templates (post with thumbnail, title only, thumbnail only)
+* Added ability to override default settings via shortcode / template tag
+* Added support for ACF date field
+* Added support for ACF true/false field
+* Fixed bug with AND logic and hierarchical taxonomies
+* Fixed cursor not appearing on initial search bar focus in Square style
+* Fixed bug where clicking on placeholder text would prevent search
+* Changed "include" and "exclude" fields to require term IDs instead of names
+* Continuing style refinements
+
 v1.5.2
 ------------------------
 * Added cancel button next to facets in single facet mode
