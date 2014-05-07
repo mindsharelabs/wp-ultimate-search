@@ -33,6 +33,10 @@ For additional information, [visit our website](http://mindsharelabs.com/)
 
 <h4>Changelog<h4>
 
+v1.6.1
+------------------------
+* Fixed missing argument bug in widget
+
 v1.6
 ------------------------
 * Added built in custom results templates (post with thumbnail, title only, thumbnail only)

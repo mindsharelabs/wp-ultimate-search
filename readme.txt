@@ -93,6 +93,9 @@ Help documents and support forums are available at [Mindshare Labs](http://minds
 
 == Changelog ==
 
+= 1.6.1 =
+* Fixed missing argument bug in widget
+
 = 1.6 =
 * Added built in custom results templates (post with thumbnail, title only, thumbnail only)
 * Added ability to override default settings via shortcode / template tag

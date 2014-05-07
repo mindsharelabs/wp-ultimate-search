@@ -1032,9 +1032,9 @@ if(class_exists("WPUltimateSearch")) {
 	 * wp_ultimate_search_bar
 	 *
 	 */
-	function wp_ultimate_search_bar($mode = null) {
+	function wp_ultimate_search_bar($atts = null) {
 		global $wp_ultimate_search;
-		echo $wp_ultimate_search->search_form();
+		echo $wp_ultimate_search->search_form($atts);
 	}
 
 	/**

@@ -37,7 +37,10 @@ if(!class_exists('WPUltimateSearchWidget')) :
 			if(!empty($title)) {
 				echo $before_title.$title.$after_title;
 			}
-			wp_ultimate_search_bar($atts['widget'] = true);
+
+			$atts = array('widget' => true);
+
+			wp_ultimate_search_bar($atts);
 			echo $after_widget;
 		}
 
