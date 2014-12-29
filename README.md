@@ -7,8 +7,6 @@ Powerful AJAX-based search alternative which supports faceting queries by taxono
 
 WP Ultimate Search: a highly customizable WordPress search alternative with the ability to autocomplete [faceted search queries](http://en.wikipedia.org/wiki/Faceted_search).
 
-Try a [demo](http://ultimatesearch.mindsharelabs.com/).
-
 <h4>Features</h4>
 
 * Searches post title and body content
@@ -16,12 +14,12 @@ Try a [demo](http://ultimatesearch.mindsharelabs.com/).
 * Highlights search terms in results
 * Option to send search queries as events to your Google Analytics account
 * Facets by post category
-* Can search in multiple categories (OR search)
+* Can search in multiple categories (OR or AND search)
 * Category options are dynamically generated and autocompleted as you type
 * Attractive and lightweight interface based on jQuery, Backbone.js, and the VisualSearch.js library
 * Customizable results template using standard WordPress functions
-
-Premium version now supports the ability to search through an unlimited number of user-specified taxonomies and meta fields (including data contained in Advanced Custom Fields)
+* Search through an unlimited number of user-specified taxonomies and meta fields (including data contained in Advanced Custom Fields).
+* Conduct radius searches against data stored in the ACF Map field (i.e. search for posts within x km of a user-specified location).
 
 <h4>Installation</h4>
 
@@ -33,11 +31,11 @@ For additional information, [visit our website](http://mindsharelabs.com/)
 
 <h4>Changelog<h4>
 
-v1.6.1
+1.6.1
 ------------------------
 * Fixed missing argument bug in widget
 
-v1.6
+1.6
 ------------------------
 * Added built in custom results templates (post with thumbnail, title only, thumbnail only)
 * Added ability to override default settings via shortcode / template tag
@@ -49,7 +47,7 @@ v1.6
 * Changed "include" and "exclude" fields to require term IDs instead of names
 * Continuing style refinements
 
-v1.5.2
+1.5.2
 ------------------------
 * Added cancel button next to facets in single facet mode
 * Dropdown menu no longer appears in wrong location when facets are deleted
@@ -57,13 +55,13 @@ v1.5.2
 * Fixed bug where meta field options wouldn't display properly
 * Fixed bug caused by using Single Facet Mode with a metadata facet
 
-v1.5.1
+1.5.1
 ------------------------
 * Values will no longer appear in dropdown if they're already in use in the search bar
 * Fixed shortcode outputting contents at top of page
 * Value dropdown will no longer appear when navigating to results page via permalink
 
-v1.5
+1.5
 ------------------------
 * Added ability to search for posts by user
 * Added ability to confine all searches to a single facet
@@ -75,11 +73,11 @@ v1.5
 * Fixed broken "results page" dropdown
 * Misc. style fixes and normalizing
 
-v1.4.5
+1.4.5
 ------------------------
 * Fixed bug with text searches
 
-v1.4.4
+1.4.4
 ------------------------
 * Updated visualsearch.js to latest version
 * Can now specify remainder preface for text queries
@@ -87,13 +85,13 @@ v1.4.4
 * Fixed extra history state being added when navigating to results page from widget
 * Moved screenshots to /assets/ folder
 
-v1.4.3
+1.4.3
 ------------------------
 * Fixed bug that prevented radius searches from working properly
 * Fixed bug that broke in-page anchors on some sites
 * Misc. bugfixes
 
-v1.4.2
+1.4.2
 ------------------------
 * Updated options framework to work with new admin styles
 * Simplified pro upgrade process
@@ -101,11 +99,11 @@ v1.4.2
 * Fixed bug caused by ampersands in permalinks
 * Fixed PHP notices on multisite installations
 
-v1.4.1
+1.4.1
 ------------------------
 * Fixed PHP warnings
 
-v1.4
+1.4
 ------------------------
 * Added radius search capability based on ACF Map field
 * Added ability to confine taxonomy searches to given terms
@@ -118,18 +116,18 @@ v1.4
 * Fixed bug where pressing backspace would sometimes cause the browser to navigate back
 * Fixed bugs that sometimes prevented premium upgrade
 
-v1.3
+1.3
 ------------------------
 * Added the ability to search for posts based on their ACF checkboxes
 * Added support for ACF comboxboxes
 * Upgraded to EDD for licensing and upgrade
 * Added settings to plugin action links
 
-v1.2.1
+1.2.1
 ------------------------
 * Misc. bugfixes to 1.2
 
-v1.2
+1.2
 ------------------------
 * Added an alternative square search bar style
 * Added option to disable built-in taxonomies and revert to a plain text search
@@ -142,7 +140,7 @@ v1.2
 * Added browser navigation history when moving from widget to results page
 * Minified visualsearch.js script
 
-v1.1
+1.1
 ------------------------
 * Added support for special characters in facet values
 * Fixed permalinked searches rendering spaces as underscores
@@ -156,12 +154,12 @@ v1.1
 * DB queries updated to support Wordpress 3.6
 * Misc. style refinements and bugfixes
 
-v1.0.3
+1.0.3
 ------------------------
 * Updates to premium upgrade process
 * Removed premium 'teasers' from options page to comply with repository guidelines
 
-v1.0.2
+1.0.2
 ------------------------
 
 WARNING: If you encounter any problems with this update, check the "Reset options" box and hit Save Changes to restore initial settings.
@@ -180,7 +178,7 @@ WARNING: If you encounter any problems with this update, check the "Reset option
 * Updated visualsearch.js to v0.4.0
 * Added default styling to search bar so bar will be displayed before scripts have loaded 
 
-v1.0
+1.0
 ------------------------
 * Option to replace WordPress default search
 * Ability to search in custom taxonomies (with upgrade)
@@ -189,12 +187,12 @@ v1.0
 * Supports user-created search results templates
 * Many more tweaks and optimizations
 
-v0.4
+0.4
 ------------------------
 * Can search post tags
 * Optimized database interaction
 
-v0.3
+0.3
 ------------------------
 * Added options page
 * Ability to search within shortcodes
@@ -206,5 +204,6 @@ v0.3
 * Fixed bug where widget wouldn't display on home page
 * Misc. performance tweaks
 
-= 0.2 =
+0.2
+------------------------
 * First public release
