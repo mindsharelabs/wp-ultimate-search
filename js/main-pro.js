@@ -294,8 +294,33 @@ jQuery(document).ready(function($) {
 		left:      'auto' // Left position relative to parent in px
 	};
 
+	// Defaults for shortcode params
+	var query = '';
+	var include = '';
+	var exclude = '';
+
+	// Check to see if default parameters have been passed into the shortcode
+	if(typeof shortcode_localize != 'undefined') {
+
+		// Prepopulated query
+		if('std' in shortcode_localize) {
+			query = shortcode_localize.std;
+		}
+
+		// Include terms
+		if('include' in shortcode_localize) {
+			include = shortcode_localize.include;
+		}
+
+		// Exclude terms
+		if('exclude' in shortcode_localize) {
+			exclude = shortcode_localize.exclude;
+		}
+
+	}
+
 	var visualSearch = VS.init({
-		container: $("#search_box_container"), query: '', remainder: wpus_script.remainder, placeholder: wpus_script.placeholder, showFacets: wpus_script.showfacets, callbacks: {
+		container: $("#search_box_container"), query: query, remainder: wpus_script.remainder, placeholder: wpus_script.placeholder, showFacets: wpus_script.showfacets, callbacks: {
 			search:          function(query, searchCollection) {
 				//		  	enable the following line for search query debugging:
 				//			console.log(["query", searchCollection.facets(), query]);
@@ -380,11 +405,21 @@ jQuery(document).ready(function($) {
 					window.location.href = wpus_script.resultspage + "#" + searchuri;
 				}
 			}, valueMatches: function(category, searchTerm, callback) {
+
+				if(wpus_script.radius && category == wpus_script.radius) {
+					$('div.is_editing .search_facet_input_container input:not(.geocomplete)').addClass('geocomplete').geocomplete().bind("geocode:result", function(event, result) {
+						query = visualSearch.searchBox.currentQuery;
+						visualSearch.searchBox.value(query + ' "' + category + '": "' + $('.geocomplete').val() + '"');
+						visualSearch.searchBox.searchEvent({});
+					});
+					return;
+				}
 				var data = {
-					action: "wpus_getvalues", facet: category
+					action: "wpus_getvalues", facet: category, include: include, exclude: exclude
 				};
 				$.get(wpus_script.ajaxurl, data, function(response_from_get_values) {
 					if(response_from_get_values) {
+
 						response_from_get_values = $.parseJSON(response_from_get_values);
 
 						// Don't display a value if it's already in use in the search collection
@@ -489,12 +524,13 @@ jQuery(document).ready(function($) {
 					visualSearch.searchBox.addFacet(facets[0], '', 99);
 				}
 			}
+
 		}
 	});
 	// Initiate the router
 	VS.app.searcher = new VS.utils.Searcher;
 
-	// Start Backbone history a neccesary step for bookmarkable URL's
+	// Start Backbone history a necessary step for bookmarkable URL's
 	Backbone.history.start();
 
 });

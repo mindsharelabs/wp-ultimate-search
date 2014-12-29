@@ -1,18 +1,16 @@
 === WP Ultimate Search ===
-Contributors: sekatsim, mindshare
+Contributors: mindshare
 Donate link: http://mind.sh/are/donate/
 Tags: search, ajax, metadata, meta, post meta, autocomplete, jquery, facet, faceted search, faceting, advanced custom fields, acf, taxonomy, taxonomies, term, terms, facets, geo, wp-geo, radius, latitude, longitude, location
-Requires at least: 3.4.1
-Tested up to: 3.9
-Stable tag: 1.6
+Requires at least: 4.0
+Tested up to: 4.1.1
+Stable tag: 2.0
  
 Powerful AJAX-based search alternative which supports faceting queries by taxonomies, terms, location, and post metadata.
 
 == Description ==
 
 A highly customizable AJAX-based WordPress search bar alternative with the ability to autocomplete [faceted search queries](http://en.wikipedia.org/wiki/Faceted_search). Users can quickly and dynamically browse through your site's taxonomies and post metadata to find exactly what they're looking for, and results can be loaded beneath the search bar instantly.
-
-Try a [demo](http://ultimatesearch.mindsharelabs.com/).
 
 <h4>Features</h4>
 
@@ -25,8 +23,8 @@ Try a [demo](http://ultimatesearch.mindsharelabs.com/).
 * Category options are dynamically generated and autocompleted as you type
 * Attractive and lightweight interface based on jQuery, Backbone.js, and the VisualSearch.js library
 * Customizable results template using standard WordPress functions
-
-Premium version supports the ability to search through an unlimited number of user-specified taxonomies and meta fields (including data contained in Advanced Custom Fields). Can also conduct radius searches against data stored in the ACF Map field (i.e. search for posts within x km of a user-specified location).
+* Search through an unlimited number of user-specified taxonomies and meta fields (including data contained in Advanced Custom Fields).
+* Conduct radius searches against data stored in the ACF Map field (i.e. search for posts within x km of a user-specified location).
 
 == Installation ==
 

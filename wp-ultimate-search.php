@@ -1,15 +1,15 @@
 <?php
 /*
 Plugin Name: WP Ultimate Search
-Plugin URI: http://ultimatesearch.mindsharelabs.com
+Plugin URI: https://wordpress.org/plugins/wp-ultimate-search/
 Description: Advanced faceted AJAX search and filter utility.
-Version: 1.6
+Version: 2.0
 Author: Mindshare Studios, Inc.
 Author URI: http://mindsharelabs.com/
 */
 
 /**
- * @copyright Copyright (c) 2012. All rights reserved.
+ * @copyright Copyright (c) 2015. All rights reserved.
  * @author    Mindshare Studios, Inc.
  *
  * @license   Released under the GPL license http://www.opensource.org/licenses/gpl-license.php
@@ -28,13 +28,12 @@ Author URI: http://mindsharelabs.com/
  * **********************************************************************
  *
  * @todo      use WPUS_PLUGIN_SLUG
- * @todo      replace all class_exists('WPUltimateSearchPro') with better mechanism for testing pro
  * @todo      move all pro functions out of options page php file into this one
  */
 
 /* CONSTANTS */
 if(!defined('WPUS_MIN_WP_VERSION')) {
-	define('WPUS_MIN_WP_VERSION', '3.1');
+	define('WPUS_MIN_WP_VERSION', '4.0');
 }
 
 if(!defined('WPUS_PLUGIN_NAME')) {
@@ -53,26 +52,10 @@ if(!defined('WPUS_DIR_URL')) {
 	define('WPUS_DIR_URL', plugin_dir_url(__FILE__));
 }
 
-if(!defined('WPUS_PRO_SLUG')) {
-	define('WPUS_PRO_SLUG', 'wp-ultimate-search-pro');
-}
-
-if(!defined('WPUS_PRO_PATH')) {
-	define('WPUS_PRO_PATH', str_replace(WPUS_PLUGIN_SLUG, WPUS_PRO_SLUG, WPUS_DIR_PATH));
-}
-
-if(!defined('WPUS_PRO_FILE')) {
-	define('WPUS_PRO_FILE', WPUS_PRO_SLUG.'.php');
-}
-
-if(!defined('WPUS_PRO_URL')) {
-	define('WPUS_PRO_URL', plugin_dir_url(WPUS_PRO_PATH . WPUS_PRO_FILE));
-}
-
 // check WordPress version
 global $wp_version;
 if(version_compare($wp_version, WPUS_MIN_WP_VERSION, "<")) {
-	exit(WPUS_PLUGIN_NAME.' requires WordPress '.WPUS_MIN_WP_VERSION.' or newer.');
+	exit(WPUS_PLUGIN_NAME . ' requires WordPress ' . WPUS_MIN_WP_VERSION . ' or newer.');
 }
 
 // deny direct access
@@ -88,7 +71,9 @@ if(!function_exists('add_action')) {
 if(!class_exists("WPUltimateSearch")) :
 	class WPUltimateSearch {
 
-		public $options, $is_active, $pro_class;
+		public $options, $is_active;
+
+		private $radius_facet;
 
 		function __construct() {
 
@@ -98,12 +83,11 @@ if(!class_exists("WPUltimateSearch")) :
 			$options = $this->options;
 
 			if(is_admin()) {
-				require_once(WPUS_DIR_PATH.'lib/options/options.php'); // include Options framework
-				require_once(WPUS_DIR_PATH.'views/wpus-options.php'); // include options file
+				require_once(WPUS_DIR_PATH . 'lib/options/options.php'); // include Options framework
+				require_once(WPUS_DIR_PATH . 'views/wpus-options.php'); // include options file
 
-				$plugin = plugin_basename(__FILE__); 
-				add_filter("plugin_action_links_$plugin", array($this, 'wpus_settings_link') );
-
+				$plugin = plugin_basename(__FILE__);
+				add_filter("plugin_action_links_$plugin", array($this, 'wpus_settings_link'));
 			}
 
 			add_action('init', array($this, 'init'));
@@ -114,13 +98,12 @@ if(!class_exists("WPUltimateSearch")) :
 			add_action('wp_ajax_wpus_getvalues', array($this, 'get_values'));
 			add_action('wp_ajax_nopriv_wpus_getvalues', array($this, 'get_values')); // need this to serve non logged in users
 
-
 			add_filter('wpus_date_save_format', array($this, 'date_save_format'));
 			add_filter('wpus_date_display_format', array($this, 'date_display_format'));
 
 			// REGISTER SHORTCODES
-			add_shortcode(WPUS_PLUGIN_SLUG."-bar", array($this, 'search_form'));
-			add_shortcode(WPUS_PLUGIN_SLUG."-results", array($this, 'search_results'));
+			add_shortcode(WPUS_PLUGIN_SLUG . "-bar", array($this, 'search_form'));
+			add_shortcode(WPUS_PLUGIN_SLUG . "-results", array($this, 'search_results'));
 
 			// REGISTER WIDGET
 			add_action('widgets_init', array($this, 'wpus_register_widgets'));
@@ -133,27 +116,23 @@ if(!class_exists("WPUltimateSearch")) :
 		}
 
 		// Add settings link on plugin page
-		public function wpus_settings_link($links) { 
-		  $settings_link = '<a href="options-general.php?page=wpus-options">Settings</a>'; 
-		  array_unshift($links, $settings_link); 
-		  return $links; 
+		public function wpus_settings_link($links) {
+			$settings_link = '<a href="options-general.php?page=wpus-options">Settings</a>';
+			array_unshift($links, $settings_link);
+			return $links;
 		}
-		
 
 		/**
 		 * wpus_register_widgets
 		 *
 		 */
 		function wpus_register_widgets() {
-			require_once(WPUS_DIR_PATH.'views/wpus-widget.php'); // include widget file
+			require_once(WPUS_DIR_PATH . 'views/wpus-widget.php'); // include widget file
 			register_widget('wpultimatesearchwidget');
 		}
 
 		function init() {
-			if(file_exists(WPUS_PRO_PATH.WPUS_PRO_SLUG.'.php')) {
-				require(WPUS_PRO_PATH.WPUS_PRO_SLUG.'.php');
-				$this->pro_class = new WPUltimateSearchPro();
-			}
+
 			if(isset($this->options['override_default'])) {
 				if($this->options['override_default']) {
 					add_filter('get_search_form', array($this, 'search_form'));
@@ -176,11 +155,11 @@ if(!class_exists("WPUltimateSearch")) :
 				}
 			} // if search page already exists, exit
 			$results_page = array(
-				'post_title'     => 'Search',
-				'post_content'   => '['.WPUS_PLUGIN_SLUG.'-bar]<br />['.WPUS_PLUGIN_SLUG.'-results]',
-				'post_status'    => 'publish',
-				'post_type'      => 'page',
-				'post_name'      => 'search',
+				'post_title' => 'Search',
+				'post_content' => '[' . WPUS_PLUGIN_SLUG . '-bar]<br />[' . WPUS_PLUGIN_SLUG . '-results]',
+				'post_status' => 'publish',
+				'post_type' => 'page',
+				'post_name' => 'search',
 				'comment_status' => 'closed'
 			);
 			wp_insert_post($results_page);
@@ -188,7 +167,332 @@ if(!class_exists("WPUltimateSearch")) :
 
 		/**
 		 *  PRIVATE FUNCTIONS
+		 * @param $posts
+		 * @param $orderby
+		 * @param string $order
+		 * @param bool $unique
+		 * @return array|bool
 		 */
+
+		private function sort_posts($posts, $orderby, $order = 'ASC', $unique = TRUE) {
+			if(!is_array($posts)) {
+				return FALSE;
+			}
+
+			usort($posts, array(new WPUS_Sort_Posts($orderby, $order), 'sort'));
+
+			// use post ids as the array keys
+			if($unique && count($posts)) {
+				$posts = array_combine(wp_list_pluck($posts, 'ID'), $posts);
+			}
+
+			return $posts;
+		}
+
+		private function lat_long_to_distance($lat1, $lng1, $lat2, $lng2, $format) {
+
+			$latFrom = deg2rad($lat1);
+			$lonFrom = deg2rad($lng1);
+			$latTo = deg2rad($lat2);
+			$lonTo = deg2rad($lng2);
+
+			$lonDelta = $lonTo - $lonFrom;
+			$a = pow(cos($latTo) * sin($lonDelta), 2) +
+				pow(cos($latFrom) * sin($latTo) - sin($latFrom) * cos($latTo) * cos($lonDelta), 2);
+			$b = sin($latFrom) * sin($latTo) + cos($latFrom) * cos($latTo) * cos($lonDelta);
+
+			$angle = atan2(sqrt($a), $b);
+
+			$earthRadius = 6371000;
+
+			$dist = $angle * $earthRadius;
+
+			if($format == 'mi') {
+				return $dist / 1609.34;
+			} elseif($format == 'km') {
+				return $dist / 1000;
+			} elseif($format == 'km') {
+				return $dist;
+			}
+		}
+
+		private function prepare_meta_value($facet, $data) {
+			$options = $this->options;
+
+			foreach($options['metafields'] as $metafield => $value) {
+
+				if($metafield == $facet) {
+
+					if($value['type'] == 'checkbox') {
+
+						$data = serialize(array($data));
+						return $data;
+					} elseif($value['type'] == 'date') {
+						return (date(apply_filters('wpus_date_save_format'), strtotime($data))); // @todo fix error
+					} elseif($value['type'] == 'true-false') {
+
+						if($data == "True") {
+							return '1';
+						} else {
+							return '0';
+						}
+					} elseif($value['type'] == 'radius') {
+
+						$prepaddr = urlencode($data);
+						$geocode = file_get_contents('http://maps.google.com/maps/api/geocode/json?address=' . $prepaddr . '&sensor=false');
+						$output = json_decode($geocode);
+						$lat = $output->results[0]->geometry->location->lat;
+						$long = $output->results[0]->geometry->location->lng;
+						$this->radius_facet = $facet;
+						return array($data, $lat, $long);
+					}
+				}
+			}
+
+			return $data;
+		}
+
+		private function filter_radius($results, $location, $radius) {
+
+			if($radius == NULL) {
+				$radius = $this->options['radius_dist'];
+			}
+
+			foreach($results as $id => $result) {
+
+				if($result_location = get_post_meta($result->ID, $this->radius_facet)) {
+
+					if(!empty($result_location[0]['lat'])) {
+						// New ACF GMaps field
+						$distance = $this->lat_long_to_distance($location[1], $location[2], $result_location[0]['lat'], $result_location[0]['lng'], $this->options['radius_format']);;
+					} elseif(is_string($result_location[0])) {
+						// Other maps field. Try to get lat long data from string
+						$noaddr = strstr($result_location[0], '|');
+						$noaddr = trim($noaddr, '|');
+						$latlng = explode(",", $noaddr);
+						$distance = $this->lat_long_to_distance($location[1], $location[2], $latlng[0], $latlng[1], $this->options['radius_format']);
+					}
+
+					if($distance >= $radius || empty($result_location[0]['lat'])) {
+						unset($results[$id]);
+					} else {
+						// Put the geo data in the output array in case the user wants to do something with it
+						$results[$id]->distance = $distance;
+						$results[$id]->location = $location[0];
+					}
+				}
+			}
+			return $results;
+		}
+
+		private function get_user_by_display_name($display_name) {
+			global $wpdb;
+
+			if(!$user = $wpdb->get_row($wpdb->prepare(
+				"SELECT `ID` FROM $wpdb->users WHERE `display_name` = %s", $display_name
+			))
+			) {
+				return FALSE;
+			}
+
+			return $user->ID;
+		}
+
+		/**
+		 * @param $searcharray
+		 */
+		public function execute_query_pro($searcharray) {
+
+			$radius = NULL;
+
+			foreach($searcharray as $index) {
+			// iterate through the search query array and separate the taxonomies into their own array
+				foreach($index as $facet => $data) {
+					$facet = esc_sql($facet);
+					if($facet == "tag") {
+						$facet = "post_tag";
+					}
+
+					$type = $this->determine_facet_type($facet); // determine if we're dealing with a taxonomy or a metafield
+
+					switch($type) {
+						case "text" :
+							// $keywords = $this->string_to_keywords($data);
+							$keywords = $data;
+							break;
+						case "taxonomy" :
+							$facet = $this->get_taxonomy_name($facet);
+							$data = preg_replace('/_/', " ", $data); // in case there are underscores in the value (from a permalink), remove them
+							$term = get_term_by('name', $data, $facet);
+							if($term != FALSE) {
+								$taxonomies[$facet][] = $term->term_id;
+							}
+							break;
+						case "metafield" :
+							$data = preg_replace('/_/', " ", $data); // in case there are underscores in the value (from a permalink), remove them
+							$facet = $this->get_metafield_name($facet);
+							$data = $this->prepare_meta_value($facet, $data);
+							$metafields[][$facet] = $data;
+							break;
+						case "radius" :
+							$radius = $data;
+							break;
+						case "user" :
+							$users[] = $this->get_user_by_display_name($data);
+					}
+				}
+			}
+
+			$query = array(
+				'posts_per_page' => -1,
+				'post_status' => 'publish'
+			);
+
+			// Text search
+			if(isset($keywords)) {
+
+				$query['s'] = $keywords;
+			}
+
+			// Taxonomy search
+			if(isset($taxonomies)) {
+
+				$query['tax_query'] = array();
+
+				// Create an AND relation between different taxonomies
+				if(count($taxonomies) > 1) {
+					$query['tax_query']['relation'] = "AND";
+				}
+
+				foreach($taxonomies as $taxonomy => $terms) {
+
+					// By default, use an OR operation on terms w/in the same taxonomy
+					$operator = "IN";
+					$include_children = TRUE;
+
+					if(count($terms) > 1 && $this->options['and_or'] == "and") {
+
+						$query['tax_query']['relation'] = "AND";
+
+						foreach($terms as $term) {
+
+							$query['tax_query'][] = array(
+								'taxonomy' => $taxonomy,
+								'terms' => $term,
+								'operator' => "IN",
+								'include_children' => TRUE
+							);
+						}
+					} else {
+
+						$query['tax_query'][] = array(
+							'taxonomy' => $taxonomy,
+							'terms' => $terms,
+							'operator' => $operator,
+							'include_children' => $include_children
+						);
+					}
+				}
+			}
+
+			// Meta fields
+			if(isset($metafields)) {
+
+				$query['meta_query'] = array();
+
+				if($this->options['and_or'] == "and" && count($metafields) > 1) {
+					$query['meta_query']['relation'] = "AND";
+				} elseif($this->options['and_or'] == "or" && count($metafields) > 1) {
+					$query['meta_query']['relation'] = "OR";
+				}
+
+				foreach($metafields as $metafield) {
+
+					foreach($metafield as $name => $metadata) {
+
+						// Since there's no way to do logical operations on geodata stored in a serialized array, we need to pull out every post that Has geodata at all, and then process them one by one.
+
+						if(is_array($metadata)) {
+
+							$location = $metadata;
+
+							$location_query_results = get_posts('meta_key=' . $name . '&posts_per_page=-1&post_type=any');
+						} else {
+
+							$query['meta_query'][] = array(
+								'key' => $name,
+								'value' => $metadata,
+								'compare' => 'LIKE'
+							);
+						}
+					}
+				}
+			}
+
+			// Post types
+			if(isset($this->options['posttypes'])) {
+
+				$posttypes = $this->options['posttypes'];
+				$query['post_type'] = array();
+
+				foreach($posttypes as $type => $data) {
+					if(isset($data['enabled'])) {
+
+						$query['post_type'][] = $type;
+					}
+				}
+			}
+
+			// Users
+			if(isset($users) && count($users) > 0) {
+				$query['author__in'] = $users;
+			}
+
+			// Pass it all through to WP_Query
+			$wpus_results = new WP_Query($query);
+
+			if(!isset($keywords)) {
+				$keywords = NULL;
+			}
+
+			$location_arr = array();
+
+			// If we're conducting a radius search, we need to run a separate query and then merge it back into the other results
+			if(isset($this->options['radius']) && $this->options['radius'] != FALSE && isset($location)) {
+
+				if($radius == NULL) {
+					$radius = $this->options['radius_dist'];
+				}
+
+				// filter_radius() returns an array of posts, where any post outside of the specified radius from the origin has been removed
+				$geo_filtered_posts = $this->filter_radius($location_query_results, $location, $radius);
+
+				// These variables will be passed to the results template for integration with mapping
+				$location_arr['address'] = $location[0];
+				$location_arr['lat'] = $location[1];
+				$location_arr['lng'] = $location[2];
+				$location_arr['radius'] = $radius;
+
+				// Grab an array of post ID's from our geographically elligible posts
+				$location_ids = wp_list_pluck($geo_filtered_posts, 'ID');
+
+				// Iterate through the results delivered by the main query, and remove any results that don't qualify
+				foreach($wpus_results->posts as $key => $value) {
+					if(!in_array($value->ID, $location_ids)) {
+						unset($wpus_results->posts[$key]);
+					}
+				}
+
+				// Reorder the array so it's organized again
+
+				$wpus_results->posts = array_values($this->sort_posts($wpus_results->posts, 'ID'));
+				$wpus_results->post_count = count($wpus_results->posts);
+			}
+
+			$this->print_results($wpus_results, $keywords, $location_arr); // format and output the search results
+
+			die(); // wordpress may print out a spurious zero without this - can be particularly bad if using json
+		}
 
 		/**
 		 *
@@ -204,7 +508,7 @@ if(!class_exists("WPUltimateSearch")) :
 		 * @return mixed
 		 */
 		private function highlightsearchterms($text, $keywords) {
-			return preg_replace('/('.implode('|', $keywords).')/i', '<strong class="wpus-highlight">$0</strong>', $text);
+			return preg_replace('/(' . implode('|', $keywords) . ')/i', '<strong class="wpus-highlight">$0</strong>', $text);
 		}
 
 		/**
@@ -279,12 +583,11 @@ if(!class_exists("WPUltimateSearch")) :
 				<script type="text/javascript">
 				    /* <![CDATA[ */
 				    var wpus_response = {
-				            "'.$parameter.'":"'.$response.'"
+				            "' . $parameter . '":"' . $response . '"
 				    };
 				    /* ]]> */
 				    </script>';
 		}
-
 
 		/**
 		 *
@@ -292,7 +595,7 @@ if(!class_exists("WPUltimateSearch")) :
 		 *
 		 *
 		 * Similar to wp_localize_script, but wp_localize_script can only be called on plugin load / on
-		 * page load. This function can be called after parsing the shortcode attributes to output 
+		 * page load. This function can be called after parsing the shortcode attributes to output
 		 * any updated parameters to the page
 		 *
 		 * @param $parameter
@@ -304,7 +607,7 @@ if(!class_exists("WPUltimateSearch")) :
 				    /* <![CDATA[ */
 				    var shortcode_localize = {';
 
-			foreach ($params as $key => $value) {
+			foreach($params as $key => $value) {
 				echo '"' . $key . '":"' . $value . '",';
 			}
 
@@ -330,28 +633,23 @@ if(!class_exists("WPUltimateSearch")) :
 
 			ob_start();
 
-			if(file_exists(TEMPLATEPATH.'/wpus-results-template.php')) {
+			if(file_exists(TEMPLATEPATH . '/wpus-results-template.php')) {
 
-				require(TEMPLATEPATH.'/wpus-results-template.php');
-
+				require(TEMPLATEPATH . '/wpus-results-template.php');
 			} else {
 
 				if($this->options['results_template'] == 'thumbnail') {
 
-					require(WPUS_DIR_PATH.'views/wpus-results-template-thumbnail.php');
-
+					require(WPUS_DIR_PATH . 'views/wpus-results-template-thumbnail.php');
 				} elseif($this->options['results_template'] == 'titles') {
 
-					require(WPUS_DIR_PATH.'views/wpus-results-template-titles.php');
-
+					require(WPUS_DIR_PATH . 'views/wpus-results-template-titles.php');
 				} elseif($this->options['results_template'] == 'images') {
 
-					require(WPUS_DIR_PATH.'views/wpus-results-template-images.php');
-
+					require(WPUS_DIR_PATH . 'views/wpus-results-template-images.php');
 				} else {
 
-					require(WPUS_DIR_PATH.'views/wpus-results-template.php');
-
+					require(WPUS_DIR_PATH . 'views/wpus-results-template.php');
 				}
 			}
 
@@ -375,39 +673,28 @@ if(!class_exists("WPUltimateSearch")) :
 		private function get_enabled_facets() {
 			$options = $this->options;
 
-			if(class_exists("WPUltimateSearchPro")) {
-
-				foreach($options['taxonomies'] as $taxonomy => $key) {
+			foreach($options['taxonomies'] as $taxonomy => $key) {
+				if(isset($key['enabled'])) {
+					if($key['enabled']) {
+						if($key['label']) {
+							$enabled_facets[] = $key['label'];
+						} else {
+							$enabled_facets[] = $taxonomy;
+						}
+					}
+				}
+			}
+			if(isset($options['metafields'])) {
+				foreach($options['metafields'] as $metafield => $key) {
 					if(isset($key['enabled'])) {
 						if($key['enabled']) {
 							if($key['label']) {
 								$enabled_facets[] = $key['label'];
 							} else {
-								$enabled_facets[] = $taxonomy;
+								$enabled_facets[] = $metafield;
 							}
 						}
 					}
-				}
-				if(isset($options['metafields'])) {
-					foreach($options['metafields'] as $metafield => $key) {
-						if(isset($key['enabled'])) {
-							if($key['enabled']) {
-								if($key['label']) {
-									$enabled_facets[] = $key['label'];
-								} else {
-									$enabled_facets[] = $metafield;
-								}
-							}
-						}
-					}
-				}
-			} else {
-				$enabled_facets = array();
-				if($options['enable_category']) {
-					$enabled_facets[] = 'category';
-				}
-				if($options['enable_tag']) {
-					$enabled_facets[] = 'tag';
 				}
 			}
 
@@ -421,7 +708,6 @@ if(!class_exists("WPUltimateSearch")) :
 
 			return $enabled_facets;
 		}
-
 
 		/**
 		 *
@@ -438,7 +724,6 @@ if(!class_exists("WPUltimateSearch")) :
 			return 'Ymd';
 		}
 
-
 		/**
 		 *
 		 * Date display format
@@ -453,7 +738,6 @@ if(!class_exists("WPUltimateSearch")) :
 		public function date_display_format() {
 			return 'n/j/Y';
 		}
-
 
 		/**
 		 *
@@ -470,9 +754,7 @@ if(!class_exists("WPUltimateSearch")) :
 
 		private function format_meta_by_type($facet, $data) {
 
-			if(!$options = $this->options) {
-				$options = $this->pro_class->options;
-			}
+			$options = $this->options;
 
 			foreach($options['metafields'] as $metafield => $value) {
 				if($metafield == $facet) {
@@ -508,9 +790,7 @@ if(!class_exists("WPUltimateSearch")) :
 		 * @return int|string
 		 */
 		protected function get_taxonomy_name($label) {
-			if(!$options = $this->options) {
-				$options = $this->pro_class->options;
-			}
+			$options = $this->options;
 
 			foreach($options['taxonomies'] as $taxonomy => $value) {
 				if($value['label'] == $label) {
@@ -533,9 +813,7 @@ if(!class_exists("WPUltimateSearch")) :
 		 * @return int|string
 		 */
 		protected function get_metafield_name($label) {
-			if(!$options = $this->options) {
-				$options = $this->pro_class->options;
-			}
+			$options = $this->options;
 
 			foreach($options['metafields'] as $metafield => $value) {
 				if($value['label'] == $label) {
@@ -558,18 +836,19 @@ if(!class_exists("WPUltimateSearch")) :
 		 * @return string
 		 */
 		protected function determine_facet_type($facet) {
-			if(!$options = $this->options) {
-				$options = $this->pro_class->options;
+			$options = $this->options;
+
+			if($facet == $options['remainder']) {
+				return "text";
 			}
 
-			if($facet == $options['remainder'])
-				return "text";
-
-			if(isset($options['radius_label']) && $facet == $options['radius_label'])
+			if(isset($options['radius_label']) && $facet == $options['radius_label']) {
 				return "radius";
+			}
 
-			if(isset($options['user_label']) && $facet == $options['user_label'])
+			if(isset($options['user_label']) && $facet == $options['user_label']) {
 				return "user";
+			}
 
 			if(isset($options['taxonomies'])) {
 				foreach($options['taxonomies'] as $taxonomy => $value) {
@@ -602,15 +881,15 @@ if(!class_exists("WPUltimateSearch")) :
 			wp_enqueue_script('backbone');
 			wp_enqueue_script(
 				'visualsearch',
-				WPUS_DIR_URL.'js/visualsearch.min.js',
+				WPUS_DIR_URL . 'js/visualsearch.min.js',
 				array(
-					 'jquery',
-					 'jquery-ui-core',
-					 'jquery-ui-widget',
-					 'jquery-ui-position',
-					 'jquery-ui-autocomplete',
-					 'backbone',
-					 'underscore'
+					'jquery',
+					'jquery-ui-core',
+					'jquery-ui-widget',
+					'jquery-ui-position',
+					'jquery-ui-autocomplete',
+					'backbone',
+					'underscore'
 				)
 			);
 
@@ -623,34 +902,31 @@ if(!class_exists("WPUltimateSearch")) :
 			}
 
 			// ENQUEUE AND LOCALIZE MAIN JS FILE
-			if(class_exists('WPUltimateSearchPro')) {
-				wp_enqueue_script('wpus-script', WPUS_PRO_URL.'js/main-pro.js', array('visualsearch'), '', wpus_option('scripts_in_footer'));
-				if($radius) {
-					wp_enqueue_script('google-maps', 'http://maps.googleapis.com/maps/api/js?sensor=false&amp;libraries=places');
-					wp_enqueue_script('geocomplete', WPUS_PRO_URL.'js/jquery.geocomplete.js', array('jquery', 'google-maps'), '', wpus_option('scripts_in_footer'));
-				}
-			} else {
-				wp_enqueue_script('wpus-script', WPUS_DIR_URL.'js/wpus-main.js', array('visualsearch'), '', wpus_option('scripts_in_footer'));
+
+			wp_enqueue_script('wpus-script', WPUS_DIR_URL . 'js/main-pro.js', array('visualsearch'), '', wpus_option('scripts_in_footer'));
+			if($radius) {
+				wp_enqueue_script('google-maps', 'http://maps.googleapis.com/maps/api/js?sensor=false&amp;libraries=places');
+				wp_enqueue_script('geocomplete', WPUS_DIR_URL . 'js/jquery.geocomplete.js', array('jquery', 'google-maps'), '', wpus_option('scripts_in_footer'));
 			}
 
 			($options['show_facets'] == 1 ? $showfacets = true : $showfacets = false);
 			($options['highlight_terms'] == 1 ? $highlight = true : $highlight = false);
 
 			$params = array(
-				'ajaxurl'		=> admin_url('admin-ajax.php'),
-				'searchNonce'   => wp_create_nonce('search-nonce'),
-				'trackevents'   => $options['track_events'],
-				'eventtitle'    => $options['event_category'],
+				'ajaxurl' => admin_url('admin-ajax.php'),
+				'searchNonce' => wp_create_nonce('search-nonce'),
+				'trackevents' => $options['track_events'],
+				'eventtitle' => $options['event_category'],
 				'enabledfacets' => json_encode($this->get_enabled_facets()),
-				'resultspage'   => get_permalink($options['results_page']),
-				'showfacets'	=> $showfacets,
-				'placeholder'	=> $options['placeholder'],
-				'highlight'		=> $highlight,
-				'radius'		=> $radius,
-				'remainder'		=> $options['remainder'],
-				'single_facet'	=> $options['single_facet_mode'],
-				'disable_permalinks'	=> $options['disable_permalinks'],
-				'single_use'	=> $options['single_use'],
+				'resultspage' => get_permalink($options['results_page']),
+				'showfacets' => $showfacets,
+				'placeholder' => $options['placeholder'],
+				'highlight' => $highlight,
+				'radius' => $radius,
+				'remainder' => $options['remainder'],
+				'single_facet' => $options['single_facet_mode'],
+				'disable_permalinks' => $options['disable_permalinks'],
+				'single_use' => $options['single_use'],
 			);
 
 			wp_localize_script('wpus-script', 'wpus_script', $params);
@@ -658,12 +934,12 @@ if(!class_exists("WPUltimateSearch")) :
 			// ENQUEUE STYLES
 			if(isset($options['style'])) {
 				if($options['style'] == 'square') {
-					wp_enqueue_style('wpus-bar', WPUS_DIR_URL.'css/square.css');
+					wp_enqueue_style('wpus-bar', WPUS_DIR_URL . 'css/square.css');
 				} else {
-					wp_enqueue_style('wpus-bar', WPUS_DIR_URL.'css/visualsearch.css');	
+					wp_enqueue_style('wpus-bar', WPUS_DIR_URL . 'css/visualsearch.css');
 				}
 			} else {
-				wp_enqueue_style('wpus-bar', WPUS_DIR_URL.'css/visualsearch.css');
+				wp_enqueue_style('wpus-bar', WPUS_DIR_URL . 'css/visualsearch.css');
 			}
 		}
 
@@ -674,16 +950,18 @@ if(!class_exists("WPUltimateSearch")) :
 		 */
 		public function search_form($atts) {
 
-			if(isset($atts['widget']) && get_the_ID() == $this->options['results_page'])
+			if(isset($atts['widget']) && get_the_ID() == $this->options['results_page']) {
 				return;
+			}
 
 			// Make the attributes available to JS
 			$this->shortcode_localize($atts);
 
 			$class = '';
 
-			if($this->options['single_facet_mode'] == true)
+			if($this->options['single_facet_mode'] == true) {
 				$class = "single-facet";
+			}
 
 			// RENDER SEARCH FORM
 			return '<div id="search_box_container" class="' . $class . '"><div id="search"><div class="VS-search">
@@ -719,10 +997,10 @@ if(!class_exists("WPUltimateSearch")) :
 			} // if nothing's been set, we can exit
 
 			// Grab shortcode overrides, if any
-			if(isset($_GET['exclude'])){
+			if(isset($_GET['exclude'])) {
 				$exclude = $_GET['exclude'];
 			}
-			if(isset($_GET['include'])){
+			if(isset($_GET['include'])) {
 				$include = $_GET['include'];
 			}
 
@@ -734,8 +1012,9 @@ if(!class_exists("WPUltimateSearch")) :
 				case "taxonomy" :
 					$facet = $this->get_taxonomy_name($facet); // get the database taxonomy name from the current facet
 
-					if(!isset($options['taxonomies'][$facet]['autocomplete']))
+					if(!isset($options['taxonomies'][$facet]['autocomplete'])) {
 						die();
+					}
 
 					if(isset($options['taxonomies'][$facet]['max'])) {
 						$number = $options['taxonomies'][$facet]['max'];
@@ -754,14 +1033,13 @@ if(!class_exists("WPUltimateSearch")) :
 							$excludetermids = explode(',', $options['taxonomies'][$facet]['exclude']);
 						}
 
-						foreach($excludeterms as $term_id) {
+						foreach($excludetermids as $term_id) {
 
 							// Check for child terms and add them to the array if found
 							$children = get_term_children($term_id, $facet);
 							if(count($children) > 0) {
 								$excludetermids = array_merge($excludetermids, $children);
 							}
-
 						}
 					}
 
@@ -769,7 +1047,7 @@ if(!class_exists("WPUltimateSearch")) :
 					$includetermids = array();
 
 					if(!empty($options['taxonomies'][$facet]['include']) || !empty($include)) {
-						
+
 						if(!empty($include)) {
 							$includetermids = explode(',', $include);
 						} else {
@@ -783,16 +1061,15 @@ if(!class_exists("WPUltimateSearch")) :
 							if(count($children) > 0) {
 								$includetermids = array_merge($includetermids, $children);
 							}
-
 						}
 					}
 
 					$args = array( // parameters for the term query
-						'orderby' 	=> 'name',
-						'order'   	=> 'ASC',
-						'number'  	=> $number,
-						'exclude' 	=> $excludetermids,
-						'include' 	=> $includetermids,
+								   'orderby' => 'name',
+								   'order' => 'ASC',
+								   'number' => $number,
+								   'exclude' => $excludetermids,
+								   'include' => $includetermids,
 					);
 
 					$terms = get_terms($facet, $args);
@@ -808,8 +1085,9 @@ if(!class_exists("WPUltimateSearch")) :
 
 					$facet = $this->get_metafield_name($facet);
 
-					if(!isset($options['metafields'][$facet]['autocomplete']))
+					if(!isset($options['metafields'][$facet]['autocomplete'])) {
 						die();
+					}
 
 					global $wpdb;
 
@@ -846,7 +1124,7 @@ if(!class_exists("WPUltimateSearch")) :
 
 						foreach($roles as $role => $enabled) {
 
-							$users = get_users('role='.$role);
+							$users = get_users('role=' . $role);
 
 							foreach($users as $user) {
 								$values[] = html_entity_decode($user->display_name);
@@ -854,7 +1132,6 @@ if(!class_exists("WPUltimateSearch")) :
 						}
 
 						echo json_encode($values);
-
 					}
 
 					die();
@@ -885,131 +1162,33 @@ if(!class_exists("WPUltimateSearch")) :
 				die ('Busted!');
 			}
 
-			if(class_exists("WPUltimateSearchPro")) {
-				$this->pro_class->execute_query_pro($searcharray);
-			} else {
-				$this->execute_query_basic($searcharray);
-			}
+			$this->execute_query_pro($searcharray);
 		}
 
-		/**
-		 * @param $searcharray
-		 */
-		public function execute_query_basic($searcharray) {
 
-			$radius = null;
+	}
 
-			foreach($searcharray as $index) { // iterate through the search query array and separate the taxonomies into their own array
-				foreach($index as $facet => $data) {
-					$facet = esc_sql($facet);
-					if($facet == "tag") {
-						$facet = "post_tag";
-					}
+	class WPUS_Sort_Posts extends WPUltimateSearch {
+		var $order, $orderby;
 
-					$type = $this->determine_facet_type($facet); // determine if we're dealing with a taxonomy or a metafield
+		function __construct($orderby, $order) {
+			$this->orderby = $orderby;
+			$this->order = ('desc' == strtolower($order)) ? 'DESC' : 'ASC';
+		}
 
-					switch($type) {
-						case "text" :
-							$keywords = $data;
-							break;
-						case "taxonomy" :
-							$facet = $this->get_taxonomy_name($facet);
-							$data = preg_replace('/_/', " ", $data); // in case there are underscores in the value (from a permalink), remove them
-							$term = get_term_by('name', $data, $facet);
-							if($term != false) {
-								$taxonomies[$facet][] = $term->term_id;
-							}
-							break;
-						case "metafield" :
-							echo "I'm sorry, but WP Ultimate Search Pro is either not installed or inactive. Please activate the plugin and try again.";
-							die();
-							break;
-						case "radius" :
-							echo "I'm sorry, but WP Ultimate Search Pro is either not installed or inactive. Please activate the plugin and try again.";
-							die();
-						case "user" :
-							echo "I'm sorry, but WP Ultimate Search Pro is either not installed or inactive. Please activate the plugin and try again.";
-							die();
-					}
-				}
+		function sort($a, $b) {
+			if($a->{$this->orderby} == $b->{$this->orderby}) {
+				return 0;
 			}
 
-			$query = array(
-				'posts_per_page'	=> -1,
-				'post_status'		=> 'publish',
-				'post_type'			=> array('post', 'page')
-			);
-
-			// Text search
-			if(isset($keywords)) {
-
-				$query['s'] = $keywords;
-
+			if($a->{$this->orderby} < $b->{$this->orderby}) {
+				return ('ASC' == $this->order) ? -1 : 1;
+			} else {
+				return ('ASC' == $this->order) ? 1 : -1;
 			}
-
-			// Taxonomy search
-			if(isset($taxonomies)) {
-
-				$query['tax_query'] = array();
-
-				// Create an AND relation between different taxonomies
-				if(count($taxonomies) > 1)
-					$query['tax_query']['relation'] = "AND";
-
-				foreach($taxonomies as $taxonomy => $terms) {
-
-					// By default, use an OR operation on terms w/in the same taxonomy
-					$operator = "IN";
-					$include_children = true;
-
-					if(count($terms) > 1 && $this->options['and_or'] == "and") {
-
-						$query['tax_query']['relation'] = "AND";
-
-						foreach($terms as $term) {
-
-							$query['tax_query'][] = array(
-								'taxonomy'	        => $taxonomy,
-								'terms'		        => $term,
-							    'operator'          => "IN",
-							    'include_children'	=> true
-							);
-
-						}
-
-					} else {
-
-						$query['tax_query'][] = array(
-							'taxonomy'	        => $taxonomy,
-							'terms'		        => $terms,
-						    'operator'          => $operator,
-						    'include_children'  => $include_children
-						);
-					}
-				}
-			}
-
-			$wpus_results = new WP_Query( $query );
-
-			if(!isset($keywords)) {
-				$keywords = NULL;
-			}
-
-			$location_arr = array();
-
-			if(isset($this->options['radius']) && $this->options['radius'] != false && isset($location)) {
-				$results = $this->filter_radius($results, $location, $radius);
-				$location_arr['address'] = $location[0];
-				$location_arr['lat'] = $location[1];
-				$location_arr['lng'] = $location[2];
-				$location_arr['radius'] = $radius;
-			}
-
-			$this->print_results($wpus_results, $keywords, $location_arr); // format and output the search results
-
-			die(); // wordpress may print out a spurious zero without this - can be particularly bad if using json
 		}
 	}
+
 endif;
 
 /**
