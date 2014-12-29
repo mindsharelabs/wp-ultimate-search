@@ -228,7 +228,7 @@ if(!class_exists("WPUltimateSearch")) :
 						$data = serialize(array($data));
 						return $data;
 					} elseif($value['type'] == 'date') {
-						return (date(apply_filters('wpus_date_save_format'), strtotime($data))); // @todo fix error
+						return date(apply_filters('wpus_date_save_format', $this->date_save_format()), strtotime($data)); // @todo fix error
 					} elseif($value['type'] == 'true-false') {
 
 						if($data == "True") {
@@ -769,8 +769,8 @@ if(!class_exists("WPUltimateSearch")) :
 						$data = unserialize($data);
 						return $data['address'];
 					} elseif($value['type'] == 'date') {
-						$date = DateTime::createFromFormat(apply_filters('wpus_date_save_format'), $data);
-						return $date->format(apply_filters('wpus_date_display_format'));
+						$date = DateTime::createFromFormat(apply_filters('wpus_date_save_format', $this->date_save_format()), $data);
+						return $date->format(apply_filters('wpus_date_display_format', $this->date_display_format()));
 					}
 				}
 			}
