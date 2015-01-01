@@ -306,7 +306,7 @@ if(!class_exists("WPUltimateSearch")) :
 			$radius = NULL;
 
 			foreach($searcharray as $index) {
-			// iterate through the search query array and separate the taxonomies into their own array
+				// iterate through the search query array and separate the taxonomies into their own array
 				foreach($index as $facet => $data) {
 					$facet = esc_sql($facet);
 					if($facet == "tag") {
@@ -598,8 +598,9 @@ if(!class_exists("WPUltimateSearch")) :
 		 * page load. This function can be called after parsing the shortcode attributes to output
 		 * any updated parameters to the page
 		 *
-		 * @param $parameter
-		 * @param $response
+		 * @param $params
+		 * @internal param $parameter
+		 * @internal param $response
 		 */
 		private function shortcode_localize($params) {
 			echo '
@@ -607,8 +608,10 @@ if(!class_exists("WPUltimateSearch")) :
 				    /* <![CDATA[ */
 				    var shortcode_localize = {';
 
-			foreach($params as $key => $value) {
-				echo '"' . $key . '":"' . $value . '",';
+			if($params) {
+				foreach($params as $key => $value) {
+					echo '"' . $key . '":"' . $value . '",';
+				}
 			}
 
 			echo ' };
@@ -1164,8 +1167,6 @@ if(!class_exists("WPUltimateSearch")) :
 
 			$this->execute_query_pro($searcharray);
 		}
-
-
 	}
 
 	class WPUS_Sort_Posts extends WPUltimateSearch {
