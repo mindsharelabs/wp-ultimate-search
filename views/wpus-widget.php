@@ -21,21 +21,22 @@ if(!class_exists('WPUltimateSearchWidget')) :
 		 *
 		 * @see WP_Widget::widget()
 		 *
-		 * @param array $args     Widget arguments.
+		 * @param array $args Widget arguments.
 		 * @param array $instance Saved values from database.
 		 */
 		public function widget($args, $instance) {
-			
+
 			// Disable the widget if we're already on the search results page
-			if(get_the_ID() == wpus_option('results_page'))
+			if(get_the_ID() == wpus_option('results_page')) {
 				return;
-			
+			}
+
 			extract($args);
 			$title = apply_filters('widget_title', $instance['title']);
 
 			echo $before_widget;
 			if(!empty($title)) {
-				echo $before_title.$title.$after_title;
+				echo $before_title . $title . $after_title;
 			}
 
 			$atts = array('widget' => true);
@@ -75,10 +76,10 @@ if(!class_exists('WPUltimateSearchWidget')) :
 				$title = __('Search', WPUS_PLUGIN_SLUG);
 			}
 			?>
-		<p>
-			<label for="<?php echo $this->get_field_id('title'); ?>"><?php _e('Title:'); ?></label>
-			<input class="widefat" id="<?php echo $this->get_field_id('title'); ?>" name="<?php echo $this->get_field_name('title'); ?>" type="text" value="<?php echo esc_attr($title); ?>" />
-		</p>
+			<p>
+				<label for="<?php echo $this->get_field_id('title'); ?>"><?php _e('Title:'); ?></label>
+				<input class="widefat" id="<?php echo $this->get_field_id('title'); ?>" name="<?php echo $this->get_field_name('title'); ?>" type="text" value="<?php echo esc_attr($title); ?>" />
+			</p>
 		<?php
 		}
 	} // class WPUltimateSearchWidget
