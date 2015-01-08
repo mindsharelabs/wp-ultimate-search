@@ -33,6 +33,7 @@ For additional information, [visit our website](http://mindsharelabs.com/)
 2.0 BETA
 ------------------------
 * Added all premium "Pro" features into free version, removed license activation
+* Added Spanish translation thanks to Andrew Kurtis <andrewk@webhostinghub.com>
 
 1.6.1
 ------------------------
