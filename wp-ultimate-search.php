@@ -5,12 +5,14 @@ Plugin URI: https://wordpress.org/plugins/wp-ultimate-search/
 Description: Advanced faceted AJAX search and filter utility.
 Version: 2.0
 Author: Mindshare Studios, Inc.
-Author URI: http://mindsharelabs.com/
+Author URI: https://mindsharelabs.com/
 */
 
 /**
  * @copyright Copyright (c) 2015. All rights reserved.
  * @author    Mindshare Studios, Inc.
+ *
+ * Spanish translation by Andrew Kurtis <andrewk@webhostinghub.com>
  *
  * @license   Released under the GPL license http://www.opensource.org/licenses/gpl-license.php
  * @see       http://wordpress.org/extend/plugins/wp-ultimate-search/

@@ -1,0 +1,408 @@
+# Copyright (C) 2014 WP Ultimate Search
+# This file is distributed under the same license as the WP Ultimate Search package.
+msgid ""
+msgstr ""
+"Project-Id-Version: WP Ultimate Search 1.6.4\n"
+"Report-Msgid-Bugs-To: http://wordpress.org/tag/wp-ultimate-search\n"
+"POT-Creation-Date: 2014-12-05 18:48:58+00:00\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"PO-Revision-Date: 2015-01-04 13:21+0100\n"
+"Last-Translator: jelena kovacevic <jecajeca260@gmail.com>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"X-Generator: Poedit 1.5.5\n"
+
+#: lib/options/options.php:1062
+msgid "Invalid phone number."
+msgstr "Número de teléfono inválido."
+
+#: lib/options/options.php:1074
+msgid "Invalid ZIP code."
+msgstr "Código ZIP inválido."
+
+#: lib/options/options.php:1606
+msgid "Invalid color code."
+msgstr "Código de color inválido."
+
+#: lib/options/options.php:1830
+msgid "You do not have sufficient permissions to edit templates for this site."
+msgstr ""
+"No tiene los suficientes permisos para editar plantillas para este sitio."
+
+#: lib/options/options.php:1833
+msgid "Error Downloading file."
+msgstr "Error descargando archivo."
+
+#: lib/options/options.php:1883
+msgid "Error importing settings. Check your import file and try again."
+msgstr ""
+"Error importando los ajustes. Chequee su archivo de importación y trate "
+"nuevamente."
+
+#: lib/options/options.php:1979
+msgid "Delete this image"
+msgstr "Borrar esta imagen"
+
+#: lib/options/options.php:1979 lib/options/options.php:2345
+msgid "Delete"
+msgstr "Borrar"
+
+#: lib/options/options.php:2046
+msgid "Cannot delete file. Something's wrong."
+msgstr "No se puede borrar el archivo. Algo va mal."
+
+#: lib/options/options.php:2135 lib/options/options.php:2163
+msgid "Remove"
+msgstr "Eliminar"
+
+#: lib/options/options.php:2139
+msgid "Add"
+msgstr "Adicionar"
+
+#: lib/options/options.php:2234
+msgid "Select Files"
+msgstr "Seleccionar Archivos"
+
+#: lib/options/options.php:2341
+msgid "Uploaded files"
+msgstr "Subir archivos"
+
+#: lib/options/options.php:2351
+msgid "Upload new files"
+msgstr "Subir nuevos archivos"
+
+#: lib/options/options.php:2357
+msgid "Add more files"
+msgstr "Adicionar más archivos"
+
+#: lib/options/options.php:2462
+msgid "Select a color"
+msgstr "Seleccionar un color"
+
+#: views/wpus-options.php:158
+msgid "Invalid license key. Please check your key or contact support."
+msgstr ""
+"Clave de licencia inválida. Por favor chequee su clave o contacte al soporte."
+
+#: views/wpus-options.php:278
+msgid "General Settings"
+msgstr "Ajustes Generales"
+
+#: views/wpus-options.php:281
+msgid "Taxonomy Settings"
+msgstr "Ajustes de Taxonomía"
+
+#: views/wpus-options.php:282
+msgid "Post Meta Settings"
+msgstr "Ajustes de Meta de Post"
+
+#: views/wpus-options.php:283
+msgid "Post Type Settings"
+msgstr "Ajustes de Tipo de Post"
+
+#: views/wpus-options.php:286
+msgid "About"
+msgstr "Acerca de "
+
+#: views/wpus-options.php:287
+msgid "Reset to Defaults"
+msgstr "Restaurar a Valores por Defecto"
+
+#: views/wpus-options.php:296
+msgid ""
+"<div class='alert alert-danger'><strong>License Key</strong><p>WP Ultimate "
+"Search Pro is installed but your license key hasn't been entered. Enter your "
+"license key in the box above and press 'Save Changes' below. Then "
+"<strong>reload</strong> the page to activate.</div>"
+msgstr ""
+"<div class='alert alert-danger'><strong>Clave de Licencia</strong><p> WP "
+"Ultimate Search Pro está instalado pero su clave de licencia no ha sido "
+"entrada. Por favor entre su clave de licencia en la casilla de arriba y "
+"presione ‘Salvar Cambios’ debajo. Luego <strong>recargue</strong>  la página "
+"para activarlo."
+
+#: views/wpus-options.php:312
+msgid "Show facets"
+msgstr "Mostrar facetas"
+
+#: views/wpus-options.php:313
+msgid "Show available facets when the search box is first clicked."
+msgstr ""
+"Mostrar facetas disponibles cuando a la casilla de búsqueda se le hace clic "
+"de primera."
+
+#: views/wpus-options.php:319
+msgid "Single Facet Mode"
+msgstr "Modo de Faceta Simple"
+
+#: views/wpus-options.php:320
+msgid ""
+"When single facet mode is enabled, the facet selection dialog will be "
+"hidden, and the user will get a dropdown of available values on their first "
+"click."
+msgstr ""
+"Cuando el modo de faceta simple se selecciona, el diálogo de selección de "
+"faceta se ocultará, y el usuario obtendrá un dropbox de los valores "
+"disponibles en su primer clic."
+
+#: views/wpus-options.php:326
+msgid "Single Use Facets"
+msgstr "Facetas de Uso Simple"
+
+#: views/wpus-options.php:327
+msgid ""
+"When this box is checked, a given facet can only be used one time in a "
+"search query. After this, the facet will no longer appear as an option."
+msgstr ""
+"Cuando esta casilla se selecciona, una faceta dada solamente puede ser "
+"utilizada una vez en la consulta de búsqueda. Luego de esto, la faceta no "
+"aparecerá más como una opción."
+
+#: views/wpus-options.php:334
+msgid "Taxonomies"
+msgstr "Taxonomías"
+
+#: views/wpus-options.php:335
+msgid "Category"
+msgstr "Categoría"
+
+#: views/wpus-options.php:342
+msgid "Tag"
+msgstr "Etiqueta"
+
+#: views/wpus-options.php:349
+msgid "Style"
+msgstr "Estilo"
+
+#: views/wpus-options.php:357
+msgid "Placeholder"
+msgstr "Marcador de Posición"
+
+#: views/wpus-options.php:358
+msgid "Text displayed in the search box before a query is entered."
+msgstr ""
+"Texto mostrado en la casilla de búsqueda antes de que la consulta se entre."
+
+#: views/wpus-options.php:364
+msgid "Remainder"
+msgstr "Recordatorio"
+
+#: views/wpus-options.php:365
+msgid "Text displayed to preface queries which don't use a facet."
+msgstr "Texto mostrado para consultas de prólogo que no usan una faceta."
+
+#: views/wpus-options.php:372
+msgid "Override default search box"
+msgstr "Sobrescribir casilla de búsqueda por defecto"
+
+#: views/wpus-options.php:373
+msgid ""
+"Select this to replace the default WordPress search for with an instance of "
+"WP Ultimate Search."
+msgstr ""
+"Seleccione esto para reemplazar la búsqueda por defecto de WordPress con una "
+"instancia de WP Ultimate Search."
+
+#: views/wpus-options.php:389
+msgid "Radius"
+msgstr "Radio"
+
+#: views/wpus-options.php:390
+msgid "Set the default distance for radius searches"
+msgstr "Establecer la distancia por defecto para las búsquedas de radio."
+
+#: views/wpus-options.php:396
+msgid "Format"
+msgstr "Formato"
+
+#: views/wpus-options.php:404
+msgid "Radius Label"
+msgstr "Etiqueta de Radio"
+
+#: views/wpus-options.php:405
+msgid "Set the text that should be displayed as the label for the radius facet"
+msgstr ""
+"Establecer el texto que debería ser mostrado como la etiqueta para la faceta "
+"de radio"
+
+#: views/wpus-options.php:422
+msgid "Search logic"
+msgstr "Lógica de búsqueda"
+
+#: views/wpus-options.php:423
+msgid ""
+"Whether to use AND logic or OR logic for facets within the same taxonomy."
+msgstr ""
+"Cuándo usar el AND lógico o el OR lógico para facetas en la misma taxonomía."
+
+#: views/wpus-options.php:433 views/wpus-options.php:487
+msgid "\"Clear search\" button"
+msgstr "Botón \"Borrar búsqueda\" "
+
+#: views/wpus-options.php:434 views/wpus-options.php:488
+msgid "Display a button after search results to clear all terms."
+msgstr ""
+"Mostrar un botón luego de los resultados de búsqueda para borrar todos los "
+"términos."
+
+#: views/wpus-options.php:449
+msgid "Search results page"
+msgstr "Página de resultados de búsqueda"
+
+#: views/wpus-options.php:459
+msgid "Search results template"
+msgstr "Plantilla de los resultados de búsqueda"
+
+#: views/wpus-options.php:460
+msgid ""
+"Select a template for search results. <a href=\"http://mindsharelabs.com/kb/"
+"how-do-i-customize-the-search-results-template/\" target=\"_BLANK\">Custom "
+"templates</a> will override this section."
+msgstr ""
+"Seleccionar una plantilla para los resultados de la búsqueda.<a href="
+"\"http://mindsharelabs.com/kb/how-do-i-customize-the-search-results-template/"
+"\" target=\"_BLANK\">Las plantillas personalizadas</a> van a sobrescribir "
+"esta sección."
+
+#: views/wpus-options.php:473
+msgid "\"No results\" message"
+msgstr "Mensaje de \"Sin resultados\""
+
+#: views/wpus-options.php:474
+msgid "Customize the message displayed when no results are found."
+msgstr "Personalizar el mensaje mostrado cuando no se muestran resultados."
+
+#: views/wpus-options.php:480
+msgid "Highlight Terms"
+msgstr "Términos Resaltados"
+
+#: views/wpus-options.php:481
+msgid "Highlight matching terms in search results."
+msgstr "Resaltar términos encontrados en los resultados de la búsqueda."
+
+#: views/wpus-options.php:494
+msgid "Button text"
+msgstr "Texto del botón"
+
+#: views/wpus-options.php:501
+msgid "Button CSS class"
+msgstr "Clase CSS del botón"
+
+#: views/wpus-options.php:502
+msgid "Apply a CSS class to match your theme."
+msgstr "Aplicar una clase CSS para ajustar su tema."
+
+#: views/wpus-options.php:508
+msgid "Disable Permalinks"
+msgstr "Deshabilitar Enlaces Permanentes"
+
+#: views/wpus-options.php:509
+msgid ""
+"By default, Ultimate Search will update the URL in a user's browser as they "
+"modify their search query. Check this box to disable that functionality."
+msgstr ""
+"Por defecto, Ultimate Search actualizará la URL en un navegador del usuario "
+"mientras ellos modifican su consulta de búsqueda. Seleccione esta casilla "
+"para deshabilitar esa funcionalidad."
+
+#: views/wpus-options.php:527
+msgid "Enable"
+msgstr "Habilitar"
+
+#: views/wpus-options.php:528
+msgid "Check this box to enable searching by user."
+msgstr "Seleccione esta casilla para habilitar la búsqueda del usuario."
+
+#: views/wpus-options.php:533
+msgid "Label"
+msgstr "Etiqueta"
+
+#: views/wpus-options.php:534
+msgid "Label to show in the dropdown of available facets."
+msgstr "Etiqueta para mostrar en el dropdown de facetas disponibles."
+
+#: views/wpus-options.php:541
+msgid "Autocomplete"
+msgstr "Autocompletar"
+
+#: views/wpus-options.php:542
+msgid "Check this box to enable autocomplete for user searches."
+msgstr ""
+"Seleccione esta casilla para habilitar autocompletamiento para las búsquedas "
+"del usuario."
+
+#: views/wpus-options.php:548
+msgid "User Roles"
+msgstr "Roles de Usuario"
+
+#: views/wpus-options.php:549
+msgid "Select the user roles to return in results."
+msgstr "Seleccione los roles de usuario a devolver en los resultados."
+
+#: views/wpus-options.php:567
+msgid "Track Events"
+msgstr "Eventos de Trackeo"
+
+#: views/wpus-options.php:568
+msgid ""
+"Enabling this option will cause searches to appear as events in your Google "
+"Analytics reports<br /> (requires an Analytics tracking code to be already "
+"installed.)"
+msgstr ""
+"Habilitar esta opción causará que las búsquedas aparezcan como eventos en "
+"sus reportes de Google Analytics  <br/> (requiere que un código de trackeo "
+"de Analytics ya esté instalado.)"
+
+#: views/wpus-options.php:574
+msgid "Event Category"
+msgstr "Categoría de Evento"
+
+#: views/wpus-options.php:575
+msgid "Set the category your events will appear under in reports."
+msgstr ""
+"Establecer la categoría con la que sus eventos aparecerán en los reportes."
+
+#: views/wpus-options.php:583
+msgid "Reset options"
+msgstr "Restaurar opciones"
+
+#: views/wpus-options.php:585
+msgid ""
+"Check this box and click \"Save Changes\" below to reset all options to "
+"their defaults."
+msgstr ""
+"Seleccione esta casilla y haga clic en \"Salvar Cambios\" debajo para "
+"restaurar todas las opciones a sus valores por defecto."
+
+#: views/wpus-widget.php:15
+msgid "Displays the WP Ultimate Search bar"
+msgstr "Muestra  la barra de WP Ultimate Search "
+
+#: views/wpus-widget.php:75
+msgid "Search"
+msgstr "Buscar"
+
+#: views/wpus-widget.php:79
+msgid "Title:"
+msgstr "Título:"
+
+#. Plugin Name of the plugin/theme
+msgid "WP Ultimate Search"
+msgstr "WP Ultimate Search "
+
+#. Plugin URI of the plugin/theme
+msgid "http://ultimatesearch.mindsharelabs.com"
+msgstr "http://ultimatesearch.mindsharelabs.com"
+
+#. Description of the plugin/theme
+msgid "Advanced faceted AJAX search and filter utility."
+msgstr "Herramienta de búsqueda y filtrado avanzada de facetas con AJAX."
+
+#. Author of the plugin/theme
+msgid "Mindshare Studios, Inc."
+msgstr "Mindshare Studios, Inc."
+
+#. Author URI of the plugin/theme
+msgid "http://mindsharelabs.com/"
+msgstr "http://mindsharelabs.com/"
