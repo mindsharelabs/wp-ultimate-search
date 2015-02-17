@@ -1101,7 +1101,7 @@ if(!class_exists("WPUltimateSearch")) :
 						SELECT pm.meta_value as value FROM {$wpdb->postmeta} pm
 						WHERE pm.meta_key LIKE '{$facet}'
 						GROUP BY value
-						ORDER BY value DESC";
+						ORDER BY value ASC";
 					// this will be cached, eventually
 					$results = $wpdb->get_results($querystring);
 
