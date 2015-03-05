@@ -6,7 +6,7 @@ if(!class_exists('WPUltimateSearchOptions')) {
 
 	class WPUltimateSearchOptions extends WPUS_options {
 
-		private $settings = array(), $sections = array(), $options, $is_active;
+		private $settings = array(), $sections = array(), $options;
 		public $setup = array(
 			'project_name' => 'WP Ultimate Search',
 			'project_slug' => 'wp-ultimate-search',
@@ -20,10 +20,8 @@ if(!class_exists('WPUltimateSearchOptions')) {
 
 			$this->options = get_option('wpus_options');
 
-			$this->is_active = TRUE;
-
 			if(!function_exists('is_plugin_active_for_network')) {
-				require_once(ABSPATH . '/wp-admin/includes/plugin.php');
+				require_once(ABSPATH.'/wp-admin/includes/plugin.php');
 			}
 
 			$this->create_sections();
@@ -45,12 +43,6 @@ if(!class_exists('WPUltimateSearchOptions')) {
 			add_action('show_field_results_page', array($this, 'show_search_select'), 10, 2);
 			add_action('show_field_user_roles', array($this, 'user_roles'), 10, 2);
 
-			// Field filters
-			add_filter('validate_field_license_key', array($this, 'activate_license'), 20, 2);
-
-			// Global filters
-			add_filter('validate_wpus_options', array($this, 'record_activation'));
-
 			add_action('init', array($this, 'initialize'));
 		}
 
@@ -64,13 +56,16 @@ if(!class_exists('WPUltimateSearchOptions')) {
 
 		public function wpus_admin_scripts() {
 
-			wp_enqueue_script('tiptip', WPUS_DIR_URL . 'js/jquery.tipTip.minified.js', array('jquery'));
-			wp_enqueue_script('main', WPUS_DIR_URL . 'js/wpus-main-admin.js', array('jquery'));
+			wp_enqueue_script('tiptip', WPUS_DIR_URL.'js/jquery.tipTip.minified.js', array('jquery'));
+			wp_enqueue_script('main', WPUS_DIR_URL.'js/wpus-main-admin.js', array('jquery'));
 			wp_localize_script('main', 'main', json_encode($this->sections));
 
-			wp_enqueue_style('wpus-admin', WPUS_DIR_URL . 'css/wpus-options.css');
+			wp_enqueue_style('wpus-admin', WPUS_DIR_URL.'css/wpus-options.css');
 		}
 
+		/**
+		 *
+		 */
 		private function update_taxonomies() {
 
 			$taxonomies = get_taxonomies(array('public' => TRUE));
@@ -162,15 +157,10 @@ if(!class_exists('WPUltimateSearchOptions')) {
 		}
 
 		private function create_sections() {
-
 			$this->sections['wpus-options']['general'] = __('General Settings');
-
-			if($this->is_active) {
-				$this->sections['wpus-options']['taxopts'] = __('Taxonomy Settings');
-				$this->sections['wpus-options']['metaopts'] = __('Post Meta Settings');
-				$this->sections['wpus-options']['typeopts'] = __('Post Type Settings');
-			}
-
+			$this->sections['wpus-options']['taxopts'] = __('Taxonomy Settings');
+			$this->sections['wpus-options']['metaopts'] = __('Post Meta Settings');
+			$this->sections['wpus-options']['typeopts'] = __('Post Type Settings');
 			$this->sections['wpus-options']['about'] = __('About');
 			$this->sections['wpus-options']['reset'] = __('Reset to Defaults');
 		}
@@ -207,22 +197,21 @@ if(!class_exists('WPUltimateSearchOptions')) {
 				'type' => 'checkbox',
 				'section' => 'general'
 			);
-			if(!$this->is_active) {
-				$this->settings['enable_category'] = array(
-					'title' => __('Taxonomies'),
-					'desc' => __('Category'),
-					'std' => 1,
-					'type' => 'checkbox',
-					'section' => 'general'
-				);
-				$this->settings['enable_tag'] = array(
-					'title' => __(''),
-					'desc' => __('Tag'),
-					'std' => 1,
-					'type' => 'checkbox',
-					'section' => 'general'
-				);
-			}
+			$this->settings['enable_category'] = array(
+				'title' => __('Taxonomies'),
+				'desc' => __('Category'),
+				'std' => 1,
+				'type' => 'checkbox',
+				'section' => 'general'
+			);
+			$this->settings['enable_tag'] = array(
+				'title' => __(''),
+				'desc' => __('Tag'),
+				'std' => 1,
+				'type' => 'checkbox',
+				'section' => 'general'
+			);
+
 			$this->settings['style'] = array(
 				'title' => __('Style'),
 				'desc' => __(''),
@@ -257,35 +246,33 @@ if(!class_exists('WPUltimateSearchOptions')) {
 			/ RADIUS SEARCH
 			*/
 
-			if($this->is_active) {
-				$this->settings['radius_heading'] = array(
-					'section' => 'general',
-					'title' => 'Radius Searches',
-					'type' => 'heading'
-				);
-				$this->settings['radius_dist'] = array(
-					'title' => __('Radius'),
-					'desc' => __('Set the default distance for radius searches'),
-					'std' => '60',
-					'type' => 'text',
-					'section' => 'general'
-				);
-				$this->settings['radius_format'] = array(
-					'title' => __('Format'),
-					'desc' => __(''),
-					'choices' => array("km" => "Kilometers", "mi" => "Miles", "m" => "Meters"),
-					'std' => 'km',
-					'type' => 'select',
-					'section' => 'general'
-				);
-				$this->settings['radius_label'] = array(
-					'title' => __('Radius Label'),
-					'desc' => __('Set the text that should be displayed as the label for the radius facet'),
-					'std' => 'distance (km)',
-					'type' => 'text',
-					'section' => 'general'
-				);
-			}
+			$this->settings['radius_heading'] = array(
+				'section' => 'general',
+				'title' => 'Radius Searches',
+				'type' => 'heading'
+			);
+			$this->settings['radius_dist'] = array(
+				'title' => __('Radius'),
+				'desc' => __('Set the default distance for radius searches'),
+				'std' => '60',
+				'type' => 'text',
+				'section' => 'general'
+			);
+			$this->settings['radius_format'] = array(
+				'title' => __('Format'),
+				'desc' => __(''),
+				'choices' => array("km" => "Kilometers", "mi" => "Miles", "m" => "Meters"),
+				'std' => 'km',
+				'type' => 'select',
+				'section' => 'general'
+			);
+			$this->settings['radius_label'] = array(
+				'title' => __('Radius Label'),
+				'desc' => __('Set the text that should be displayed as the label for the radius facet'),
+				'std' => 'distance (km)',
+				'type' => 'text',
+				'section' => 'general'
+			);
 
 			/*
 			/ SEARCH RESULTS
@@ -325,7 +312,7 @@ if(!class_exists('WPUltimateSearchOptions')) {
 
 			$this->settings['results_page'] = array(
 				'title' => __('Search results page'),
-				'desc' => __('Specify the page with the [' . WPUS_PLUGIN_SLUG . '-results] shortcode.<br />Searches conducted from widget will redirect to this page.'),
+				'desc' => __('Specify the page with the ['.WPUS_PLUGIN_SLUG.'-results] shortcode.<br />Searches conducted from widget will redirect to this page.'),
 				'choices' => $page_select,
 				'std' => array_search('Search', $page_select),
 				'type' => 'select',
@@ -392,42 +379,40 @@ if(!class_exists('WPUltimateSearchOptions')) {
 			/*
 			/ USER SEARCH
 			*/
-			if($this->is_active) {
-				$this->settings['user_search'] = array(
-					'section' => 'general',
-					'title' => 'User Search',
-					'type' => 'heading'
-				);
+			$this->settings['user_search'] = array(
+				'section' => 'general',
+				'title' => 'User Search',
+				'type' => 'heading'
+			);
 
-				$this->settings['enable_user_search'] = array(
-					'section' => 'general',
-					'title' => __('Enable'),
-					'desc' => __('Check this box to enable searching by user.'),
-					'type' => 'checkbox',
-					'std' => 0
-				);
-				$this->settings['user_label'] = array(
-					'title' => __('Label'),
-					'desc' => __('Label to show in the dropdown of available facets.'),
-					'std' => "user",
-					'type' => 'text',
-					'section' => 'general'
-				);
-				$this->settings['user_autocomplete'] = array(
-					'section' => 'general',
-					'title' => __('Autocomplete'),
-					'desc' => __('Check this box to enable autocomplete for user searches.'),
-					'type' => 'checkbox',
-					'std' => 0
-				);
-				$this->settings['enabled_roles'] = array(
-					'section' => 'general',
-					'title' => __('User Roles'),
-					'desc' => __('Select the user roles to return in results.'),
-					'type' => 'user_roles',
-					'std' => 0
-				);
-			}
+			$this->settings['enable_user_search'] = array(
+				'section' => 'general',
+				'title' => __('Enable'),
+				'desc' => __('Check this box to enable searching by user.'),
+				'type' => 'checkbox',
+				'std' => 0
+			);
+			$this->settings['user_label'] = array(
+				'title' => __('Label'),
+				'desc' => __('Label to show in the dropdown of available facets.'),
+				'std' => "user",
+				'type' => 'text',
+				'section' => 'general'
+			);
+			$this->settings['user_autocomplete'] = array(
+				'section' => 'general',
+				'title' => __('Autocomplete'),
+				'desc' => __('Check this box to enable autocomplete for user searches.'),
+				'type' => 'checkbox',
+				'std' => 0
+			);
+			$this->settings['enabled_roles'] = array(
+				'section' => 'general',
+				'title' => __('User Roles'),
+				'desc' => __('Select the user roles to return in results.'),
+				'type' => 'user_roles',
+				'std' => 0
+			);
 
 			/*
 			/ ANALYTICS SETTINGS
@@ -472,23 +457,23 @@ if(!class_exists('WPUltimateSearchOptions')) {
 			}
 
 			$roles = $wp_roles->get_names();
-			$options = get_option('wpus_options');
+			$options = $this->options;
 
 			foreach($roles as $role_value => $role_name) {
-				echo '<input class="checkbox" id="' . $role_value . '" type="checkbox" name="wpus_options[' . $id . '][' . $role_value . ']" value="1" ' . checked($options[$id][$role_value], 1, FALSE) . ' />';
-				echo '<label for="' . $role_value . '">' . $role_name . '</label><br />';
+				echo '<input class="checkbox" id="'.$role_value.'" type="checkbox" name="wpus_options['.$id.']['.$role_value.']" value="1" '.checked(@$options[$id][$role_value], 1, FALSE).' />';
+				echo '<label for="'.$role_value.'">'.$role_name.'</label><br />';
 			}
 		}
 
 		public function show_search_select($id, $field) {
 
-			$options = get_option('wpus_options');
+			$options = $this->options;
 
-			echo '<div id="' . $id . '" class="bfh-selectbox ' . $field['class'] . '" data-name="wpus_options[' . $id . ']' . '" data-value="' . $this->options[$id] . '" ' . ($field['disabled'] ? 'disabled="true"' : '') . ' data-filter="true" >';
+			echo '<div id="'.$id.'" class="bfh-selectbox '.$field['class'].'" data-name="wpus_options['.$id.']'.'" data-value="'.@$this->options[$id].'" '.($field['disabled'] ? 'disabled="true"' : '').' data-filter="true" >'; // added error suppression for notices per https://github.com/mindsharestudios/wp-ultimate-search/issues/3
 
 			foreach($field['choices'] as $value => $label) {
 
-				echo '<div data-value="' . esc_attr($value) . '"' . selected($options[$id], $value, FALSE) . '>' . $label . '</div>';
+				echo '<div data-value="'.esc_attr($value).'"'.selected($options[$id], $value, FALSE).'>'.$label.'</div>';
 			}
 
 			echo '</div>';
@@ -497,7 +482,10 @@ if(!class_exists('WPUltimateSearchOptions')) {
 		public function display_about_section($slug, $settings) {
 			?>
 
-			<p>Developed by <a href="http://mind.sh/are/?ref=wpus">Mindshare Studios, Inc</a>. If you like what we do and want to show your support, consider <a href="http://mind.sh/are/donate/">making a donation</a>.</p>
+			<p>Developed by <a href="http://mind.sh/are/?ref=wpus">Mindshare Studios, Inc</a>. If you like what we do and want to show your support, consider <a href="http://mind.sh/are/donate/">making
+																																																   a
+																																																   donation</a>.
+			</p>
 
 			<p>Plugin page on <a href="http://wordpress.org/extend/plugins/<?= WPUS_PLUGIN_SLUG ?>/">WordPress.org</a></p>
 
@@ -513,13 +501,10 @@ if(!class_exists('WPUltimateSearchOptions')) {
 		}
 
 		public function display_taxonomy_section($slug, $settings) {
+
+			$options = $this->options;
+
 			?>
-
-			<?php if(!$this->is_active) {
-				return;
-			} ?>
-
-			<?php $options = get_option('wpus_options'); ?>
 
 			<table class="widefat table table-striped">
 				<thead>
@@ -564,55 +549,56 @@ if(!class_exists('WPUltimateSearchOptions')) {
 				</tfoot>
 				<tbody>
 				<?php
+				if(isset($options) && array_key_exists('taxonomies', $options)) {
+					foreach($options['taxonomies'] as $taxonomy => $value) {
 
-				foreach($options['taxonomies'] as $taxonomy => $value) {
+						// If the taxonomy is active, set the 'checked' class
+						if(!empty($value['enabled'])) {
+							$checked = 'checked';
+						} else {
+							$checked = '';
+							$options['taxonomies'][$taxonomy]['enabled'] = 0;
+						}
 
-					// If the taxonomy is active, set the 'checked' class
-					if(!empty($value['enabled'])) {
-						$checked = 'checked';
-					} else {
-						$checked = '';
-						$options['taxonomies'][$taxonomy]['enabled'] = 0;
-					}
+						if(empty($value["autocomplete"])) {
+							$options["taxonomies"][$taxonomy]["autocomplete"] = 0;
+						}
 
-					if(empty($value["autocomplete"])) {
-						$options["taxonomies"][$taxonomy]["autocomplete"] = 0;
-					}
-
-					// Generate the list of terms for the "Count" tooltip
-					$terms = get_terms($taxonomy);
-					$termcount = count($terms);
-					$termstring = '';
-					foreach($terms as $term) {
-						$termstring .= $term->name . ', ';
-					}
-					?>
-					<tr>
-						<th scope="row" class="tax"><span id="<?php echo $taxonomy . '-title' ?>" class="<?php echo $checked ?>"><?php echo $taxonomy ?>:<div class="VS-icon-cancel"></div></span>
-						</th>
-						<td>
-							<input class="checkbox" type="checkbox" id="<?php echo $taxonomy ?>" name="wpus_options[taxonomies][<?php echo $taxonomy ?>][enabled]" value="1" <?php echo checked($options['taxonomies'][$taxonomy]['enabled'], 1, FALSE) ?> />
-						</td>
-						<td>
-							<input class="" type="text" id="<?php echo $taxonomy ?>" name="wpus_options[taxonomies][<?php echo $taxonomy ?>][label]" size="20" placeholder="<?php echo $taxonomy ?>" value="<?php echo esc_attr($options['taxonomies'][$taxonomy]['label']) ?>" />
-						</td>
-						<td><?php echo $termcount ?>
-							<div class="tooltip" title="<?php echo $termstring ?>"></div>
-						</td>
-						<td>
-							<input class="" type="text" id="<?php echo $taxonomy ?>" name="wpus_options[taxonomies][<?php echo $taxonomy ?>][max]" size="3" placeholder="0" value="<?php echo esc_attr($options['taxonomies'][$taxonomy]['max']) ?>" />
-						</td>
-						<td>
-							<input class="" type="text" id="<?php echo $taxonomy ?>" name="wpus_options[taxonomies][<?php echo $taxonomy ?>][exclude]" size="30" placeholder="" value="<?php echo esc_attr($options['taxonomies'][$taxonomy]['exclude']) ?>" />
-						</td>
-						<td>
-							<input class="" type="text" id="<?php echo $taxonomy ?>" name="wpus_options[taxonomies][<?php echo $taxonomy ?>][include]" size="30" placeholder="" value="<?php echo(isset($options['taxonomies'][$taxonomy]['include']) ? esc_attr($options['taxonomies'][$taxonomy]['include']) : '') ?>" />
-						</td>
-						<td>
-							<input class="checkbox" type="checkbox" name="wpus_options[taxonomies][<?php echo $taxonomy ?>][autocomplete]" value="1" <?php echo checked($options["taxonomies"][$taxonomy]["autocomplete"], 1, FALSE) ?> />
-						</td>
-					</tr>
-				<?php } ?>
+						// Generate the list of terms for the "Count" tooltip
+						$terms = get_terms($taxonomy);
+						$termcount = count($terms);
+						$termstring = '';
+						foreach($terms as $term) {
+							$termstring .= $term->name.', ';
+						}
+						?>
+						<tr>
+							<th scope="row" class="tax"><span id="<?php echo $taxonomy.'-title' ?>" class="<?php echo $checked ?>"><?php echo $taxonomy ?>:<div class="VS-icon-cancel"></div></span>
+							</th>
+							<td>
+								<input class="checkbox" type="checkbox" id="<?php echo $taxonomy ?>" name="wpus_options[taxonomies][<?php echo $taxonomy ?>][enabled]" value="1" <?php echo checked($options['taxonomies'][$taxonomy]['enabled'], 1, FALSE) ?> />
+							</td>
+							<td>
+								<input class="" type="text" id="<?php echo $taxonomy ?>" name="wpus_options[taxonomies][<?php echo $taxonomy ?>][label]" size="20" placeholder="<?php echo $taxonomy ?>" value="<?php echo esc_attr($options['taxonomies'][$taxonomy]['label']) ?>" />
+							</td>
+							<td><?php echo $termcount ?>
+								<div class="tooltip" title="<?php echo $termstring ?>"></div>
+							</td>
+							<td>
+								<input class="" type="text" id="<?php echo $taxonomy ?>" name="wpus_options[taxonomies][<?php echo $taxonomy ?>][max]" size="3" placeholder="0" value="<?php echo esc_attr($options['taxonomies'][$taxonomy]['max']) ?>" />
+							</td>
+							<td>
+								<input class="" type="text" id="<?php echo $taxonomy ?>" name="wpus_options[taxonomies][<?php echo $taxonomy ?>][exclude]" size="30" placeholder="" value="<?php echo esc_attr($options['taxonomies'][$taxonomy]['exclude']) ?>" />
+							</td>
+							<td>
+								<input class="" type="text" id="<?php echo $taxonomy ?>" name="wpus_options[taxonomies][<?php echo $taxonomy ?>][include]" size="30" placeholder="" value="<?php echo(isset($options['taxonomies'][$taxonomy]['include']) ? esc_attr($options['taxonomies'][$taxonomy]['include']) : '') ?>" />
+							</td>
+							<td>
+								<input class="checkbox" type="checkbox" name="wpus_options[taxonomies][<?php echo $taxonomy ?>][autocomplete]" value="1" <?php echo checked($options["taxonomies"][$taxonomy]["autocomplete"], 1, FALSE) ?> />
+							</td>
+						</tr>
+					<?php }
+				} ?>
 				</tbody>
 			</table>
 		<?php
@@ -621,11 +607,10 @@ if(!class_exists('WPUltimateSearchOptions')) {
 		public function display_meta_section($slug, $settings) {
 			?>
 
-			<?php if(!$this->is_active) {
-				return;
-			} ?>
+			<?php
 
-			<?php $options = get_option('wpus_options'); ?>
+			$options = $this->options;
+			?>
 
 			<table class="widefat table table-striped">
 				<thead>
@@ -691,7 +676,7 @@ if(!class_exists('WPUltimateSearchOptions')) {
 
 					?>
 					<tr>
-						<th scope="row" class="tax"><span id="<?php echo $metafield . '-title' ?>" class="<?php echo $checked ?>"><?php echo $metafield ?>:<div class="VS-icon-cancel"></div></span>
+						<th scope="row" class="tax"><span id="<?php echo $metafield.'-title' ?>" class="<?php echo $checked ?>"><?php echo $metafield ?>:<div class="VS-icon-cancel"></div></span>
 						</th>
 						<td>
 							<input class="checkbox" type="checkbox" id="<?php echo $metafield ?>" name="wpus_options[metafields][<?php echo $metafield ?>][enabled]" value="1" <?php echo checked($options["metafields"][$metafield]["enabled"], 1, FALSE) ?> />
@@ -699,7 +684,7 @@ if(!class_exists('WPUltimateSearchOptions')) {
 						<td>
 							<input class="" type="text" id="<?php echo $metafield ?>" name="wpus_options[metafields][<?php echo $metafield ?>][label]" size="20" placeholder="<?php echo $metafield ?>" value="<?php echo esc_attr($options["metafields"][$metafield]["label"]) ?>" />
 						</td>
-						<td><?php echo $value["count"] ?></td>
+						<td><?php echo @$value["count"] ?></td>
 						<td>
 							<div class="bfh-selectbox " id="<?php echo $metafield ?>" data-name="wpus_options[metafields][<?php echo $metafield ?>][type]" data-value="<?php echo $options["metafields"][$metafield]["type"] ?>">
 								<div data-value="string" <?php echo selected($options["metafields"][$metafield]["type"], "string", FALSE) ?> >String</div>
@@ -725,9 +710,7 @@ if(!class_exists('WPUltimateSearchOptions')) {
 		public function display_type_section($slug, $settings) {
 			?>
 
-			<?php if(!$this->is_active) {
-				return;
-			} ?>
+
 
 			<table class="widefat table table-striped">
 				<thead>
@@ -747,7 +730,7 @@ if(!class_exists('WPUltimateSearchOptions')) {
 				</tr>
 				</tfoot>
 				<tbody>
-				<?php $options = get_option('wpus_options'); ?>
+				<?php $options = $this->options; ?>
 
 				<?php foreach($options["posttypes"] as $posttype => $value) {
 
@@ -759,7 +742,7 @@ if(!class_exists('WPUltimateSearchOptions')) {
 					}
 					?>
 					<tr>
-						<th scope="row" class="tax"><span id="<?php echo $posttype . '-title' ?>" class="<?php echo $checked ?>"><?php echo $posttype ?>
+						<th scope="row" class="tax"><span id="<?php echo $posttype.'-title' ?>" class="<?php echo $checked ?>"><?php echo $posttype ?>
 								<div class="VS-icon-cancel"></div></span>
 							<input class="" type="hidden" id="<?php echo $posttype ?>" name="wpus_options[posttypes][<?php echo $posttype ?>][label]" value="<?php echo esc_attr($options["posttypes"][$posttype]["label"]) ?>" />
 						</th>

@@ -3,7 +3,7 @@
 Plugin Name: WP Ultimate Search
 Plugin URI: https://wordpress.org/plugins/wp-ultimate-search/
 Description: Advanced faceted AJAX search and filter utility.
-Version: 2.0
+Version: 2.0.1
 Author: Mindshare Studios, Inc.
 Author URI: https://mindsharelabs.com/
 */
@@ -57,7 +57,7 @@ if(!defined('WPUS_DIR_URL')) {
 // check WordPress version
 global $wp_version;
 if(version_compare($wp_version, WPUS_MIN_WP_VERSION, "<")) {
-	exit(WPUS_PLUGIN_NAME . ' requires WordPress ' . WPUS_MIN_WP_VERSION . ' or newer.');
+	exit(WPUS_PLUGIN_NAME.' requires WordPress '.WPUS_MIN_WP_VERSION.' or newer.');
 }
 
 // deny direct access
@@ -73,20 +73,17 @@ if(!function_exists('add_action')) {
 if(!class_exists("WPUltimateSearch")) :
 	class WPUltimateSearch {
 
-		public $options, $is_active;
+		public $options;
 
 		private $radius_facet;
 
 		function __construct() {
 
-			$this->is_active = false;
 			$this->options = get_option('wpus_options');
 
-			$options = $this->options;
-
 			if(is_admin()) {
-				require_once(WPUS_DIR_PATH . 'lib/options/options.php'); // include Options framework
-				require_once(WPUS_DIR_PATH . 'views/wpus-options.php'); // include options file
+				require_once(WPUS_DIR_PATH.'lib/options/options.php'); // include Options framework
+				require_once(WPUS_DIR_PATH.'views/wpus-options.php'); // include options file
 
 				$plugin = plugin_basename(__FILE__);
 				add_filter("plugin_action_links_$plugin", array($this, 'wpus_settings_link'));
@@ -104,8 +101,8 @@ if(!class_exists("WPUltimateSearch")) :
 			add_filter('wpus_date_display_format', array($this, 'date_display_format'));
 
 			// REGISTER SHORTCODES
-			add_shortcode(WPUS_PLUGIN_SLUG . "-bar", array($this, 'search_form'));
-			add_shortcode(WPUS_PLUGIN_SLUG . "-results", array($this, 'search_results'));
+			add_shortcode(WPUS_PLUGIN_SLUG."-bar", array($this, 'search_form'));
+			add_shortcode(WPUS_PLUGIN_SLUG."-results", array($this, 'search_results'));
 
 			// REGISTER WIDGET
 			add_action('widgets_init', array($this, 'wpus_register_widgets'));
@@ -129,7 +126,7 @@ if(!class_exists("WPUltimateSearch")) :
 		 *
 		 */
 		function wpus_register_widgets() {
-			require_once(WPUS_DIR_PATH . 'views/wpus-widget.php'); // include widget file
+			require_once(WPUS_DIR_PATH.'views/wpus-widget.php'); // include widget file
 			register_widget('wpultimatesearchwidget');
 		}
 
@@ -158,7 +155,7 @@ if(!class_exists("WPUltimateSearch")) :
 			} // if search page already exists, exit
 			$results_page = array(
 				'post_title' => 'Search',
-				'post_content' => '[' . WPUS_PLUGIN_SLUG . '-bar]<br />[' . WPUS_PLUGIN_SLUG . '-results]',
+				'post_content' => '['.WPUS_PLUGIN_SLUG.'-bar]<br />['.WPUS_PLUGIN_SLUG.'-results]',
 				'post_status' => 'publish',
 				'post_type' => 'page',
 				'post_name' => 'search',
@@ -241,7 +238,7 @@ if(!class_exists("WPUltimateSearch")) :
 					} elseif($value['type'] == 'radius') {
 
 						$prepaddr = urlencode($data);
-						$geocode = file_get_contents('http://maps.google.com/maps/api/geocode/json?address=' . $prepaddr . '&sensor=false');
+						$geocode = file_get_contents('http://maps.google.com/maps/api/geocode/json?address='.$prepaddr.'&sensor=false');
 						$output = json_decode($geocode);
 						$lat = $output->results[0]->geometry->location->lat;
 						$long = $output->results[0]->geometry->location->lng;
@@ -418,7 +415,7 @@ if(!class_exists("WPUltimateSearch")) :
 
 							$location = $metadata;
 
-							$location_query_results = get_posts('meta_key=' . $name . '&posts_per_page=-1&post_type=any');
+							$location_query_results = get_posts('meta_key='.$name.'&posts_per_page=-1&post_type=any');
 						} else {
 
 							$query['meta_query'][] = array(
@@ -510,7 +507,7 @@ if(!class_exists("WPUltimateSearch")) :
 		 * @return mixed
 		 */
 		private function highlightsearchterms($text, $keywords) {
-			return preg_replace('/(' . implode('|', $keywords) . ')/i', '<strong class="wpus-highlight">$0</strong>', $text);
+			return preg_replace('/('.implode('|', $keywords).')/i', '<strong class="wpus-highlight">$0</strong>', $text);
 		}
 
 		/**
@@ -585,7 +582,7 @@ if(!class_exists("WPUltimateSearch")) :
 				<script type="text/javascript">
 				    /* <![CDATA[ */
 				    var wpus_response = {
-				            "' . $parameter . '":"' . $response . '"
+				            "'.$parameter.'":"'.$response.'"
 				    };
 				    /* ]]> */
 				    </script>';
@@ -612,7 +609,7 @@ if(!class_exists("WPUltimateSearch")) :
 
 			if($params) {
 				foreach($params as $key => $value) {
-					echo '"' . $key . '":"' . $value . '",';
+					echo '"'.$key.'":"'.$value.'",';
 				}
 			}
 
@@ -638,23 +635,23 @@ if(!class_exists("WPUltimateSearch")) :
 
 			ob_start();
 
-			if(file_exists(TEMPLATEPATH . '/wpus-results-template.php')) {
+			if(file_exists(TEMPLATEPATH.'/wpus-results-template.php')) {
 
-				require(TEMPLATEPATH . '/wpus-results-template.php');
+				require(TEMPLATEPATH.'/wpus-results-template.php');
 			} else {
 
 				if($this->options['results_template'] == 'thumbnail') {
 
-					require(WPUS_DIR_PATH . 'views/wpus-results-template-thumbnail.php');
+					require(WPUS_DIR_PATH.'views/wpus-results-template-thumbnail.php');
 				} elseif($this->options['results_template'] == 'titles') {
 
-					require(WPUS_DIR_PATH . 'views/wpus-results-template-titles.php');
+					require(WPUS_DIR_PATH.'views/wpus-results-template-titles.php');
 				} elseif($this->options['results_template'] == 'images') {
 
-					require(WPUS_DIR_PATH . 'views/wpus-results-template-images.php');
+					require(WPUS_DIR_PATH.'views/wpus-results-template-images.php');
 				} else {
 
-					require(WPUS_DIR_PATH . 'views/wpus-results-template.php');
+					require(WPUS_DIR_PATH.'views/wpus-results-template.php');
 				}
 			}
 
@@ -886,7 +883,7 @@ if(!class_exists("WPUltimateSearch")) :
 			wp_enqueue_script('backbone');
 			wp_enqueue_script(
 				'visualsearch',
-				WPUS_DIR_URL . 'js/visualsearch.min.js',
+				WPUS_DIR_URL.'js/visualsearch.min.js',
 				array(
 					'jquery',
 					'jquery-ui-core',
@@ -908,10 +905,10 @@ if(!class_exists("WPUltimateSearch")) :
 
 			// ENQUEUE AND LOCALIZE MAIN JS FILE
 
-			wp_enqueue_script('wpus-script', WPUS_DIR_URL . 'js/main-pro.js', array('visualsearch'), '', wpus_option('scripts_in_footer'));
+			wp_enqueue_script('wpus-script', WPUS_DIR_URL.'js/main-pro.js', array('visualsearch'), '', wpus_option('scripts_in_footer'));
 			if($radius) {
 				wp_enqueue_script('google-maps', 'http://maps.googleapis.com/maps/api/js?sensor=false&amp;libraries=places');
-				wp_enqueue_script('geocomplete', WPUS_DIR_URL . 'js/jquery.geocomplete.js', array('jquery', 'google-maps'), '', wpus_option('scripts_in_footer'));
+				wp_enqueue_script('geocomplete', WPUS_DIR_URL.'js/jquery.geocomplete.js', array('jquery', 'google-maps'), '', wpus_option('scripts_in_footer'));
 			}
 
 			($options['show_facets'] == 1 ? $showfacets = true : $showfacets = false);
@@ -939,12 +936,12 @@ if(!class_exists("WPUltimateSearch")) :
 			// ENQUEUE STYLES
 			if(isset($options['style'])) {
 				if($options['style'] == 'square') {
-					wp_enqueue_style('wpus-bar', WPUS_DIR_URL . 'css/square.css');
+					wp_enqueue_style('wpus-bar', WPUS_DIR_URL.'css/square.css');
 				} else {
-					wp_enqueue_style('wpus-bar', WPUS_DIR_URL . 'css/visualsearch.css');
+					wp_enqueue_style('wpus-bar', WPUS_DIR_URL.'css/visualsearch.css');
 				}
 			} else {
-				wp_enqueue_style('wpus-bar', WPUS_DIR_URL . 'css/visualsearch.css');
+				wp_enqueue_style('wpus-bar', WPUS_DIR_URL.'css/visualsearch.css');
 			}
 		}
 
@@ -969,7 +966,7 @@ if(!class_exists("WPUltimateSearch")) :
 			}
 
 			// RENDER SEARCH FORM
-			return '<div id="search_box_container" class="' . $class . '"><div id="search"><div class="VS-search">
+			return '<div id="search_box_container" class="'.$class.'"><div id="search"><div class="VS-search">
 			  <div class="VS-search-box-wrapper VS-search-box">
 			    <div class="VS-icon VS-icon-search"></div>
 			    <div class="VS-icon VS-icon-cancel VS-cancel-search-box" title="clear search"></div>
@@ -1129,7 +1126,7 @@ if(!class_exists("WPUltimateSearch")) :
 
 						foreach($roles as $role => $enabled) {
 
-							$users = get_users('role=' . $role);
+							$users = get_users('role='.$role);
 
 							foreach($users as $user) {
 								$values[] = html_entity_decode($user->display_name);
