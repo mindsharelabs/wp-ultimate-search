@@ -3,8 +3,8 @@ Contributors: mindshare
 Donate link: http://mind.sh/are/donate/
 Tags: search, ajax, metadata, meta, post meta, autocomplete, jquery, facet, faceted search, faceting, advanced custom fields, acf, taxonomy, taxonomies, term, terms, facets, geo, wp-geo, radius, latitude, longitude, location
 Requires at least: 4.0
-Tested up to: 4.1.1
-Stable tag: 2.0
+Tested up to: 4.2.2
+Stable tag: 2.0.1
  
 Powerful AJAX-based search alternative which supports faceting queries by taxonomies, terms, location, and post metadata.
 
@@ -37,8 +37,6 @@ Place `[wp-ultimate-search-bar]` where you'd like the search bar, and `[wp-ultim
 
 To use the template tag:
 Put `wp_ultimate_search_bar()` where you'd like the search bar, and `wp_ultimate_search_results()` where you'd like the results.
-
-For additional information, [visit our website](http://mindsharelabs.com/)
 
 == Frequently Asked Questions ==
 
@@ -88,8 +86,12 @@ Help documents and support forums are available at [Mindshare Labs](http://minds
 
 `/assets/screenshot-5.jpg`
 
-
 == Changelog ==
+
+= 2.0.1 =
+* Added all premium "Pro" features into free version, removed license activation
+* Added Spanish translation thanks to Andrew Kurtis <andrewk@webhostinghub.com>
+* Added Russian translation thanks to Andrijana Nikolic <andrijanan@webhostinggeeks.com>
 
 = 1.6.1 =
 * Fixed missing argument bug in widget

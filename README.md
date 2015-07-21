@@ -30,10 +30,11 @@ WP Ultimate Search: a highly customizable WordPress search alternative with the 
 For additional information, [visit our website](http://mindsharelabs.com/)
 
 <h4>Changelog<h4>
-2.0 BETA
+2.0.1
 ------------------------
 * Added all premium "Pro" features into free version, removed license activation
 * Added Spanish translation thanks to Andrew Kurtis <andrewk@webhostinghub.com>
+* Added Russian translation thanks to Andrijana Nikolic <andrijanan@webhostinggeeks.com>
 
 1.6.1
 ------------------------

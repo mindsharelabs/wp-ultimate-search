@@ -1,0 +1,393 @@
+# Copyright (C) 2015 WP Ultimate Search
+# This file is distributed under the same license as the WP Ultimate Search package.
+msgid ""
+msgstr ""
+"Project-Id-Version: WP Ultimate Search 1.6.4\n"
+"Report-Msgid-Bugs-To: http://wordpress.org/support/plugin/wp-ultimate-search\n"
+"POT-Creation-Date: 2015-05-21 22:47:33+00:00\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"PO-Revision-Date: 2015-06-04 16:12+0100\n"
+"Last-Translator: Borisa Djuraskovic <borisad@webhostinghub.com>\n"
+"X-Generator: Poedit 1.7.4\n"
+"Language-Team: \n"
+"Language: sr_RS\n"
+
+#: lib/options/options.php:1062
+msgid "Invalid phone number."
+msgstr "Nevažeći telefonski broj."
+
+#: lib/options/options.php:1074
+msgid "Invalid ZIP code."
+msgstr "Nevažeći poštanski kod."
+
+#: lib/options/options.php:1606
+msgid "Invalid color code."
+msgstr "Nevažeči kod boje."
+
+#: lib/options/options.php:1830
+msgid "You do not have sufficient permissions to edit templates for this site."
+msgstr "Nemate odgovarajuće dozvole da biste uređivali šablone za ovaj site."
+
+#: lib/options/options.php:1833
+msgid "Error Downloading file."
+msgstr "Došlo je do greške prilikom preuzimanja datoteke."
+
+#: lib/options/options.php:1883
+msgid "Error importing settings. Check your import file and try again."
+msgstr ""
+"Došlo je do greške prilikom uvoza podešavanja. Proverite svoju uvezenu datoteku i "
+"pokušajte ponovo."
+
+#: lib/options/options.php:1979
+msgid "Delete this image"
+msgstr "Obriši ovu sliku."
+
+#: lib/options/options.php:1979 lib/options/options.php:2345
+msgid "Delete"
+msgstr "Obriši"
+
+#: lib/options/options.php:2046
+msgid "Cannot delete file. Something's wrong."
+msgstr "Datoteka ne može biti obrisana. Nešto nije u redu."
+
+#: lib/options/options.php:2135 lib/options/options.php:2163
+msgid "Remove"
+msgstr "Ukloni"
+
+#: lib/options/options.php:2139
+msgid "Add"
+msgstr "Dodaj"
+
+#: lib/options/options.php:2234
+msgid "Select Files"
+msgstr "Odaberi datoteke"
+
+#: lib/options/options.php:2341
+msgid "Uploaded files"
+msgstr "Otpremljene datoteke"
+
+#: lib/options/options.php:2351
+msgid "Upload new files"
+msgstr "Otpremi nove datoteke"
+
+#: lib/options/options.php:2357
+msgid "Add more files"
+msgstr "Dodaj još datoteka"
+
+#: lib/options/options.php:2462
+msgid "Select a color"
+msgstr "Odaberi boju"
+
+#: views/wpus-options.php:158
+msgid "Invalid license key. Please check your key or contact support."
+msgstr "Nevažeći ključ licence. Proverite svoj ključ ili se obratite podršci."
+
+#: views/wpus-options.php:278
+msgid "General Settings"
+msgstr "Opšta podešavanja"
+
+#: views/wpus-options.php:281
+msgid "Taxonomy Settings"
+msgstr "Podešavanja taksonomije"
+
+#: views/wpus-options.php:282
+msgid "Post Meta Settings"
+msgstr "Podešavanja meta-posta"
+
+#: views/wpus-options.php:283
+msgid "Post Type Settings"
+msgstr "Podešavanja vrste posta"
+
+#: views/wpus-options.php:286
+msgid "About"
+msgstr "O"
+
+#: views/wpus-options.php:287
+msgid "Reset to Defaults"
+msgstr "Vrati na podrazumevane vrednosti"
+
+#: views/wpus-options.php:296
+msgid ""
+"<div class='alert alert-danger'><strong>License Key</strong><p>WP Ultimate Search "
+"Pro is installed but your license key hasn't been entered. Enter your license key "
+"in the box above and press 'Save Changes' below. Then <strong>reload</strong> the "
+"page to activate.</div>"
+msgstr ""
+"<div class='alert alert-danger'><strong>Ključ licence </strong><p>Instaliran je "
+"WP Ultimate Search Pro, ali niste uneli svoj ključ licence. Unesite svoj ključ "
+"licence u gornji okvir i kliknite na ‘Sačuvaj izmene’ ispod. Zatim <strong>ponovo "
+"učitajte</strong> stranicu da biste je aktivirali.</div>"
+
+#: views/wpus-options.php:312
+msgid "Show facets"
+msgstr "Prikaži facet-e"
+
+#: views/wpus-options.php:313
+msgid "Show available facets when the search box is first clicked."
+msgstr "Prikaži raspoložive facet-e kad neko prvi put klikne na polje za pretragu."
+
+#: views/wpus-options.php:319
+msgid "Single Facet Mode"
+msgstr "Režim jednostrukog facet-a"
+
+#: views/wpus-options.php:320
+msgid ""
+"When single facet mode is enabled, the facet selection dialog will be hidden, and "
+"the user will get a dropdown of available values on their first click."
+msgstr ""
+"Kad je aktiviran režim pojedinačnog facet-a, dijalog za odabir facet-a biće "
+"sakriven i korisnik će dobiti opadajući meni raspoloživih vrednosti na prvi klik."
+
+#: views/wpus-options.php:326
+msgid "Single Use Facets"
+msgstr "Pojedinačna upotreba facet-a"
+
+#: views/wpus-options.php:327
+msgid ""
+"When this box is checked, a given facet can only be used one time in a search "
+"query. After this, the facet will no longer appear as an option."
+msgstr ""
+"Kad je štiklirano ovo polje, dati facet može se koristiti samo jednom u pretrazi. "
+"Nakon toga, facet se više neće ni pojavljivati kao mogućnost."
+
+#: views/wpus-options.php:334
+msgid "Taxonomies"
+msgstr "Taksonomije"
+
+#: views/wpus-options.php:335
+msgid "Category"
+msgstr "Kategorija"
+
+#: views/wpus-options.php:342
+msgid "Tag"
+msgstr "Oznaka"
+
+#: views/wpus-options.php:349
+msgid "Style"
+msgstr "Stil"
+
+#: views/wpus-options.php:357
+msgid "Placeholder"
+msgstr "Zamenski tekst"
+
+#: views/wpus-options.php:358
+msgid "Text displayed in the search box before a query is entered."
+msgstr "Tekst prikazan u polju za pretragu pre nego što se unese pretraga."
+
+#: views/wpus-options.php:364
+msgid "Remainder"
+msgstr "Ostatak"
+
+#: views/wpus-options.php:365
+msgid "Text displayed to preface queries which don't use a facet."
+msgstr "Tekst koji se prikazuje pre pretraga koje ne koriste facet."
+
+#: views/wpus-options.php:372
+msgid "Override default search box"
+msgstr "Poništi podrazumevano polje za pretragu."
+
+#: views/wpus-options.php:373
+msgid ""
+"Select this to replace the default WordPress search for with an instance of WP "
+"Ultimate Search."
+msgstr ""
+"Odaberite ovu opciju da biste zamenili podrazumevanu WordPress pretragu WP "
+"Ultimate Search pretragom, na primer. "
+
+#: views/wpus-options.php:389
+msgid "Radius"
+msgstr "Radijus"
+
+#: views/wpus-options.php:390
+msgid "Set the default distance for radius searches"
+msgstr "Podesite podrazumevanu daljinu za radijus pretrage"
+
+#: views/wpus-options.php:396
+msgid "Format"
+msgstr "Format"
+
+#: views/wpus-options.php:404
+msgid "Radius Label"
+msgstr "Oznaka "
+
+#: views/wpus-options.php:405
+msgid "Set the text that should be displayed as the label for the radius facet"
+msgstr "Podesite tekst koji treba prikazati kao radijus facet-a"
+
+#: views/wpus-options.php:422
+msgid "Search logic"
+msgstr "Logika pretraživanja"
+
+#: views/wpus-options.php:423
+msgid "Whether to use AND logic or OR logic for facets within the same taxonomy."
+msgstr ""
+"Treba li koristiti “I” ili “ILI” logiku za facet-e u okviru iste taksonomije."
+
+#: views/wpus-options.php:433 views/wpus-options.php:487
+msgid "\"Clear search\" button"
+msgstr "Taster \"Obriši pretragu\" "
+
+#: views/wpus-options.php:434 views/wpus-options.php:488
+msgid "Display a button after search results to clear all terms."
+msgstr "Prikažite taster nakon rezultata pretrage da biste obrisali sve termine."
+
+#: views/wpus-options.php:449
+msgid "Search results page"
+msgstr "Stranica rezultata pretrage"
+
+#: views/wpus-options.php:459
+msgid "Search results template"
+msgstr "Šablon rezultata pretrage"
+
+#: views/wpus-options.php:460
+msgid ""
+"Select a template for search results. <a href=\"http://mindsharelabs.com/kb/how-"
+"do-i-customize-the-search-results-template/\" target=\"_BLANK\">Custom templates</"
+"a> will override this section."
+msgstr ""
+"Odaberite šablon za rezultate pretrage. <a href=\"http://mindsharelabs.com/kb/how-"
+"do-i-customize-the-search-results-template/\" target=\"_BLANK\">Prilagođeni "
+"šabloni</a>"
+
+#: views/wpus-options.php:473
+msgid "\"No results\" message"
+msgstr "\"Nema rezultata\" poruka "
+
+#: views/wpus-options.php:474
+msgid "Customize the message displayed when no results are found."
+msgstr "Prilagodite poruku koja se prikazuje kad nisu pronađeni rezultati."
+
+#: views/wpus-options.php:480
+msgid "Highlight Terms"
+msgstr "Označi termine"
+
+#: views/wpus-options.php:481
+msgid "Highlight matching terms in search results."
+msgstr "Označite termine koji se podudaraju u rezultatima pretrage."
+
+#: views/wpus-options.php:494
+msgid "Button text"
+msgstr "Tekst tastera"
+
+#: views/wpus-options.php:501
+msgid "Button CSS class"
+msgstr "CSS klasa tastera"
+
+#: views/wpus-options.php:502
+msgid "Apply a CSS class to match your theme."
+msgstr "Primenite CSS klasu da biste je uparili sa svojom temom."
+
+#: views/wpus-options.php:508
+msgid "Disable Permalinks"
+msgstr "Deaktiviraj permalinkove."
+
+#: views/wpus-options.php:509
+msgid ""
+"By default, Ultimate Search will update the URL in a user's browser as they "
+"modify their search query. Check this box to disable that functionality."
+msgstr ""
+"Po standardu, Ultimate Search ažuriraće URL u pretraživaču korisnika dok menjaju "
+"svoje pretrage. Štiklirajte ovaj okvir da biste deaktivirati tu funkcionalnost."
+
+#: views/wpus-options.php:527
+msgid "Enable"
+msgstr "Aktiviraj"
+
+#: views/wpus-options.php:528
+msgid "Check this box to enable searching by user."
+msgstr "Štiklirajte ovaj okvir da biste aktivirali korisničku pretragu."
+
+#: views/wpus-options.php:533
+msgid "Label"
+msgstr "Oznaka"
+
+#: views/wpus-options.php:534
+msgid "Label to show in the dropdown of available facets."
+msgstr "Oznaka koja treba da se prikaže u opadajućem meniju raspoloživih facet-a."
+
+#: views/wpus-options.php:541
+msgid "Autocomplete"
+msgstr "Automatsko dopunjavanje"
+
+#: views/wpus-options.php:542
+msgid "Check this box to enable autocomplete for user searches."
+msgstr ""
+"Štiklirajte ovaj okvir da biste aktivirali automatsko dopunjavanje za korisničke "
+"pretrage."
+
+#: views/wpus-options.php:548
+msgid "User Roles"
+msgstr "Korisničke uloge"
+
+#: views/wpus-options.php:549
+msgid "Select the user roles to return in results."
+msgstr "Odaberite korisničke uloge koje će se pojaviti u rezultatima."
+
+#: views/wpus-options.php:567
+msgid "Track Events"
+msgstr "Prati događaje"
+
+#: views/wpus-options.php:568
+msgid ""
+"Enabling this option will cause searches to appear as events in your Google "
+"Analytics reports<br /> (requires an Analytics tracking code to be already "
+"installed.)"
+msgstr ""
+"Aktiviranjem ove opcije pretrage će se pojavljivati kao događaji u vašim "
+"izveštajima Google analitike <br /> (zahteva da vam već bude instaliran kod za "
+"praćenje analitike)."
+
+#: views/wpus-options.php:574
+msgid "Event Category"
+msgstr "Kategorija događaja"
+
+#: views/wpus-options.php:575
+msgid "Set the category your events will appear under in reports."
+msgstr ""
+"Odredite kategoriju pod kojom će se pojavljivati vaši događaji u izveštajima."
+
+#: views/wpus-options.php:583
+msgid "Reset options"
+msgstr "Opcije vraćanja na početne vrednosti"
+
+#: views/wpus-options.php:585
+msgid ""
+"Check this box and click \"Save Changes\" below to reset all options to their "
+"defaults."
+msgstr ""
+"Štiklirajte ovaj okvir i kliknite na \"Sačuvaj izmene\" dole kako biste sve "
+"opcije vratili na njihove podrazumevane vrednosti."
+
+#: views/wpus-widget.php:15
+msgid "Displays the WP Ultimate Search bar"
+msgstr "Prikazuje WP Ultimate Search traku"
+
+#: views/wpus-widget.php:75
+msgid "Search"
+msgstr "Traži"
+
+#: views/wpus-widget.php:79
+msgid "Title:"
+msgstr "Naziv:"
+
+#. Plugin Name of the plugin/theme
+msgid "WP Ultimate Search"
+msgstr "WP Ultimate Search"
+
+#. Plugin URI of the plugin/theme
+msgid "http://ultimatesearch.mindsharelabs.com"
+msgstr "http://ultimatesearch.mindsharelabs.com"
+
+#. Description of the plugin/theme
+msgid "Advanced faceted AJAX search and filter utility."
+msgstr "Napredan dinamičan alat za AJAX pretragu i filtriranje"
+
+#. Author of the plugin/theme
+msgid "Mindshare Studios, Inc."
+msgstr "Mindshare Studios, Inc."
+
+#. Author URI of the plugin/theme
+msgid "http://mindsharelabs.com/"
+msgstr "http://mindsharelabs.com/"

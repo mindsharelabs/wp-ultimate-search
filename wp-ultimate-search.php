@@ -8,11 +8,13 @@ Author: Mindshare Studios, Inc.
 Author URI: https://mindsharelabs.com/
 */
 
+
 /**
  * @copyright Copyright (c) 2015. All rights reserved.
  * @author    Mindshare Studios, Inc.
  *
  * Spanish translation by Andrew Kurtis <andrewk@webhostinghub.com>
+ * Russian translation by Andrijana Nikolic <andrijanan@webhostinggeeks.com>
  *
  * @license   Released under the GPL license http://www.opensource.org/licenses/gpl-license.php
  * @see       http://wordpress.org/extend/plugins/wp-ultimate-search/
