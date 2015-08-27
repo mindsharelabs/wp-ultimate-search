@@ -3,8 +3,8 @@ Contributors: mindshare
 Donate link: http://mind.sh/are/donate/
 Tags: search, ajax, metadata, meta, post meta, autocomplete, jquery, facet, faceted search, faceting, advanced custom fields, acf, taxonomy, taxonomies, term, terms, facets, geo, wp-geo, radius, latitude, longitude, location
 Requires at least: 4.0
-Tested up to: 4.2.2
-Stable tag: 2.0.1
+Tested up to: 4.3
+Stable tag: 2.0.2
  
 Powerful AJAX-based search alternative which supports faceting queries by taxonomies, terms, location, and post metadata.
 
